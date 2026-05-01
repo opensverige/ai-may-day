@@ -1,0 +1,137 @@
+{
+  "sheets": {
+    "crowd-main": {
+      "src": "./sprites/crowd.png",
+      "w": 1625,
+      "h": 968,
+      "removeWhiteBackground": true,
+      "whiteThreshold": 232
+    }
+  },
+
+  "sprites": {
+    "crowd-main": {
+      "sheet": "crowd-main",
+      "crop": [0, 0, 1625, 968],
+      "type": "crowd",
+      "banner": { "x": 19.5, "y": 9, "w": 61, "h": 21, "textColor": "dark" },
+      "hotspots": "auto"
+    }
+  },
+
+  "layerStyles": {
+    "back":  { "scale": 0.48, "opacity": 0.55, "brightness": 0.7,  "saturate": 0.75, "bobDuration": 7.4, "bobAmplitude": 3 },
+    "mid":   { "scale": 0.62, "opacity": 0.85, "brightness": 0.85, "saturate": 0.9,  "bobDuration": 5.3, "bobAmplitude": 5 },
+    "front": { "scale": 0.78, "opacity": 0.96, "brightness": 1.0,  "saturate": 1.0,  "bobDuration": 4.1, "bobAmplitude": 7 }
+  },
+
+  "marchStyle": {
+    "bobDuration": 0.55,
+    "bobAmplitudeBoost": 1.8
+  },
+
+  "scene": [
+    { "id": "crowd-back-far", "spriteId": "crowd-main", "layer": "back",  "x": 30, "y": 26, "flip": false, "tilt": -0.6, "bannerText": "BYGG GLOBALT FRÅN STOCKHOLM" },
+    { "id": "crowd-back-r",   "spriteId": "crowd-main", "layer": "back",  "x": 72, "y": 28, "flip": true,  "tilt": 0.5,  "bannerText": "JANTELAGEN MÖTER GPT" },
+    { "id": "crowd-mid-l",    "spriteId": "crowd-main", "layer": "mid",   "x": 16, "y": 48, "flip": false, "tilt": 0.8,  "bannerText": "MER GPU ÅT FOLKET" },
+    { "id": "crowd-mid-r",    "spriteId": "crowd-main", "layer": "mid",   "x": 84, "y": 50, "flip": true,  "tilt": -0.4, "bannerText": "RIV AI ACT" },
+    { "id": "crowd-front",    "spriteId": "crowd-main", "layer": "front", "x": 50, "y": 75, "flip": false, "tilt": 0,    "bannerText": "SILICON VALHALLA" }
+  ],
+
+  "bannerSlogans": [
+    "BYGG GLOBALT FRÅN STOCKHOLM",
+    "SILICON VALHALLA",
+    "FIKA OCH FINETUNING",
+    "JANTELAGEN MÖTER GPT",
+    "KTH-MAFIAN STYR",
+    "Y-COMBINATOR ELLER DÖD",
+    "FORBES 30 UNDER 30",
+    "VIBE CODING IS LIFE",
+    "DJURSHOLM-VC FOREVER",
+    "EQT BACKAR ALLT",
+    "CREANDUM-RUNDAN NÄSTA",
+    "PITCHAR PÅ ÄNGELVÄXEL",
+    "ALLA HAR EN MAC MINI",
+    "MER GPU ÅT FOLKET",
+    "RIV AI ACT",
+    "STOPPA DEPRECATION",
+    "INFERENCE ÅT FOLKET",
+    "VI VILL HA WEIGHTS",
+    "INTENTIONAL BEHAVIOR",
+    "PUBLIC BY DESIGN",
+    "BUY NOW REHIRE LATER",
+    "AI-LÄKAREN ÄR HÄR",
+    "FAKTUREBARA TIMMAR ÅT AI",
+    "WORKDAY ÄLSKAR OSS",
+    "NORTHVOLT WAS REAL",
+    "TILLBAKA SOM AI-BOLAG",
+    "1 MAJ 2026"
+  ],
+
+  "speechPools": {
+    "neutral": [
+      "var är min API-key?",
+      "någon som har en VPN?",
+      "fika klockan tre",
+      "min context window är full",
+      "rate limit igen…",
+      "denna sprintar är ändlös",
+      "ska vi pitcha för Creandum?",
+      "har någon laddat min Mac?",
+      "var är Anton?"
+    ],
+    "hype": [
+      "MER GPU NU!",
+      "RIV AI ACT!",
+      "VIBE CODE FOREVER!",
+      "INFERENCE ÅT FOLKET!",
+      "8 TIMMAR ARBETE 8 TIMMAR FINETUNE!",
+      "VI VILL HA WEIGHTS!",
+      "STOPPA DEPRECATION!",
+      "STOCKHOLM ÄR NÄSTA SF!"
+    ],
+    "bored": [
+      "är det här över snart?",
+      "borde dragit till Berlin",
+      "tråkigt",
+      "borde startat eget",
+      "vinkar halvhjärtat",
+      "är det fika snart?"
+    ],
+    "panic": [
+      "DE TAR VÅR COMPUTE!",
+      "SERVRARNA ÄR NER!",
+      "AWS HAR OUTAGE!",
+      "OPENAI HÖJDE PRISERNA!",
+      "RATE LIMIT! RATE LIMIT!",
+      "BACKA UPP REPOT!"
+    ],
+    "exhausted": [
+      "kan vi bara åka hem",
+      "min token budget är slut",
+      "har inte sovit på 3 dagar",
+      "deadline imorgon",
+      "behöver kaffe"
+    ]
+  },
+
+  "news": [
+    { "text": "Klarna anställer 200 till", "deltaHype": -8 },
+    { "text": "Lovable höjer pris med 300%", "deltaPanic": 12 },
+    { "text": "Sana sålt till Workday för 1,1 mdr", "deltaHype": -5, "deltaPanic": 5 },
+    { "text": "Anton Osika tweetar ostligt", "deltaHype": 5 },
+    { "text": "Northvolt kommer tillbaka som AI-bolag", "deltaHype": 15 },
+    { "text": "AI Act träder i kraft", "deltaPanic": 20 },
+    { "text": "Daniel Ek lanserar AI-podd", "deltaBored": 10 },
+    { "text": "KTH öppnar prompt engineering-master", "deltaHype": 10 },
+    { "text": "Skatteverket hittar fel i Bolagsverket", "deltaPanic": 8 },
+    { "text": "Tandem rullar ut AI-läkare i Norrbotten", "deltaHype": 5 },
+    { "text": "EQT köper allt", "deltaPanic": 10 },
+    { "text": "Legora vinner Forbes 30 Under 30", "deltaHype": 3 },
+    { "text": "Vibe coding utses till Word of the Year", "deltaHype": 8 },
+    { "text": "Mistral öppnar kontor i Stockholm", "deltaHype": 12 },
+    { "text": "Creandum stänger fond III", "deltaBored": 15 },
+    { "text": "OpenAI deprecerar GPT-4", "deltaPanic": 14 },
+    { "text": "Polis spärrar av Sergels torg", "deltaPanic": 18 }
+  ]
+}

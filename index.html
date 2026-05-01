@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a1412" />
+  <title>AI MAY DAY · 1 maj 2026</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+
+  <!-- Atmosfär bakom allt -->
+  <div class="sky" aria-hidden="true">
+    <div class="moon"></div>
+    <div class="moon-glow"></div>
+    <div class="skyline"></div>
+    <div class="skyline skyline--far"></div>
+    <div class="grain"></div>
+  </div>
+
+  <!-- HUD: title + mood + counter -->
+  <header class="hud">
+    <div class="hud__title">
+      <div class="hud__eyebrow">PARTAJ &middot; STHLM &middot; 1 MAJ 2026</div>
+      <h1 class="hud__h1">AI&nbsp;MAY&nbsp;DAY</h1>
+      <div class="hud__sub">CROWD CONTROL FÖR ETT FOLK SOM PROMPTAR</div>
+    </div>
+
+    <div class="mood" role="group" aria-label="Stämning">
+      <div class="mood__row" data-mood="hype">
+        <span class="mood__label">UPPRÖRD</span>
+        <span class="mood__bar"><i></i></span>
+        <span class="mood__pct">0%</span>
+      </div>
+      <div class="mood__row" data-mood="calm">
+        <span class="mood__label">NÖJD</span>
+        <span class="mood__bar"><i></i></span>
+        <span class="mood__pct">0%</span>
+      </div>
+      <div class="mood__row" data-mood="panic">
+        <span class="mood__label">PANIK</span>
+        <span class="mood__bar"><i></i></span>
+        <span class="mood__pct">0%</span>
+      </div>
+      <div class="mood__row" data-mood="bored">
+        <span class="mood__label">TRÖTT</span>
+        <span class="mood__bar"><i></i></span>
+        <span class="mood__pct">0%</span>
+      </div>
+    </div>
+
+    <div class="counter">
+      <div class="counter__num" id="marcher-count">1&thinsp;247</div>
+      <div class="counter__label">DEMONSTRANTER</div>
+    </div>
+  </header>
+
+  <!-- Scen: 3 lager + förgrund -->
+  <main class="scene" id="scene">
+
+    <div class="layer layer--back"   data-layer="back"></div>
+    <div class="layer layer--mid"    data-layer="mid"></div>
+    <div class="layer layer--front"  data-layer="front"></div>
+
+    <div class="layer layer--bubbles" id="bubbles" aria-live="polite"></div>
+    <div class="layer layer--police"  id="police"></div>
+    <canvas class="layer layer--snow" id="snow" aria-hidden="true"></canvas>
+
+    <div class="vignette" aria-hidden="true"></div>
+    <div class="ground-fade" aria-hidden="true"></div>
+  </main>
+
+  <!-- Actions -->
+  <nav class="actions" aria-label="Crowd actions">
+    <button class="btn btn--engage"   data-action="engage"   type="button">
+      <span class="btn__kbd">A</span>
+      <span class="btn__title">ENGAGE</span>
+      <span class="btn__sub">tända en gnista</span>
+    </button>
+    <button class="btn btn--chant"    data-action="chant"    type="button">
+      <span class="btn__kbd">S</span>
+      <span class="btn__title">CHANT</span>
+      <span class="btn__sub">våg från bakre led</span>
+    </button>
+    <button class="btn btn--disperse" data-action="disperse" type="button">
+      <span class="btn__kbd">D</span>
+      <span class="btn__title">DISPERSE</span>
+      <span class="btn__sub">lugna ner massan</span>
+    </button>
+    <button class="btn btn--police"   data-action="police"   type="button">
+      <span class="btn__kbd">F</span>
+      <span class="btn__title">POLICE</span>
+      <span class="btn__sub">extern panikkälla</span>
+    </button>
+  </nav>
+
+  <!-- Toggles -->
+  <aside class="toggles">
+    <button class="toggle" data-toggle="march" type="button">
+      <span class="toggle__dot"></span>MARSCHERA
+    </button>
+    <button class="toggle" data-toggle="snow" type="button">
+      <span class="toggle__dot"></span>SNÖ
+    </button>
+    <button class="toggle" data-toggle="reslogan" type="button">
+      <span class="toggle__dot toggle__dot--static"></span>NYA PAROLLER
+    </button>
+  </aside>
+
+  <!-- BREAKING NEWS-ticker -->
+  <footer class="ticker" aria-label="Nyheter">
+    <div class="ticker__brand">BREAKING</div>
+    <div class="ticker__track" id="ticker-track">
+      <div class="ticker__item">SYSTEMET BOOTAR &middot; CROWD ANLÄNDER &middot; FANTASTISKT VÄDER FÖR REVOLUTION</div>
+    </div>
+    <div class="ticker__time" id="clock">--:--</div>
+  </footer>
+
+  <!-- Debug-overlay -->
+  <div class="debug-info" id="debug-info" hidden></div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
