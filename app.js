@@ -446,6 +446,7 @@ const BUBBLE_COOLDOWN = 14000;
 const BUBBLE_HOLD = 4500;
 
 function trySpawnBubble(h) {
+  if (h.layer !== "front") return; // bubblor bara från front-crowd för fokus
   if (game.visibleBubbles >= BUBBLE_MAX) return;
   if (now() - h.lastBubble < BUBBLE_COOLDOWN) return;
 

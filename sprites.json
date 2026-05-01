@@ -20,9 +20,9 @@
   },
 
   "layerStyles": {
-    "back":  { "scale": 0.48, "opacity": 0.55, "brightness": 0.7,  "saturate": 0.75, "bobDuration": 7.4, "bobAmplitude": 3 },
-    "mid":   { "scale": 0.62, "opacity": 0.85, "brightness": 0.85, "saturate": 0.9,  "bobDuration": 5.3, "bobAmplitude": 5 },
-    "front": { "scale": 0.78, "opacity": 0.96, "brightness": 1.0,  "saturate": 1.0,  "bobDuration": 4.1, "bobAmplitude": 7 }
+    "back":  { "scale": 0.34, "opacity": 0.32, "brightness": 0.55, "saturate": 0.6,  "bobDuration": 7.4, "bobAmplitude": 2 },
+    "mid":   { "scale": 0.48, "opacity": 0.6,  "brightness": 0.72, "saturate": 0.78, "bobDuration": 5.3, "bobAmplitude": 4 },
+    "front": { "scale": 0.95, "opacity": 1.0,  "brightness": 1.05, "saturate": 1.05, "bobDuration": 4.1, "bobAmplitude": 8 }
   },
 
   "marchStyle": {
@@ -31,11 +31,11 @@
   },
 
   "scene": [
-    { "id": "crowd-back-far", "spriteId": "crowd-main", "layer": "back",  "x": 30, "y": 26, "flip": false, "tilt": -0.6, "bannerText": "BYGG GLOBALT FRÅN STOCKHOLM" },
-    { "id": "crowd-back-r",   "spriteId": "crowd-main", "layer": "back",  "x": 72, "y": 28, "flip": true,  "tilt": 0.5,  "bannerText": "JANTELAGEN MÖTER GPT" },
-    { "id": "crowd-mid-l",    "spriteId": "crowd-main", "layer": "mid",   "x": 16, "y": 48, "flip": false, "tilt": 0.8,  "bannerText": "MER GPU ÅT FOLKET" },
-    { "id": "crowd-mid-r",    "spriteId": "crowd-main", "layer": "mid",   "x": 84, "y": 50, "flip": true,  "tilt": -0.4, "bannerText": "RIV AI ACT" },
-    { "id": "crowd-front",    "spriteId": "crowd-main", "layer": "front", "x": 50, "y": 75, "flip": false, "tilt": 0,    "bannerText": "SILICON VALHALLA" }
+    { "id": "crowd-back-far", "spriteId": "crowd-main", "layer": "back",  "x": 32, "y": 22, "flip": false, "tilt": -0.6, "bannerText": "BYGG GLOBALT FRÅN STOCKHOLM" },
+    { "id": "crowd-back-r",   "spriteId": "crowd-main", "layer": "back",  "x": 68, "y": 23, "flip": true,  "tilt": 0.5,  "bannerText": "JANTELAGEN MÖTER GPT" },
+    { "id": "crowd-mid-l",    "spriteId": "crowd-main", "layer": "mid",   "x": 22, "y": 35, "flip": false, "tilt": 0.6,  "bannerText": "MER GPU ÅT FOLKET" },
+    { "id": "crowd-mid-r",    "spriteId": "crowd-main", "layer": "mid",   "x": 78, "y": 36, "flip": true,  "tilt": -0.3, "bannerText": "RIV AI ACT" },
+    { "id": "crowd-front",    "spriteId": "crowd-main", "layer": "front", "x": 50, "y": 70, "flip": false, "tilt": 0,    "bannerText": "SILICON VALHALLA" }
   ],
 
   "bannerSlogans": [
