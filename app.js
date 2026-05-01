@@ -1194,6 +1194,14 @@ function endGame(outcome) {
   // LEADERBOARD: alla 8 utfall i en grid med best-time per win
   renderLeaderboard(key);
 
+  // Anonym aggregerad telemetri — bara utfalls-key, inget personligt
+  try {
+    window.va?.("event", {
+      name: "finale",
+      data: { key, route: game.route || "none", elapsed: Math.round(elapsed) },
+    });
+  } catch (e) {}
+
   // Visa "NYTT UTFALL HITTAT"-celebration om första gången på detta key
   if (endingInfo.isNew) {
     el.classList.add("finale--new-ending");
@@ -1447,7 +1455,7 @@ function tickHotspots(dt) {
   const hypePct = (hypeCount / Math.max(1, game.hotspots.length)) * 100;
   let overheatChance = 0;
   // En överhettad massa kantrar — ju högre hype desto större panic-leak
-  if (hypePct > 65) overheatChance = (hypePct - 65) / 70; // 0–0.5 över hype 65–100%
+  if (hypePct > 60) overheatChance = (hypePct - 60) / 55; // tidigare snowball, snabbare leak
 
   for (const h of game.hotspots) {
     h.timer += dt;
