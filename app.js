@@ -140,14 +140,8 @@ function mountScene(config, sheets) {
     pos.style.width = widthPct + "%";
     pos.style.aspectRatio = `${sprite.crop[2]} / ${sprite.crop[3]}`;
     const tilt = inst.tilt || 0;
-    // FRONT-lager anchoras till scen-bottom så crowden inte floatar
-    if (inst.layer === "front") {
-      pos.style.bottom = "0";
-      pos.style.transform = `translateX(-50%) rotate(${tilt}deg)`;
-    } else {
-      pos.style.top = inst.y + "%";
-      pos.style.transform = `translate(-50%, -50%) rotate(${tilt}deg)`;
-    }
+    pos.style.top = inst.y + "%";
+    pos.style.transform = `translate(-50%, -50%) rotate(${tilt}deg)`;
 
     const el = document.createElement("div");
     el.className = "sprite" + (inst.flip ? " sprite--flipped" : "");
@@ -157,6 +151,7 @@ function mountScene(config, sheets) {
     el.style.height = "100%";
     el.style.opacity = layerStyle.opacity;
     el.style.filter = `brightness(${layerStyle.brightness}) saturate(${layerStyle.saturate ?? 1})`;
+    if (typeof inst.bobDelay === "number") el.style.animationDelay = inst.bobDelay + "s";
     pos.appendChild(el);
 
     // sprite-img med crop från sheet via background-position

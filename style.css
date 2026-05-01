@@ -444,11 +444,14 @@ body {
 /* mask-image borttaget helt — för dyrt att composita varje frame */
 
 
-/* Bobb-animation BARA när marsch är på — annars statiskt = ingen GPU-cost */
-@keyframes bob-march { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-10px) } }
-.scene.is-marching .layer--front .sprite {
-  animation: bob-march 0.6s ease-in-out infinite;
-}
+/* Subtle bobb per lager — translate Y bara, billig på GPU */
+@keyframes bobb-back  { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes bobb-mid   { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes bobb-front { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+.layer--back  .sprite { animation: bobb-back  5.5s ease-in-out infinite; }
+.layer--mid   .sprite { animation: bobb-mid   4.2s ease-in-out infinite; }
+.layer--front .sprite { animation: bobb-front 3.4s ease-in-out infinite; }
 
 /* banner-text overlay positionerad inom sprite */
 .banner-text {
