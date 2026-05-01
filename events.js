@@ -36,7 +36,7 @@ const ARCHETYPES = {
   "journalist":   { name: "JOURNALISTEN",  ...chr("journalist") },
   "polischef":    { name: "POLISCHEFEN",   ...chr("polis")      },
   "professor":    { name: "PROFESSORN",    ...chr("byrakrat")   },
-  "kommunalrad":  { name: "KOMMUNALRÅDET", ...chr("protest")    }, // generisk demonstrant
+  "kommunalrad":  { name: "KOMMUNALRÅDET", ...chr("kommun")     }, // egen, reacting/intense fallar tillbaka till default
   "influencer":   { name: "INFLUENCERN",   ...chr("journalist") },
   "borasare":     { name: "BORÅSAREN",     ...chr("protest")    }, // generisk demonstrant
   "pensionar":    { name: "PENSIONÄREN",   ...chr("pensionar")  },
