@@ -353,7 +353,7 @@ const game = {
   snowing: false,
   marchers: 1247,
   lastNews: 0,
-  newsInterval: 14, // sek
+  newsInterval: 6, // sek
   visibleBubbles: 0,
   dispersedAt: -Infinity,
   // mål-tracking
@@ -720,7 +720,7 @@ function tickNews(dt) {
   game.lastNews += dt;
   if (game.lastNews >= game.newsInterval) {
     game.lastNews = 0;
-    game.newsInterval = rand(12, 25);
+    game.newsInterval = rand(6, 12);
     const item = pick(game.config.news);
     pushNews(item);
   }
@@ -841,17 +841,32 @@ function bindUI() {
     engageAt(t.clientX, t.clientY);
   }, { passive: true });
 
-  // action-knappar
+  // action-knappar med cooldown
+  const cooldowns = { engage: 1.5, chant: 4, disperse: 5, police: 6 };
   $$(".btn").forEach((b) => {
+    // se till att cd-bar finns
+    if (!b.querySelector(".btn__cd-bar")) {
+      const bar = document.createElement("span");
+      bar.className = "btn__cd-bar";
+      b.appendChild(bar);
+    }
     b.addEventListener("click", () => {
+      if (b.classList.contains("btn--cooling") || game.isOver) return;
       const a = b.dataset.action;
       if (a === "engage") {
-        // tända slumpmässig hotspot för demo
         const r = pick(game.hotspots);
         if (r) { setHotspotState(r, "hype"); trySpawnBubble(r); }
       } else if (a === "chant") chant();
       else if (a === "disperse") disperse();
       else if (a === "police") police();
+      // cooldown
+      const dur = cooldowns[a] || 2;
+      b.style.setProperty("--cd-duration", dur + "s");
+      b.classList.add("btn--cooling");
+      // restart animation
+      const bar = b.querySelector(".btn__cd-bar");
+      if (bar) { bar.style.animation = "none"; void bar.offsetWidth; bar.style.animation = ""; }
+      setTimeout(() => b.classList.remove("btn--cooling"), dur * 1000);
     });
   });
 

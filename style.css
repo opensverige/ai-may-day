@@ -451,8 +451,8 @@ body {
 }
 .sprite--flipped .sprite__img { transform: scaleX(-1); }
 .sprite__img--feathered {
-  -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 60%, black 45%, transparent 96%);
-          mask-image: radial-gradient(ellipse 70% 70% at 50% 60%, black 45%, transparent 96%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
 }
 
 
@@ -559,55 +559,63 @@ body {
   background: var(--parchment);
   color: var(--ink);
   font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: 11px;
-  letter-spacing: 0.02em;
-  padding: 6px 10px 7px;
-  border: 1.5px solid #2c2520;
-  border-radius: 14px 14px 14px 4px;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  padding: 11px 18px 12px;
+  border: 2px solid #2c2520;
+  border-radius: 16px 16px 16px 4px;
   box-shadow:
-    2px 3px 0 rgba(0,0,0,0.6),
+    3px 4px 0 rgba(0,0,0,0.65),
     0 0 0 1px rgba(255,255,255,0.04) inset;
   white-space: nowrap;
-  max-width: 220px;
+  max-width: 380px;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 200ms ease, transform 200ms ease;
+  transition: opacity 220ms ease, transform 220ms ease;
   z-index: 6;
 }
-.bubble--visible { opacity: 1; transform: translate(-50%, calc(-100% - 6px)); }
+.bubble--visible { opacity: 1; transform: translate(-50%, calc(-100% - 10px)); }
 .bubble--shout {
   background: var(--red-bright);
   color: var(--parchment);
-  font-weight: 800;
-  letter-spacing: 0.05em;
+  font-weight: 900;
+  font-size: 18px;
+  letter-spacing: 0.04em;
   border-color: #2a0808;
-  border-radius: 4px 14px 4px 14px;
-  text-shadow: 0 1px 0 rgba(0,0,0,0.4);
-  transform: translate(-50%, -100%) rotate(-1.5deg);
+  border-radius: 4px 16px 4px 16px;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.45);
+  transform: translate(-50%, -100%) rotate(-2deg);
+  padding: 12px 22px 13px;
 }
-.bubble--shout.bubble--visible { transform: translate(-50%, calc(-100% - 6px)) rotate(-1.5deg); }
+.bubble--shout.bubble--visible { transform: translate(-50%, calc(-100% - 10px)) rotate(-2deg); }
 .bubble--panic {
   background: #2a3850;
-  color: #d6e2f0;
+  color: #e2ebf5;
   border-color: #0a1422;
+  font-weight: 900;
+  font-size: 17px;
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.55);
 }
 .bubble--bored, .bubble--exhausted {
   background: #d8c89c;
-  color: #3a2f24;
+  color: #2e2418;
   font-style: italic;
-  font-weight: 500;
-  opacity: 0.9;
+  font-weight: 600;
+  font-size: 15px;
+  opacity: 0.92;
 }
 
 .bubble::after {
   content: "";
   position: absolute;
-  left: 18px; bottom: -9px;
-  width: 12px; height: 12px;
+  left: 22px; bottom: -11px;
+  width: 16px; height: 16px;
   background: inherit;
-  border-right: 1.5px solid #2c2520;
-  border-bottom: 1.5px solid #2c2520;
+  border-right: 2px solid #2c2520;
+  border-bottom: 2px solid #2c2520;
   transform: rotate(45deg);
 }
 .bubble--shout::after { border-color: #2a0808; }
@@ -687,6 +695,23 @@ body {
 .btn:hover { border-color: var(--gold-soft); background: linear-gradient(180deg, rgba(38,52,50,0.9), rgba(20,30,28,0.95)); }
 .btn:active { transform: translateY(1px); }
 .btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.btn--cooling { pointer-events: none; opacity: 0.55; cursor: wait; filter: saturate(0.5); }
+.btn__cd-bar {
+  position: absolute;
+  left: 0; bottom: 0;
+  height: 3px;
+  width: 100%;
+  background: var(--gold-bright);
+  transform-origin: left center;
+  transform: scaleX(0);
+  z-index: 2;
+}
+.btn--cooling .btn__cd-bar { animation: cd-progress var(--cd-duration, 3s) linear forwards; }
+@keyframes cd-progress {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
 
 .btn--engage:hover   { border-color: var(--red); }
 .btn--engage   .btn__title { color: var(--red-bright); }
@@ -777,7 +802,7 @@ body {
 .ticker__item {
   display: inline-block;
   padding-left: 100%;
-  animation: tick 28s linear infinite;
+  animation: tick 14s linear infinite;
   text-transform: uppercase;
   white-space: nowrap;
 }

@@ -29,16 +29,15 @@
       "banner": { "x": 19.5, "y": 9, "w": 61, "h": 21, "textColor": "dark" },
       "hotspots": "auto"
     },
-    "cell-a": { "sheet": "crowd-band", "crop": [20, 4, 500, 250],    "type": "crowd", "banner": null, "hotspots": "auto" },
-    "cell-b": { "sheet": "crowd-band", "crop": [540, 4, 480, 250],   "type": "crowd", "banner": null, "hotspots": "auto" },
-    "cell-c": { "sheet": "crowd-band", "crop": [1040, 4, 490, 250],  "type": "crowd", "banner": null, "hotspots": "auto" },
-    "cell-d": { "sheet": "crowd-band", "crop": [20, 770, 740, 254],  "type": "crowd", "banner": null, "hotspots": "auto" }
+    "row-back":  { "sheet": "crowd-band", "crop": [0, 4, 1536, 226],   "type": "crowd", "banner": null, "hotspots": "auto" },
+    "row-mid":   { "sheet": "crowd-band", "crop": [0, 260, 1536, 226], "type": "crowd", "banner": null, "hotspots": "auto" },
+    "row-front": { "sheet": "crowd-band", "crop": [0, 770, 1536, 226], "type": "crowd", "banner": null, "hotspots": "auto" }
   },
 
   "layerStyles": {
-    "back":  { "scale": 0.5,  "opacity": 0.6,  "brightness": 0.7,  "saturate": 0.75, "bobDuration": 7.4, "bobAmplitude": 2 },
-    "mid":   { "scale": 0.85, "opacity": 0.9,  "brightness": 0.9,  "saturate": 0.92, "bobDuration": 5.3, "bobAmplitude": 3 },
-    "front": { "scale": 1.5,  "opacity": 1.0,  "brightness": 1.05, "saturate": 1.0,  "bobDuration": 4.1, "bobAmplitude": 5 }
+    "back":  { "scale": 1.5,  "opacity": 0.7,  "brightness": 0.78, "saturate": 0.82, "bobDuration": 7.4, "bobAmplitude": 2 },
+    "mid":   { "scale": 1.65, "opacity": 0.9,  "brightness": 0.92, "saturate": 0.94, "bobDuration": 5.3, "bobAmplitude": 3 },
+    "front": { "scale": 1.85, "opacity": 1.0,  "brightness": 1.05, "saturate": 1.0,  "bobDuration": 4.1, "bobAmplitude": 4 }
   },
 
   "marchStyle": {
@@ -47,12 +46,9 @@
   },
 
   "scene": [
-    { "id": "back-l",  "spriteId": "cell-a", "layer": "back", "x": 15, "y": 28, "flip": false, "tilt": -0.4, "bannerText": "" },
-    { "id": "back-c",  "spriteId": "cell-b", "layer": "back", "x": 50, "y": 22, "flip": false, "tilt": 0.3,  "bannerText": "" },
-    { "id": "back-r",  "spriteId": "cell-c", "layer": "back", "x": 85, "y": 26, "flip": true,  "tilt": -0.2, "bannerText": "" },
-    { "id": "mid-l",   "spriteId": "cell-c", "layer": "mid",  "x": 22, "y": 50, "flip": false, "tilt": 0.5,  "bannerText": "" },
-    { "id": "mid-r",   "spriteId": "cell-a", "layer": "mid",  "x": 78, "y": 52, "flip": true,  "tilt": -0.3, "bannerText": "" },
-    { "id": "front",   "spriteId": "cell-d", "layer": "front","x": 50, "y": 78, "flip": false, "tilt": 0,    "bannerText": "" }
+    { "id": "back",  "spriteId": "row-back",  "layer": "back",  "x": 50, "y": 28, "flip": false, "tilt": 0, "bannerText": "" },
+    { "id": "mid",   "spriteId": "row-mid",   "layer": "mid",   "x": 50, "y": 48, "flip": false, "tilt": 0, "bannerText": "" },
+    { "id": "front", "spriteId": "row-front", "layer": "front", "x": 50, "y": 78, "flip": false, "tilt": 0, "bannerText": "" }
   ],
 
   "bannerSlogans": [
@@ -92,20 +88,30 @@
       "fika klockan tre",
       "min context window är full",
       "rate limit igen…",
-      "denna sprintar är ändlös",
       "ska vi pitcha för Creandum?",
       "har någon laddat min Mac?",
-      "var är Anton?"
+      "var är Anton?",
+      "claude eller gpt?",
+      "min prompt funkar inte",
+      "är det moln eller serverdimma?",
+      "någon som vibe codat?",
+      "är det här en demo eller demo?"
     ],
     "hype": [
       "MER GPU NU!",
       "RIV AI ACT!",
       "VIBE CODE FOREVER!",
       "INFERENCE ÅT FOLKET!",
-      "8 TIMMAR ARBETE 8 TIMMAR FINETUNE!",
+      "8 TIMMAR FINETUNE 8 TIMMAR PROMPT 8 TIMMAR DEPLOY!",
       "VI VILL HA WEIGHTS!",
       "STOPPA DEPRECATION!",
-      "STOCKHOLM ÄR NÄSTA SF!"
+      "STOCKHOLM ÄR NÄSTA SF!",
+      "OPEN SOURCE ELLER DÖD!",
+      "BAN STAGEHAND!",
+      "AGI NU NU NU!",
+      "VI ÄR INTE ETT WRAPPER!",
+      "FAKTUREBARA TIMMAR ÅT AI!",
+      "EU ACT KAN DRA!"
     ],
     "bored": [
       "är det här över snart?",
@@ -113,22 +119,28 @@
       "tråkigt",
       "borde startat eget",
       "vinkar halvhjärtat",
-      "är det fika snart?"
+      "är det fika snart?",
+      "scrollar X istället",
+      "öppnar Cursor i smyg"
     ],
     "panic": [
       "DE TAR VÅR COMPUTE!",
       "SERVRARNA ÄR NER!",
       "AWS HAR OUTAGE!",
-      "OPENAI HÖJDE PRISERNA!",
+      "OPENAI HÖJDE PRISERNA 400%!",
       "RATE LIMIT! RATE LIMIT!",
-      "BACKA UPP REPOT!"
+      "BACKA UPP REPOT!",
+      "VERCEL ÄR NER!",
+      "PROD ÄR DOWN!",
+      "ROLLA TILLBAKA!"
     ],
     "exhausted": [
       "kan vi bara åka hem",
       "min token budget är slut",
       "har inte sovit på 3 dagar",
       "deadline imorgon",
-      "behöver kaffe"
+      "behöver kaffe",
+      "skickade fel branch till prod"
     ]
   },
 
