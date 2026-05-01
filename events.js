@@ -27,9 +27,10 @@ const SINGLE_POSE_CROP = { x: 200, y: 100, w: 624, h: 1100 };
 function spriteWith(spriteSrc, crops) {
   return { sprite: spriteSrc, spriteW: 1024, spriteH: 1536, portraits: crops };
 }
-const SANA   = spriteWith("./sprites/character/sana.png",   TRIPLE_POSE_CROPS);
-const FACKET = spriteWith("./sprites/character/facket.png", TRIPLE_POSE_CROPS);
-const POLIS  = spriteWith("./sprites/character/polis.png",  TRIPLE_POSE_CROPS);
+const SANA       = spriteWith("./sprites/character/sana.png",       TRIPLE_POSE_CROPS);
+const FACKET     = spriteWith("./sprites/character/facket.png",     TRIPLE_POSE_CROPS);
+const POLIS      = spriteWith("./sprites/character/polis.png",      TRIPLE_POSE_CROPS);
+const JOURNALIST = spriteWith("./sprites/character/journalist.png", TRIPLE_POSE_CROPS);
 const LOVABLE = spriteWith("./sprites/character/lovable.png", {
   default: SINGLE_POSE_CROP, reacting: SINGLE_POSE_CROP, intense: SINGLE_POSE_CROP,
 });
@@ -40,7 +41,7 @@ const ARCHETYPES = {
   "fackpamp":     { name: "FACKPAMPEN",    ...FACKET },
   "aktivist":     { name: "AKTIVISTEN",    ...LOVABLE },
   "eu-byrakrat":  { name: "EU-BYRÅKRATEN", ...SANA   },
-  "journalist":   { name: "JOURNALISTEN",  ...LOVABLE },
+  "journalist":   { name: "JOURNALISTEN",  ...JOURNALIST },
   "polischef":    { name: "POLISCHEFEN",   ...POLIS  },
   "professor":    { name: "PROFESSORN",    ...SANA   },
   "kommunalrad":  { name: "KOMMUNALRÅDET", ...FACKET },

@@ -314,13 +314,33 @@ body {
   background:
     linear-gradient(180deg, rgba(28,42,40,0.96), rgba(15,25,23,0.98));
   border: 1px solid var(--gold-soft);
-  padding: 38px 48px 30px;
-  max-width: 540px;
+  padding: 0 48px 30px;
+  max-width: 580px;
   width: calc(100% - 40px);
   text-align: center;
   position: relative;
   box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.03) inset;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
 }
+.finale__card .finale__eyebrow:first-child { margin-top: 38px; }
+
+/* Key art överst i finale */
+.finale__keyart {
+  margin: 0 -48px 22px;
+  border-bottom: 3px solid #1a1208;
+  background: #1a1208;
+  overflow: hidden;
+  line-height: 0;
+}
+.finale__keyart img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 380px;
+  object-fit: cover;
+}
+.finale__keyart + .finale__eyebrow { margin-top: 14px; }
 .finale__card::after {
   content: "";
   position: absolute; inset: 0;

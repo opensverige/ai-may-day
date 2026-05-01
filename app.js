@@ -687,7 +687,7 @@ const FINALE = {
   bored:  { eyebrow: "DEMONSTRATIONEN UPPLÖST", title: "FOLK GICK HEM",       sub: "Token budget slut. Ingen orkade chanta längre. Kaféerna stänger 19:00.",                          cls: "finale--bored" },
 
   // namngivna varianter (Reigns-style)
-  "win-eqt":         { eyebrow: "DEMONSTRATIONEN ÖVERTAGEN", title: "EQT KÖPTE TÅGET",          sub: "Demonstrationen är nu en portfolio-tillgång. Värderingen sattes till 4,2 mdr.",       cls: "finale--win" },
+  "win-eqt":         { eyebrow: "DEMONSTRATIONEN ÖVERTAGEN", title: "EQT KÖPTE TÅGET",          sub: "Demonstrationen är nu en portfolio-tillgång. Värderingen sattes till 4,2 mdr.",       cls: "finale--win", keyArt: "./sprites/vinst/EQT.png" },
   "win-flag":        { eyebrow: "RIKSDAGEN VÄNDER",          title: "BLÅ-GUL REVOLUTION",       sub: "EU AI Act rivs upp på lunchen. Anton Osika blir ny näringsminister.",                cls: "finale--win" },
   "win-bali":        { eyebrow: "TÅGET FORTSÄTTER PÅ ZOOM",  title: "DEMONSTRATIONEN ÅKER TILL BALI", sub: "Hela 1 maj fortsätter på distans. WiFi:t är förvånansvärt bra.",                cls: "finale--win" },
   "police-eu":       { eyebrow: "DEMONSTRATIONEN BYRÅKRATISERAD", title: "EU-KOMMISSIONÄREN VANN", sub: "Alla skrev under formulär 7B. Solen gick ner. Vi är fortfarande på rad 12.",       cls: "finale--police" },
@@ -720,6 +720,25 @@ function endGame(outcome) {
   $("#finale-eyebrow").textContent = f.eyebrow;
   $("#finale-title").textContent = f.title;
   $("#finale-sub").textContent = f.sub;
+
+  // KEY-ART (om finns för utfallet)
+  const card = $(".finale__card");
+  let keyArtEl = $("#finale-keyart");
+  if (f.keyArt) {
+    if (!keyArtEl) {
+      keyArtEl = document.createElement("div");
+      keyArtEl.id = "finale-keyart";
+      keyArtEl.className = "finale__keyart";
+      keyArtEl.innerHTML = `<img alt="${f.title}" />`;
+      card.insertBefore(keyArtEl, card.firstChild);
+    }
+    const img = keyArtEl.querySelector("img");
+    img.onerror = () => keyArtEl.remove();
+    img.src = f.keyArt;
+    keyArtEl.style.display = "";
+  } else if (keyArtEl) {
+    keyArtEl.style.display = "none";
+  }
 
   const elapsed = (now() - game.startTime) / 1000;
   const stats = [
