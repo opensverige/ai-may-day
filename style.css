@@ -1867,8 +1867,8 @@ body {
   .mood {
     position: fixed;
     left: max(14px, env(safe-area-inset-left, 0px));
-    /* ovanför actions-raden så knappar inte täcks */
-    bottom: calc(118px + env(safe-area-inset-bottom, 0px));
+    /* ovanför actions + combo-meter så inget täcks */
+    bottom: calc(160px + env(safe-area-inset-bottom, 0px));
     z-index: 6;
     margin: 0;
     min-width: min(260px, 36vw);

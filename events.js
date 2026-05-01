@@ -372,6 +372,10 @@ class EventManager {
     const overlay = document.createElement("div");
     overlay.className = "event-overlay";
     overlay.innerHTML = `
+      <div class="event-pause-banner" aria-hidden="true">
+        <span class="event-pause-banner__pip"></span>
+        SPELET ÄR PAUSAT &middot; HÄNDELSE PÅ TORGET
+      </div>
       <button class="event-skip" type="button" title="Hoppa över (Esc)" aria-label="Hoppa över">×</button>
       <div class="event-card">
         <div class="event-card__inner">
@@ -410,15 +414,11 @@ class EventManager {
         const btn = document.createElement("button");
         btn.className = "event-choice";
         btn.type = "button";
-        const effect = this._formatEffect(choice.effect);
-        const unlock = choice.unlock
-          ? `<span class="effect-pill effect-pill--unlock">+ PAROLL</span>`
-          : "";
+        // Effekt visas EFTER klick i resultatet — innan klick gäller bara val.
         btn.innerHTML = `
           <span class="event-choice__num">${i + 1}</span>
           <span class="event-choice__body">
             <span class="event-choice__label">${this._escape(choice.label)}</span>
-            ${(effect || unlock) ? `<span class="event-choice__effect">${effect}${unlock}</span>` : ""}
           </span>
         `;
         btn.addEventListener("click", () => this._choose(event, choice));
@@ -475,14 +475,16 @@ class EventManager {
     const portraitState = choice.portraitState || this._deriveState(choice.effect);
     this._setPortraitState(portraitState);
 
-    // visa resultat
+    // visa resultat — effekt-pillsen avslöjas HÄR, efter att valet är gjort
     const choicesEl = this.activeModal.querySelector(".event-choices");
     const resultEl = this.activeModal.querySelector(".event-result");
     choicesEl.classList.add("event-choices--hidden");
     resultEl.hidden = false;
+    const effect = this._formatEffect(choice.effect);
     resultEl.innerHTML = `
       ${choice.unlock ? `<div class="event-unlock">+ NY PAROLL: ${this._escape(choice.unlock)}</div>` : ""}
       <div class="event-result__text">${this._escape(choice.result)}</div>
+      ${effect ? `<div class="event-result__effect">${effect}</div>` : ""}
     `;
     requestAnimationFrame(() => resultEl.classList.add("event-result--visible"));
 
