@@ -1246,12 +1246,14 @@ body.is-final-spurt .ticker.ticker--top { animation: ticker-rush 0.6s ease-in-ou
 }
 
 /* ── NYTT UTFALL HITTAT — celebration på finale-rutan ──── */
+/* Sitter INNE i kortet för att inte klippas av overflow:auto */
+.finale--new-ending .finale__card {
+  padding-top: 8px;
+}
 .finale--new-ending .finale__card::before {
   content: "★ NYTT UTFALL HITTAT ★";
-  position: absolute;
-  top: -24px;
-  left: 50%;
-  transform: translateX(-50%);
+  display: block;
+  margin: 14px auto 0;
   font-family: var(--font-mono);
   font-weight: 900;
   font-size: 11px;
@@ -1261,13 +1263,15 @@ body.is-final-spurt .ticker.ticker--top { animation: ticker-rush 0.6s ease-in-ou
   border: 3px solid #1a1208;
   box-shadow: 4px 4px 0 #1a1208;
   padding: 6px 14px 5px;
+  width: fit-content;
   white-space: nowrap;
   animation: new-ending-shimmer 1.6s ease-in-out infinite;
 }
 @keyframes new-ending-shimmer {
-  0%, 100% { transform: translateX(-50%) scale(1); filter: brightness(1); }
-  50%      { transform: translateX(-50%) scale(1.04); filter: brightness(1.18); }
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50%      { transform: scale(1.04); filter: brightness(1.18); }
 }
+.finale--new-ending .finale__verdict { margin-top: 8px; }
 
 @media (max-width: 720px) {
   .spurt-banner { padding: 16px 24px 18px; }

@@ -377,6 +377,7 @@ const game = {
   // dramaturgi
   finalSpurt: false,
   bossTriggered: false,
+  midbeatTriggered: false,
   countdownLastShown: -1,
   elapsedSec: 0,    // ackumulerad aktiv speltid (ej wall-clock — paus pausar)
   route: null,      // val-tag från boss-event (boss-riv / boss-utredning / boss-dans)
@@ -495,6 +496,8 @@ function deactivateOpenclaw() {
     clearInterval(game.openclaw.intervalId);
     game.openclaw.intervalId = null;
   }
+  // Refresha combo-fönstret så manuella engages efter OpenClaw fortsätter samma kombo
+  game.comboLastAt = now();
   $("#openclaw-flap")?.classList.remove("is-active");
   $(".btn--engage")?.classList.remove("has-openclaw");
 }
@@ -593,8 +596,11 @@ function megafon() {
 
 function trackComboHit() {
   const t = now();
-  // combo-fönster: 3s mellan hits för att räknas
-  if (t - game.comboLastAt > 3000) game.combo = 0;
+  // OpenClaw aktiv → frys combo-fönstret (annars resettas combo p.g.a. 6.5s tystnad)
+  const window_ms = 3000;
+  if (!game.openclaw.active && (t - game.comboLastAt > window_ms)) {
+    game.combo = 0;
+  }
   game.comboLastAt = t;
   game.combo++;
 
@@ -703,13 +709,12 @@ function renderLeaderboard(currentKey) {
   ];
 
   let host = $("#finale-leaderboard");
-  if (!host) {
-    host = document.createElement("div");
-    host.id = "finale-leaderboard";
-    host.className = "finale__leaderboard";
-    const stats = $("#finale-stats");
-    stats?.parentNode?.insertBefore(host, stats.nextSibling);
-  }
+  if (host) host.remove(); // rensa gammal node för att undvika dubbletter
+  host = document.createElement("div");
+  host.id = "finale-leaderboard";
+  host.className = "finale__leaderboard";
+  const stats = $("#finale-stats");
+  stats?.parentNode?.insertBefore(host, stats.nextSibling);
 
   const cells = ROWS.map((r) => {
     const unlocked = seen.includes(r.key);
@@ -939,7 +944,7 @@ const GOAL_THRESHOLDS = {
 const MATCH_DURATION  = 90;  // sek total speltid
 const FINAL_SPURT_AT  = 70;  // sek då slutspurt triggas (20s kvar)
 const BOSS_EVENT_AT   = 28;  // sek då boss-eventet triggas (tidigt så de flesta hinner se det)
-const SPURT_WIN_BOOST = 1.7; // win-timer multiplier under spurt
+const SPURT_WIN_BOOST = 1.35; // win-timer multiplier under spurt (mildare comeback)
 
 function tickGoal(dt) {
   if (game.isOver) return;
@@ -967,8 +972,21 @@ function tickGoal(dt) {
     // om event-system inte redo eller annan modal kör → vänta nästa tick
   }
 
-  // Slutspurt: 70s in
-  if (elapsedSec >= FINAL_SPURT_AT && !game.finalSpurt) {
+  // Mid-beat: 50s in — fyller döda zonen mellan boss och spurt
+  if (elapsedSec >= 50 && !game.midbeatTriggered && !game.paused) {
+    game.midbeatTriggered = true;
+    const beats = [
+      "Lovable släpper agent-SDK på torget — demonstranter laddar ner live",
+      "DN-fotograf täcker tåget — ledarsidan har redan vinkeln klar",
+      "Spotify pushar reklam till alla i området — 'Lyssna på AI MAY DAY-podden'",
+      "EU-byråkraten anländer med 40 sidor formulär — torget pausar i panik",
+      "Kommunen bjuder kaffe från Pressbyrån — alla pausar 4 minuter",
+    ];
+    pushNews({ text: pick(beats) });
+  }
+
+  // Slutspurt: 70s in (men inte mitt i en event-modal — vänta tills den stängs)
+  if (elapsedSec >= FINAL_SPURT_AT && !game.finalSpurt && !game.paused) {
     game.finalSpurt = true;
     document.body.classList.add("is-final-spurt");
     showSpurtBanner();

@@ -461,8 +461,20 @@ class EventManager {
       // redan valt → cancel result-timer och stäng direkt
       if (this._closeTimeout) clearTimeout(this._closeTimeout);
       this._close();
+    } else if (this._currentEvent.trigger === "boss") {
+      // Boss-skip = ingen route, ingen effekt. Threshold-fallback styr utfallet.
+      this.activeModal.dataset.choosing = "1";
+      const choicesEl = this.activeModal.querySelector(".event-choices");
+      const resultEl  = this.activeModal.querySelector(".event-result");
+      if (choicesEl) choicesEl.classList.add("event-choices--hidden");
+      if (resultEl) {
+        resultEl.hidden = false;
+        resultEl.innerHTML = `<div class="event-result__text">Statsministern lämnar utan svar. Tåget ser konfunderat ut.</div>`;
+        requestAnimationFrame(() => resultEl.classList.add("event-result--visible"));
+      }
+      this._closeTimeout = setTimeout(() => this._close(), 2000);
     } else {
-      // inget val gjort → välj alternativ 1 som default
+      // Vanliga ambient-events: defaulta till val 1
       this._choose(this._currentEvent, this._currentEvent.choices[0]);
     }
   }
