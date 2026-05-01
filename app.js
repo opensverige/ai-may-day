@@ -497,9 +497,10 @@ function trySpawnBubble(h) {
   if (h.state === "hype") b.classList.add("bubble--shout");
   if (h.state === "panic") b.classList.add("bubble--panic");
   b.textContent = text;
-  // clamp så bubblan inte clippas vid skärmkanter
-  const x = clamp(h.absX, 8, 92);
-  const y = clamp(h.absY, 8, 96);
+  // clamp så bubblan alltid hamnar i övre/mellersta delen av scenen
+  // (bubble har translate(-50%,-100%) → svans pekar nedåt mot crowd, body uppåt)
+  const x = clamp(h.absX, 12, 88);
+  const y = clamp(h.absY, 28, 70);
   b.style.left = x + "%";
   b.style.top  = y + "%";
   $("#bubbles").appendChild(b);

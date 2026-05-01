@@ -574,7 +574,7 @@ body {
   pointer-events: none;
   opacity: 0;
   transition: opacity 220ms ease, transform 220ms ease;
-  z-index: 6;
+  z-index: 30;
 }
 .bubble--visible { opacity: 1; transform: translate(-50%, calc(-100% - 10px)); }
 .bubble--shout {
@@ -921,8 +921,22 @@ body {
   .btn__sub { display: none; }
   .toggles {
     right: 6px;
+    top: auto;
+    bottom: 110px;
+    transform: none;
   }
   .toggle { padding: 6px 8px; font-size: 9px; }
   .hud__h1 { font-size: 36px; }
   .moon { width: 56px; height: 56px; top: 6%; }
+  .bubble {
+    font-size: 13px;
+    padding: 8px 12px 9px;
+    max-width: 75vw;
+    white-space: normal;
+    text-align: center;
+  }
+  .bubble--shout { font-size: 14px; padding: 9px 14px 10px; }
+  .bubble--panic { font-size: 13px; }
+  .goal { padding: 6px 14px; font-size: 9px; gap: 8px; grid-template-columns: auto 1fr 100px auto; }
+  .goal__label { letter-spacing: 0.18em; }
 }
