@@ -997,9 +997,12 @@ function debugInfo() {
 let lastT = 0;
 let logicAcc = 0;
 let moodAcc = 0;
+game.paused = false;
 function loop(t) {
-  const realDt = lastT ? Math.min(0.1, (t - lastT) / 1000) : 0;
+  const realDtRaw = lastT ? Math.min(0.1, (t - lastT) / 1000) : 0;
   lastT = t;
+  // pause: ingen state-tick under event-modaler
+  const realDt = game.paused ? 0 : realDtRaw;
 
   // hotspots+news+marsch tickar bara 15 Hz (ej varje frame)
   logicAcc += realDt;
@@ -1051,6 +1054,33 @@ function loop(t) {
 
     // välkomst-news
     setTimeout(() => pushNews({ text: "AI-tåget samlas vid Sergels torg" }), 1200);
+
+    // exponera tunn API för event-systemet (events.js)
+    window.AIMayDay = {
+      pauseGame() { game.paused = true; document.body.classList.add("is-paused"); },
+      resumeGame() { game.paused = false; document.body.classList.remove("is-paused"); },
+      getCrowdState() {
+        const counts = { neutral: 0, hype: 0, bored: 0, panic: 0, exhausted: 0 };
+        for (const h of game.hotspots) counts[h.state]++;
+        const total = game.hotspots.length || 1;
+        return {
+          hype:      Math.round((counts.hype      / total) * 100),
+          panic:     Math.round((counts.panic     / total) * 100),
+          bored:     Math.round((counts.bored     / total) * 100),
+          exhausted: Math.round((counts.exhausted / total) * 100),
+          neutral:   Math.round((counts.neutral   / total) * 100),
+        };
+      },
+      applyDelta,
+      addBannerSlogan(text) {
+        if (game.config?.bannerSlogans && !game.config.bannerSlogans.includes(text)) {
+          game.config.bannerSlogans.push(text);
+        }
+      },
+      pushNews,
+      isOver: () => game.isOver,
+    };
+    document.dispatchEvent(new CustomEvent("aimayday:ready"));
 
     requestAnimationFrame(loop);
   } catch (err) {
