@@ -241,7 +241,7 @@ function generateHotspots(scene) {
 
   for (const inst of scene.instances) {
     const banner = inst.sprite.banner;
-    const count = inst.layer === "back" ? 14 : inst.layer === "mid" ? 18 : 22;
+    const count = inst.layer === "back" ? 6 : inst.layer === "mid" ? 8 : 12;
 
     // sample i nedre 60% av sprite (där huvuden faktiskt sitter), över hela bredden
     for (let i = 0; i < count; i++) {
@@ -776,7 +776,7 @@ function resizeSnow() {
 function spawnFlakes() {
   if (snowFlakes.length > 0) return;
   const dpr = window.devicePixelRatio || 1;
-  for (let i = 0; i < 180; i++) {
+  for (let i = 0; i < 60; i++) {
     snowFlakes.push({
       x: rand(0, snowCanvas.width),
       y: rand(-snowCanvas.height, snowCanvas.height),
@@ -972,21 +972,30 @@ function debugInfo() {
    ========================================================================= */
 
 let lastT = 0;
+let logicAcc = 0;
 let moodAcc = 0;
 function loop(t) {
-  const dt = lastT ? Math.min(0.1, (t - lastT) / 1000) : 0;
+  const realDt = lastT ? Math.min(0.1, (t - lastT) / 1000) : 0;
   lastT = t;
-  tickHotspots(dt);
-  // throttle DOM-update (mood + goal) till 5 Hz — sparar GPU och DOM-updates
-  moodAcc += dt;
+
+  // hotspots+news+marsch tickar bara 15 Hz (ej varje frame)
+  logicAcc += realDt;
+  if (logicAcc >= 0.066) {
+    tickHotspots(logicAcc);
+    updateMarcherCount(logicAcc);
+    tickNews(logicAcc);
+    logicAcc = 0;
+  }
+
+  // mood+goal 5 Hz
+  moodAcc += realDt;
   if (moodAcc >= 0.2) {
     updateMood();
     tickGoal(moodAcc);
     moodAcc = 0;
   }
-  updateMarcherCount(dt);
-  tickNews(dt);
-  drawSnow(dt);
+
+  drawSnow(realDt);
   debugInfo();
   requestAnimationFrame(loop);
 }
