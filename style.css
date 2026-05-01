@@ -83,8 +83,8 @@ body {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  gap: 28px;
-  padding: 18px 26px 14px;
+  gap: 22px;
+  padding: 11px 22px 9px;
   background:
     linear-gradient(180deg, rgba(7,16,14,0.92) 0%, rgba(7,16,14,0.55) 90%, transparent 100%);
   border-bottom: 1px solid var(--hairline);
@@ -93,17 +93,17 @@ body {
 .hud__title { min-width: 0; }
 .hud__eyebrow {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 10px;
   letter-spacing: 0.22em;
   color: var(--gold-soft);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   text-transform: uppercase;
 }
 .hud__h1 {
   font-family: var(--font-display);
   font-weight: 900;
   font-style: normal;
-  font-size: clamp(28px, 4.6vw, 52px);
+  font-size: clamp(22px, 3.6vw, 40px);
   line-height: 0.95;
   margin: 0;
   letter-spacing: 0.02em;
@@ -113,14 +113,14 @@ body {
     2px 0 0 #000,
     -2px 0 0 #000,
     0 2px 0 #000,
-    3px 3px 0 var(--red-deep),
-    5px 5px 0 rgba(0,0,0,0.55);
+    2px 2px 0 var(--red-deep),
+    4px 4px 0 rgba(0,0,0,0.55);
 }
 .hud__sub {
-  margin-top: 6px;
+  margin-top: 3px;
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.28em;
+  font-size: 9px;
+  letter-spacing: 0.26em;
   color: var(--parchment-d);
   text-transform: uppercase;
 }
@@ -2007,11 +2007,11 @@ body.is-final-spurt .ticker.ticker--top { animation: ticker-rush 0.6s ease-in-ou
   z-index: 5;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   flex-wrap: wrap;
-  gap: 4px 10px;
-  padding: 8px 18px 9px;
-  background: #07100e;
+  gap: 6px 18px;
+  padding: 12px 22px 13px;
+  background: linear-gradient(180deg, #0a1614 0%, #050b09 100%);
   border-top: 2px solid #1a1208;
   font-family: var(--font-mono);
   font-size: 10px;
@@ -2019,24 +2019,96 @@ body.is-final-spurt .ticker.ticker--top { animation: ticker-rush 0.6s ease-in-ou
   text-transform: uppercase;
   color: rgba(239, 227, 200, 0.72);
 }
+
+/* LEAD: OPENSVERIGE som tydligt avsändarmärke */
+.credits__lead {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.credits__from {
+  font-size: 9px;
+  letter-spacing: 0.32em;
+  color: var(--gold-soft);
+  font-weight: 700;
+  opacity: 0.75;
+}
+.credits__brand {
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: 900;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  color: var(--parchment);
+  text-decoration: none;
+  border: none !important;
+  text-shadow: 1px 1px 0 #000;
+  padding: 2px 0;
+  transition: color 0.15s ease;
+}
+.credits__brand strong { color: var(--gold-bright); font-weight: 900; }
+.credits__brand:hover { color: var(--gold-bright); }
+.credits__brand:hover strong { color: #fff4d2; }
+
+/* Discord-tap bredvid OpenSverige-loggan */
+.credits__discord {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px 5px 8px;
+  background: #5865f2;
+  color: #fff;
+  border: 2px solid #1a1208 !important;
+  box-shadow: 2px 2px 0 #1a1208;
+  text-decoration: none !important;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  transition: transform 0.08s ease, background 0.15s ease;
+}
+.credits__discord:hover {
+  background: #6975f5;
+  color: #fff !important;
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 #1a1208;
+  border-color: #1a1208 !important;
+}
+.credits__discord:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 #1a1208; }
+.credits__discord svg { display: block; flex-shrink: 0; }
+.credits__discord-label { line-height: 1; }
+
+/* Övriga länkar (av Baltsar · Patch Notes · Juridik) */
+.credits__rest {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
 .credits__item { white-space: nowrap; }
 .credits__sep { color: rgba(212,165,92,0.4); }
-.credits a {
+.credits__rest a {
   color: rgba(241, 199, 129, 0.95);
   text-decoration: none;
   border-bottom: 1px dotted rgba(241,199,129,0.45);
   transition: color 0.15s ease, border-color 0.15s ease;
 }
-.credits a:hover { color: var(--gold-bright); border-bottom-color: var(--gold-bright); }
-.credits a strong { color: var(--gold-bright); font-weight: 900; }
+.credits__rest a:hover { color: var(--gold-bright); border-bottom-color: var(--gold-bright); }
 
 @media (max-width: 720px) {
   .credits {
     font-size: 9px;
-    padding: 7px 12px 8px;
-    gap: 3px 8px;
+    padding: 10px 14px 11px;
+    gap: 8px 12px;
     letter-spacing: 0.14em;
+    justify-content: center;
   }
+  .credits__lead { gap: 8px; }
+  .credits__brand { font-size: 13px; }
+  .credits__discord { padding: 4px 8px 4px 7px; font-size: 9px; gap: 5px; }
+  .credits__discord svg { width: 14px; height: 14px; }
+  .credits__rest { gap: 3px 8px; }
 }
 
 /* =========================================================================
@@ -2161,9 +2233,11 @@ body.is-final-spurt .ticker.ticker--top { animation: ticker-rush 0.6s ease-in-ou
 @media (max-width: 720px) {
   .hud {
     grid-template-columns: 1fr;
-    gap: 10px;
-    padding: 12px 14px 10px;
+    gap: 6px;
+    padding: 8px 14px 8px;
   }
+  .hud__eyebrow { font-size: 9px; margin-bottom: 1px; }
+  .hud__sub { font-size: 8.5px; margin-top: 2px; }
   .counter { justify-self: start; text-align: left; display: flex; align-items: baseline; gap: 10px; }
   .counter__label { letter-spacing: 0.18em; }
   .mood { min-width: 0; }
@@ -2184,7 +2258,7 @@ body.is-final-spurt .ticker.ticker--top { animation: ticker-rush 0.6s ease-in-ou
     transform: none;
   }
   .toggle { padding: 6px 8px; font-size: 9px; }
-  .hud__h1 { font-size: 36px; }
+  .hud__h1 { font-size: 26px; }
   .moon { width: 56px; height: 56px; top: 6%; }
   .bubble {
     font-size: 13px;
