@@ -273,9 +273,9 @@ const EVENTS = [
     weight: 0,         // 0 = picka aldrig random
     text: "Hej. Jag är statsministern. Jag har sett *bilden* med flaggan. Vi behöver prata. Riksdagen lyssnar live. Tre alternativ — välj ett.",
     choices: [
-      { label: "Kräv att EU AI Act rivs", effect: { hype: +28, panic: +12 }, unlock: "RIV LAGEN", news: "Statsministern lovar att lyfta saken i Riksdagen — tåget skanderar viralt", result: "Hen ler stelt. Säger 'vi tar med oss det'. Tweetar något ostligt direkt efteråt.", portraitState: "intense" },
-      { label: "Acceptera tillsättning av utredning", effect: { bored: +25, panic: -15 }, news: "Demonstrationen omklassad — 18-månaders utredning utlovas, ingen orkar vänta", result: "En utredning tillsätts. Slutdatum: efter nästa val. Ingen är glad.", portraitState: "default" },
-      { label: "Bjud upp till valsen", effect: { hype: +18, bored: +5 }, unlock: "1 MAJ DANCE CHALLENGE", news: "Statsministern dansar med demonstranter — bilden går omedelbart viralt", result: "Hen tvekar, sen accepterar. Hela torget får sin TikTok-moment.", portraitState: "reacting" },
+      { label: "Kräv att EU AI Act rivs", effect: { hype: +28, panic: +12 }, unlock: "RIV LAGEN", route: "boss-riv",       news: "Statsministern lovar att lyfta saken i Riksdagen — tåget skanderar viralt", result: "Hen ler stelt. Säger 'vi tar med oss det'. Tweetar något ostligt direkt efteråt.", portraitState: "intense" },
+      { label: "Acceptera tillsättning av utredning", effect: { bored: +25, panic: -15 }, route: "boss-utredning",         news: "Demonstrationen omklassad — 18-månaders utredning utlovas, ingen orkar vänta", result: "En utredning tillsätts. Slutdatum: efter nästa val. Ingen är glad.", portraitState: "default" },
+      { label: "Bjud upp till valsen", effect: { hype: +18, bored: +5 }, unlock: "1 MAJ DANCE CHALLENGE", route: "boss-dans", news: "Statsministern dansar med demonstranter — bilden går omedelbart viralt", result: "Hen tvekar, sen accepterar. Hela torget får sin TikTok-moment.", portraitState: "reacting" },
     ],
   },
 ];
@@ -388,8 +388,7 @@ class EventManager {
     overlay.className = "event-overlay";
     overlay.innerHTML = `
       <div class="event-pause-banner" aria-hidden="true">
-        <span class="event-pause-banner__pip"></span>
-        SPELET ÄR PAUSAT &middot; HÄNDELSE PÅ TORGET
+        <span><span class="event-pause-banner__pip"></span>PAUSAT &middot; HÄNDELSE PÅ TORGET</span>
       </div>
       <button class="event-skip" type="button" title="Hoppa över (Esc)" aria-label="Hoppa över">×</button>
       <div class="event-card">
@@ -484,6 +483,10 @@ class EventManager {
     }
     if (choice.unlock) {
       try { this.api.addBannerSlogan(choice.unlock); } catch (e) {}
+    }
+    // routing-tag (t.ex. boss-val styr finale-utfall)
+    if (choice.route) {
+      try { this.api.setRoute && this.api.setRoute(choice.route); } catch (e) {}
     }
 
     // härled porträtt-state från effekt om inte explicit

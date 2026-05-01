@@ -379,6 +379,7 @@ const game = {
   bossTriggered: false,
   countdownLastShown: -1,
   elapsedSec: 0,    // ackumulerad aktiv speltid (ej wall-clock — paus pausar)
+  route: null,      // val-tag från boss-event (boss-riv / boss-utredning / boss-dans)
   // OPENCLAW — auto-engage agent
   openclaw: {
     streak: 0,
@@ -683,6 +684,54 @@ function trackEnding(key) {
     try { localStorage.setItem("aimd_endings_seen", JSON.stringify(seen)); } catch (e) {}
   }
   return { isNew, count: seen.filter((k) => REACHABLE_ENDINGS.includes(k)).length, total: REACHABLE_ENDINGS.length };
+}
+
+function renderLeaderboard(currentKey) {
+  let seen = [], times = {};
+  try { seen  = JSON.parse(localStorage.getItem("aimd_endings_seen") || "[]"); } catch (e) {}
+  try { times = JSON.parse(localStorage.getItem("aimd_best_times")   || "{}"); } catch (e) {}
+
+  const ROWS = [
+    { key: "win-eqt",        short: "EQT",       full: "EQT KÖPTE TÅGET",        type: "win"   },
+    { key: "win-flag",       short: "BLÅ-GUL",   full: "BLÅ-GUL REVOLUTION",     type: "win"   },
+    { key: "win-bali",       short: "BALI",      full: "FORTSATTE PÅ ZOOM",      type: "win"   },
+    { key: "police-eu",      short: "EU",        full: "EU-KOMMISSIONÄREN VANN", type: "police"},
+    { key: "police-fika",    short: "FIKA",      full: "POLISEN BJÖD PÅ BULLE",  type: "police"},
+    { key: "bored-acquired", short: "ACQUIRED",  full: "ALLA LYSSNADE PÅ ACQUIRED", type: "bored" },
+    { key: "bored-cellucor", short: "CELLUCOR",  full: "CELLUCOR-LAGRET TOG SLUT",  type: "bored" },
+    { key: "bored-arland",   short: "ARLANDA",   full: "TÅGET FLÖG TILL SF",     type: "bored" },
+  ];
+
+  let host = $("#finale-leaderboard");
+  if (!host) {
+    host = document.createElement("div");
+    host.id = "finale-leaderboard";
+    host.className = "finale__leaderboard";
+    const stats = $("#finale-stats");
+    stats?.parentNode?.insertBefore(host, stats.nextSibling);
+  }
+
+  const cells = ROWS.map((r) => {
+    const unlocked = seen.includes(r.key);
+    const isCurrent = r.key === currentKey;
+    const t = times[r.key];
+    const time = unlocked && t ? `${t.toFixed(1)}s` : (unlocked ? "—" : "");
+    const cls = [
+      "lb__cell",
+      `lb__cell--${r.type}`,
+      unlocked ? "is-unlocked" : "is-locked",
+      isCurrent ? "is-current" : "",
+    ].join(" ");
+    return `<div class="${cls}" title="${r.full}">
+      <span class="lb__short">${unlocked ? r.short : "???"}</span>
+      <span class="lb__time">${time}</span>
+    </div>`;
+  }).join("");
+
+  host.innerHTML = `
+    <div class="lb__head">UTFALLS-TAVLA · ${seen.filter(k => ROWS.some(r => r.key === k)).length}/${ROWS.length}</div>
+    <div class="lb__grid">${cells}</div>
+  `;
 }
 
 function trackBestTime(key, elapsed) {
@@ -1023,11 +1072,17 @@ function endGame(outcome) {
   // om outcome redan är en specifik key (t.ex. 'win-eqt') — använd den direkt
   let key = outcome;
   if (outcome === "win") {
-    // Diversifierat så blå-gul kräver verkligen lugnt spel
-    if (game.peakPanic > 35) key = "win-eqt";              // hög-energi/risk-väg → EQT
-    else if (game.policeCount > 0) key = "win-bali";       // polis kom men ni vann ändå
-    else if (game.newsCount > 7) key = "win-bali";         // mycket händelser, ändå vinst
-    else key = "win-flag";                                 // kvar: lugnt + utan polis = blå-gul
+    // Boss-val styr utfall i första hand — varje körning får ett tydligt val
+    if (game.route === "boss-riv")            key = "win-eqt";   // aggressiv route
+    else if (game.route === "boss-dans")      key = "win-bali";  // viralt/escapism
+    else if (game.route === "boss-utredning") key = "win-flag";  // lugn route
+    else {
+      // ingen boss träffad (t.ex. snabbvinst före 28s) → tröskel-fallback
+      if (game.peakPanic > 25)        key = "win-eqt";
+      else if (game.policeCount > 0)  key = "win-bali";
+      else if (game.newsCount > 6)    key = "win-bali";
+      else                            key = "win-flag";
+    }
   } else if (outcome === "police") {
     if (game.newsCount > 6) key = "police-eu";
     else key = "police-fika";
@@ -1109,6 +1164,9 @@ function endGame(outcome) {
     ["Polis", String(game.policeCount)],
   ];
   $("#finale-stats").innerHTML = stats.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
+
+  // LEADERBOARD: alla 8 utfall i en grid med best-time per win
+  renderLeaderboard(key);
 
   // Visa "NYTT UTFALL HITTAT"-celebration om första gången på detta key
   if (endingInfo.isNew) {
@@ -1723,6 +1781,7 @@ function loop(t) {
       pushNews,
       pushEventNews,
       isOver: () => game.isOver,
+      setRoute(tag) { game.route = tag; },
 
       // === DEV-HOOKS ===
       forceFinale(key, fakeStats = true) {

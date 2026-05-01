@@ -591,6 +591,85 @@ body {
   bottom: 0;
 }
 
+/* LEADERBOARD — utfalls-tavla på finale */
+.finale__leaderboard {
+  margin: 4px 0 12px;
+  padding: 10px 12px 12px;
+  background: rgba(0,0,0,0.3);
+  border: 2px solid var(--hairline);
+}
+.lb__head {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  color: var(--gold-bright);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  text-align: center;
+}
+.lb__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+}
+.lb__cell {
+  background: rgba(26, 18, 8, 0.5);
+  border: 2px solid #1a1208;
+  padding: 6px 4px 5px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  position: relative;
+  transition: transform 0.12s ease;
+}
+.lb__short {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: rgba(212, 165, 92, 0.55);
+}
+.lb__time {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.4);
+  font-variant-numeric: tabular-nums;
+}
+.lb__cell.is-unlocked .lb__short { color: var(--parchment); }
+.lb__cell.is-unlocked .lb__time  { color: var(--gold-bright); }
+.lb__cell.is-locked { opacity: 0.55; }
+
+.lb__cell--win.is-unlocked     { border-color: #6fe089; background: rgba(40, 80, 50, 0.45); }
+.lb__cell--win.is-unlocked .lb__short { color: #b6e2bf; }
+.lb__cell--win.is-unlocked .lb__time  { color: #d4f5dc; }
+
+.lb__cell--police.is-unlocked  { border-color: #5b8fc4; background: rgba(20, 40, 70, 0.45); }
+.lb__cell--police.is-unlocked .lb__short { color: #c0d6ee; }
+.lb__cell--police.is-unlocked .lb__time  { color: #d4e6f5; }
+
+.lb__cell--bored.is-unlocked   { border-color: #d6a850; background: rgba(70, 50, 20, 0.45); }
+.lb__cell--bored.is-unlocked .lb__short { color: #e8d8a8; }
+.lb__cell--bored.is-unlocked .lb__time  { color: #f5e6c0; }
+
+.lb__cell.is-current {
+  transform: scale(1.06);
+  box-shadow: 0 0 0 3px var(--gold-bright), 4px 4px 0 #1a1208;
+  z-index: 1;
+  animation: lb-current-pulse 1.5s ease-in-out infinite;
+}
+@keyframes lb-current-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px var(--gold-bright), 4px 4px 0 #1a1208; }
+  50%      { box-shadow: 0 0 0 4px #fff4d2, 4px 4px 0 #1a1208; }
+}
+
+@media (max-width: 720px) {
+  .lb__grid { grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  .lb__short { font-size: 9px; }
+  .lb__time  { font-size: 10px; }
+}
+
 /* SHARE-block */
 .finale__share {
   margin: 8px 0 12px;
