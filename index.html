@@ -92,12 +92,79 @@
     </div>
   </header>
 
-  <!-- Mål-progress -->
-  <div class="goal" id="goal" role="status" aria-live="polite">
-    <span class="goal__label">MÅL</span>
+  <!-- Mål-progress (klickbar för hjälp-tooltip) -->
+  <button class="goal" id="goal" type="button" aria-label="Visa speltips" title="Klicka för speltips">
+    <span class="goal__label">
+      <span class="goal__help" aria-hidden="true">?</span>
+      MÅL
+    </span>
     <span class="goal__text" id="goal-text">UPPRÖRD ≥ 75% I 12 SEK → REVOLUTION</span>
     <span class="goal__bar"><i id="goal-bar"></i></span>
     <span class="goal__time" id="goal-time">0.0s</span>
+  </button>
+
+  <!-- Speltips-modal (visas när man klickar på MÅL) -->
+  <div class="howto" id="howto" hidden>
+    <div class="howto__card" role="dialog" aria-labelledby="howto-title" aria-modal="true">
+      <button class="howto__close" id="howto-close" type="button" aria-label="Stäng">×</button>
+      <div class="howto__eyebrow">SPELTIPS</div>
+      <h2 class="howto__title" id="howto-title">Tämja AI-tåget</h2>
+      <p class="howto__lead">
+        Du står med megafonen på Sergels torg 1 maj 2026. Mätaren upptill
+        visar massans humör. Håll den i rätt zon innan tiden tar slut — eller
+        innan polisen hinner fram.
+      </p>
+
+      <div class="howto__grid">
+        <div class="howto__row">
+          <span class="howto__pip howto__pip--win"></span>
+          <strong>UPPRÖRD</strong> hög länge → <em>VINST</em>
+        </div>
+        <div class="howto__row">
+          <span class="howto__pip howto__pip--police"></span>
+          <strong>PANIK</strong> hög länge → polisen tar över
+        </div>
+        <div class="howto__row">
+          <span class="howto__pip howto__pip--bored"></span>
+          <strong>TRÖTT</strong> hög länge → folk går hem
+        </div>
+        <div class="howto__row">
+          <span class="howto__pip howto__pip--calm"></span>
+          <strong>NÖJD</strong> är mellanläge — varken vinst eller hot
+        </div>
+      </div>
+
+      <div class="howto__section">
+        <div class="howto__sub">DINA FYRA KNAPPAR</div>
+        <div class="howto__keys">
+          <span><kbd>A</kbd> ENGAGE — tänd en gnista</span>
+          <span><kbd>S</kbd> CHANT — våg från bakre led</span>
+          <span><kbd>D</kbd> DISPERSE — lugna ner massan</span>
+          <span><kbd>F</kbd> POLICE — extern panikkälla</span>
+        </div>
+      </div>
+
+      <div class="howto__section">
+        <div class="howto__sub">DET FINNS FLERA SLUT</div>
+        <p class="howto__teaser">
+          11 namngivna utfall — 3 vinster, 8 förluster. Vissa kräver att du
+          klarar dig <em>utan</em> polis-attacker. Andra triggas bara om du
+          spelar tillräckligt lugnt. Ett par är lättare att hitta om
+          stämningen ligger på rätt sida av kanten. Spela klart för att se.
+        </p>
+      </div>
+
+      <div class="howto__section">
+        <div class="howto__sub">UNDER TIDEN</div>
+        <p class="howto__teaser">
+          Karaktärer dyker upp och kräver beslut. Nyhetsbannern överst
+          rapporterar live från torget. Bonus-paroller kan dyka upp på
+          banderollerna när du gör vissa val.
+        </p>
+      </div>
+
+      <button class="howto__ok" id="howto-ok" type="button">FATTAT</button>
+    </div>
   </div>
 
   <!-- Finalskärm -->

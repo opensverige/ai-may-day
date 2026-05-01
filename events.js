@@ -38,7 +38,7 @@ const ARCHETYPES = {
   "professor":    { name: "PROFESSORN",    ...chr("byrakrat")   },
   "kommunalrad":  { name: "KOMMUNALRÅDET", ...chr("facket")     },
   "influencer":   { name: "INFLUENCERN",   ...chr("journalist") },
-  "borasare":     { name: "BORÅSAREN",     ...chr("polis")      },
+  "borasare":     { name: "BORÅSAREN",     ...chr("facket")     },
   "pensionar":    { name: "PENSIONÄREN",   ...chr("facket")     },
 };
 
@@ -52,9 +52,9 @@ const EVENTS = [
     weight: 3,
     text: "Hej hej. Jag ser att stämningen är… spicy. Vi på fonden tänker att det här är en *fantastic opportunity*. Vill ni ta in 200 miljoner pre-seed?",
     choices: [
-      { label: "Ja, vi tar pengarna", effect: { hype: +30, panic: -20 }, unlock: "EQT BACKAR ALLT", result: "Tåget dirigeras om mot Stureplan. Ingen vet varför.", portraitState: "intense" },
-      { label: "Nej, vi är ideellt", effect: { bored: +20, hype: -10 }, result: "VC-partnern går missnöjt. Mumlar nåt om 'mindset'.", portraitState: "reacting" },
-      { label: "Bara om Creandum är med", effect: { hype: +15, panic: +5 }, result: "Förhandlingen startar. Tåget pausar i 45 sekunder.", portraitState: "default" },
+      { label: "Ja, vi tar pengarna", effect: { hype: +30, panic: -20 }, unlock: "EQT BACKAR ALLT", news: "Demonstrationen blir portfolio-tillgång — VC injicerar 200 mdr mitt i tåget", result: "Tåget dirigeras om mot Stureplan. Ingen vet varför.", portraitState: "intense" },
+      { label: "Nej, vi är ideellt", effect: { bored: +20, hype: -10 }, news: "VC-partner avvisad — fonden mumlar 'mindset' och drar", result: "VC-partnern går missnöjt. Mumlar nåt om 'mindset'.", portraitState: "reacting" },
+      { label: "Bara om Creandum är med", effect: { hype: +15, panic: +5 }, news: "Pre-seed-rundan halterar — hela tåget pausar i förhandling", result: "Förhandlingen startar. Tåget pausar i 45 sekunder.", portraitState: "default" },
     ],
   },
   {
@@ -64,9 +64,9 @@ const EVENTS = [
     weight: 2,
     text: "Ursäkta. Är ni anmälda? Jag har en lapp här som säger fika-paus. Stämmer det?",
     choices: [
-      { label: "Ja, fikapaus", effect: { panic: -30, bored: +15 }, result: "Polischefen ler lättat. Tar en bulle.", portraitState: "default" },
-      { label: "Visa tillstånd", effect: { panic: -10 }, result: "Tillståndet är från 2019 men polischefen orkar inte kolla.", portraitState: "reacting" },
-      { label: "Starta CHANT", effect: { hype: +20, panic: +10 }, result: "Polischefen suckar djupt. Ringer förstärkning.", portraitState: "intense" },
+      { label: "Ja, fikapaus", effect: { panic: -30, bored: +15 }, news: "Demonstration omklassad — polischefen tar en bulle och ler", result: "Polischefen ler lättat. Tar en bulle.", portraitState: "default" },
+      { label: "Visa tillstånd", effect: { panic: -10 }, news: "Tillstånd från 2019 godkänns på torget — alla andas ut", result: "Tillståndet är från 2019 men polischefen orkar inte kolla.", portraitState: "reacting" },
+      { label: "Starta CHANT", effect: { hype: +20, panic: +10 }, news: "Polischef ringer förstärkning — tåget skruvar upp volymen", result: "Polischefen suckar djupt. Ringer förstärkning.", portraitState: "intense" },
     ],
   },
   {
@@ -76,9 +76,9 @@ const EVENTS = [
     weight: 2,
     text: "I enlighet med artikel 6 i AI Act behöver jag se era model cards. Och era weights. Och en GDPR-utvärdering. Och en kaffe.",
     choices: [
-      { label: "Här är allt", effect: { panic: -20, bored: +25 }, unlock: "COMPLIANCE FÖRST", result: "Byråkraten skriver i 40 minuter. Stämningen dör." },
-      { label: "Vi är open source", effect: { hype: +15 }, result: "Byråkraten blir förvirrad. Måste konsultera artikel 7." },
-      { label: "Bjud på kaffe", effect: { panic: -10, bored: +5 }, result: "Det funkar förvånansvärt bra." },
+      { label: "Här är allt", effect: { panic: -20, bored: +25 }, unlock: "COMPLIANCE FÖRST", news: "EU-revision på Sergels torg — model cards utlämnade i 40 minuter", result: "Byråkraten skriver i 40 minuter. Stämningen dör." },
+      { label: "Vi är open source", effect: { hype: +15 }, news: "Tåget åberopar open-source-undantag — byråkraten konsulterar artikel 7", result: "Byråkraten blir förvirrad. Måste konsultera artikel 7." },
+      { label: "Bjud på kaffe", effect: { panic: -10, bored: +5 }, news: "Demonstrant löser EU-tillsyn med en kopp svart kaffe", result: "Det funkar förvånansvärt bra." },
     ],
   },
   {
@@ -88,9 +88,9 @@ const EVENTS = [
     weight: 3,
     text: "Jag orkar inte längre. Jag tänker quitta och flytta till Bali. Jag har redan bokat. Vad ska jag göra?",
     choices: [
-      { label: "Peptalk", effect: { hype: +20, exhausted: -15 }, result: "Grundaren får ny energi. Pitchar omedelbart en ny idé." },
-      { label: "Hjälp packa", effect: { bored: +15, exhausted: -10 }, result: "Vi följer alla med. Tåget åker till Arlanda." },
-      { label: "Jag tar över bolaget", effect: { hype: +10, panic: +10 }, result: "En oväntad styrelsekupp. Jag är nu CEO." },
+      { label: "Peptalk", effect: { hype: +20, exhausted: -15 }, news: "Bali-flykt avstyrd — grundaren pitchar redan ny idé på torget", result: "Grundaren får ny energi. Pitchar omedelbart en ny idé." },
+      { label: "Hjälp packa", effect: { bored: +15, exhausted: -10 }, news: "Hela demonstrationen åker till Arlanda för att packa ihop", result: "Vi följer alla med. Tåget åker till Arlanda." },
+      { label: "Jag tar över bolaget", effect: { hype: +10, panic: +10 }, news: "Styrelsekupp på Sergels torg — demonstranten utses till CEO", result: "En oväntad styrelsekupp. Jag är nu CEO." },
     ],
   },
 
@@ -102,9 +102,9 @@ const EVENTS = [
     weight: 4,
     text: "Kamrater! Vi måste visa solidaritet med inferens-arbetarna! De som jobbar 24/7 utan paus eller pension!",
     choices: [
-      { label: "Ja, kamrat!", effect: { hype: +25 }, unlock: "INFERENS ÄR ARBETE", result: "Fackpampen gråter. En aktivist börjar filma." },
-      { label: "Vad är inferens?", effect: { bored: +20 }, result: "Fackpampen försöker förklara med metaforen 'rörmokare'. Det funkar inte." },
-      { label: "Vi behöver fler raster", effect: { hype: +10, exhausted: -10 }, result: "Alla går och tar fika. Tåget pausar 20 minuter." },
+      { label: "Ja, kamrat!", effect: { hype: +25 }, unlock: "INFERENS ÄR ARBETE", news: "Inferens-arbetarna får sin paroll — en aktivist filmar gråtande fackpamp", result: "Fackpampen gråter. En aktivist börjar filma." },
+      { label: "Vad är inferens?", effect: { bored: +20 }, news: "Förvirring på torget — fackpamp förklarar inferens med 'rörmokar'-metafor", result: "Fackpampen försöker förklara med metaforen 'rörmokare'. Det funkar inte." },
+      { label: "Vi behöver fler raster", effect: { hype: +10, exhausted: -10 }, news: "Tåget pausar 20 minuter — alla går och tar fika på Pressbyrån", result: "Alla går och tar fika. Tåget pausar 20 minuter." },
     ],
   },
   {
@@ -114,9 +114,9 @@ const EVENTS = [
     weight: 4,
     text: "Hej! Jag skriver för en stor publikation. Vad är ert *huvudbudskap* idag? Något kontroversiellt?",
     choices: [
-      { label: "Bombastisk quote", effect: { hype: +20 }, result: "Journalisten skriver utan att kolla fakta. Story går viralt." },
-      { label: "No comment", effect: { bored: +10 }, result: "Journalisten skriver ändå. Citerar 'en källa nära tåget'." },
-      { label: "Vänd frågan", effect: { hype: +5, panic: +5 }, result: "Du frågar om hens lön. Hen blir generad." },
+      { label: "Bombastisk quote", effect: { hype: +20 }, news: "Demonstranter går viralt med okollat citat — story bryter över hela X", result: "Journalisten skriver utan att kolla fakta. Story går viralt." },
+      { label: "No comment", effect: { bored: +10 }, news: "'En källa nära tåget' citeras — exakt vad är oklart", result: "Journalisten skriver ändå. Citerar 'en källa nära tåget'." },
+      { label: "Vänd frågan", effect: { hype: +5, panic: +5 }, news: "Journalist konfronteras om sin lön — pressmöte avbryts spontant", result: "Du frågar om hens lön. Hen blir generad." },
     ],
   },
   {
@@ -126,9 +126,9 @@ const EVENTS = [
     weight: 3,
     text: "Vi måste prata om compute-utsläppen! Varje prompt motsvarar ett halvt flygresa till Thailand!",
     choices: [
-      { label: "Ge mikrofonen", effect: { hype: +15, panic: +5 }, unlock: "COMPUTE ÄR KLIMAT", result: "Aktivisten håller 23 minuter. Postar sen från sin Tesla." },
-      { label: "Skyll på Bitcoin", effect: { hype: +10, bored: +10 }, result: "Aktivisten håller med. Det är alltid Bitcoin." },
-      { label: "Artigt avbryt", effect: { bored: +15 }, result: "Aktivisten suckar. 'Det är därför ingenting förändras.'" },
+      { label: "Ge mikrofonen", effect: { hype: +15, panic: +5 }, unlock: "COMPUTE ÄR KLIMAT", news: "Klimat-monolog 23 minuter på torget — aktivisten åker hem i Tesla", result: "Aktivisten håller 23 minuter. Postar sen från sin Tesla." },
+      { label: "Skyll på Bitcoin", effect: { hype: +10, bored: +10 }, news: "Tåget enas — det är alltid Bitcoins fel, ingen protesterar", result: "Aktivisten håller med. Det är alltid Bitcoin." },
+      { label: "Artigt avbryt", effect: { bored: +15 }, news: "'Det är därför ingenting förändras' — aktivisten lämnar talet", result: "Aktivisten suckar. 'Det är därför ingenting förändras.'" },
     ],
   },
   {
@@ -138,9 +138,9 @@ const EVENTS = [
     weight: 3,
     text: "Ursäkta, jag märker att ni demonstrerar utan korrekt referenser. Får jag presentera mitt papper från 2019?",
     choices: [
-      { label: "Lyssna artigt", effect: { bored: +30, exhausted: +15 }, result: "40 minuter senare har ingen någon energi kvar." },
-      { label: "Be om citation", effect: { hype: +5 }, result: "Professorn blir lycklig. Ger dig en papper-PDF." },
-      { label: "Vi har deadline", effect: { bored: +10 }, result: "Professorn mumlar 'industri-folk' och går." },
+      { label: "Lyssna artigt", effect: { bored: +30, exhausted: +15 }, news: "40-minuters-papper från 2019 läses upp — energin sjunker drastiskt", result: "40 minuter senare har ingen någon energi kvar." },
+      { label: "Be om citation", effect: { hype: +5 }, news: "Akademisk citation lovar peer-review — professor lämnar PDF", result: "Professorn blir lycklig. Ger dig en papper-PDF." },
+      { label: "Vi har deadline", effect: { bored: +10 }, news: "Tåget hänvisar till deadline — 'industri-folk' mumlar professorn", result: "Professorn mumlar 'industri-folk' och går." },
     ],
   },
   {
@@ -150,9 +150,9 @@ const EVENTS = [
     weight: 2,
     text: "Hej hej! Jag är från [region]. Får jag stå med er på bilden? För medborgarnas bästa förstås.",
     choices: [
-      { label: "Ja, men håll en paroll", effect: { hype: +10 }, result: "Kommunalrådet håller en paroll bakvänd. Bilden går viralt." },
-      { label: "Nej tack", effect: { bored: +5 }, result: "Kommunalrådet ser sårad ut. Tar selfie ändå." },
-      { label: "Be om bidrag", effect: { hype: +15, panic: +5 }, result: "Kommunalrådet blir blek. Försvinner." },
+      { label: "Ja, men håll en paroll", effect: { hype: +10 }, news: "Kommunpolitiker håller paroll bakvänd — bilden går viralt på X", result: "Kommunalrådet håller en paroll bakvänd. Bilden går viralt." },
+      { label: "Nej tack", effect: { bored: +5 }, news: "Kommunalråd nekas bildtillträde — tar selfie i bakgrunden ändå", result: "Kommunalrådet ser sårad ut. Tar selfie ändå." },
+      { label: "Be om bidrag", effect: { hype: +15, panic: +5 }, news: "Demonstrant kräver bidrag — kommunalråd försvinner från torget", result: "Kommunalrådet blir blek. Försvinner." },
     ],
   },
   {
@@ -162,9 +162,9 @@ const EVENTS = [
     weight: 4,
     text: "Guys, this is so insane right now. Like, history is being made. Should I do a get-ready-with-me from the protest?",
     choices: [
-      { label: "Posera", effect: { hype: +15 }, result: "Tåget blir innehållsfabrik. 80% poserar." },
-      { label: "Täck kameran", effect: { panic: +15 }, result: "Influencern ringer sin advokat." },
-      { label: "Starta dans", effect: { hype: +25 }, unlock: "1 MAJ DANCE CHALLENGE", result: "Hela tåget gör en TikTok-koreografi." },
+      { label: "Posera", effect: { hype: +15 }, news: "Tåget blir content-fabrik — 80%% poserar för influencer-livestreamen", result: "Tåget blir innehållsfabrik. 80% poserar." },
+      { label: "Täck kameran", effect: { panic: +15 }, news: "Kameran täcks — influencer ringer sin advokat live på torget", result: "Influencern ringer sin advokat." },
+      { label: "Starta dans", effect: { hype: +25 }, unlock: "1 MAJ DANCE CHALLENGE", news: "Hela tåget gör TikTok-koreografi — '1 maj dance challenge' trendar", result: "Hela tåget gör en TikTok-koreografi." },
     ],
   },
   {
@@ -174,9 +174,9 @@ const EVENTS = [
     weight: 3,
     text: "Ursäkta. Vad fan är AI? Och varför demonstrerar ni? Jag bara passerade på vägen till ICA.",
     choices: [
-      { label: "Förklara med liknelse", effect: { hype: +10 }, result: "Du jämför AI med en mikrovågsugn. Det blir oklarare." },
-      { label: "Rekrytera", effect: { hype: +20, panic: +5 }, result: "Boråsaren har nu en banderoll. Vet fortfarande inte varför." },
-      { label: "Ignorera", effect: { bored: +10 }, result: "Boråsaren går till ICA. Köper falukorv." },
+      { label: "Förklara med liknelse", effect: { hype: +10 }, news: "AI förklaras som mikrovågsugn — flera demonstranter blir mer förvirrade", result: "Du jämför AI med en mikrovågsugn. Det blir oklarare." },
+      { label: "Rekrytera", effect: { hype: +20, panic: +5 }, news: "Förbipasserande får banderoll — vet fortfarande inte varför", result: "Boråsaren har nu en banderoll. Vet fortfarande inte varför." },
+      { label: "Ignorera", effect: { bored: +10 }, news: "Förbipasserande väljer falukorv på ICA framför demonstration", result: "Boråsaren går till ICA. Köper falukorv." },
     ],
   },
   {
@@ -186,9 +186,9 @@ const EVENTS = [
     weight: 2,
     text: "Jag stod här 1971. Då handlade det om gruvarbetarna. Ni vet, det är samma sak fast nu pratar ni om… vad var det? Servrar?",
     choices: [
-      { label: "Lyssna respektfullt", effect: { hype: +10, exhausted: -10 }, result: "En oväntat klok parallell. Alla nickar tyst." },
-      { label: "Fråga om ChatGPT", effect: { bored: +20 }, result: "Pensionären har faktiskt en åsikt. Den är välartikulerad." },
-      { label: "Ok boomer", effect: { panic: +15 }, result: "Pensionären är inte boomer. Hen är 1939. Tåget skäms." },
+      { label: "Lyssna respektfullt", effect: { hype: +10, exhausted: -10 }, news: "Historisk parallell på torget — tystnad sänker sig över demonstrationen", result: "En oväntat klok parallell. Alla nickar tyst." },
+      { label: "Fråga om ChatGPT", effect: { bored: +20 }, news: "Pensionär har välartikulerad åsikt om ChatGPT — alla lyssnar artigt", result: "Pensionären har faktiskt en åsikt. Den är välartikulerad." },
+      { label: "Ok boomer", effect: { panic: +15 }, news: "Demonstrant feltolkar ålder — pensionären är från 1939, tåget skäms", result: "Pensionären är inte boomer. Hen är 1939. Tåget skäms." },
     ],
   },
   {
@@ -198,9 +198,9 @@ const EVENTS = [
     weight: 1,
     text: "Jag glömde detta — formulär 7B om transparens. Behöver bara 47 underskrifter. Ni har tid?",
     choices: [
-      { label: "Vi skriver under", effect: { bored: +35 }, result: "Tre timmar senare. Solen går ner. Vi är fortfarande på rad 12." },
-      { label: "Vi är upptagna", effect: { panic: +10 }, result: "Byråkraten antecknar. Det blir konsekvenser." },
-      { label: "Du först", effect: { hype: +5, bored: +10 }, result: "Byråkraten blir förvirrad. Det är inte protokoll." },
+      { label: "Vi skriver under", effect: { bored: +35 }, news: "Formulär 7B signeras live på torget — solen hinner gå ner före rad 47", result: "Tre timmar senare. Solen går ner. Vi är fortfarande på rad 12." },
+      { label: "Vi är upptagna", effect: { panic: +10 }, news: "Demonstration vägrar formulär 7B — byråkraten antecknar 'konsekvenser'", result: "Byråkraten antecknar. Det blir konsekvenser." },
+      { label: "Du först", effect: { hype: +5, bored: +10 }, news: "Demonstrant kräver att byråkraten signar först — protokoll-brott på torget", result: "Byråkraten blir förvirrad. Det är inte protokoll." },
     ],
   },
   {
@@ -210,9 +210,9 @@ const EVENTS = [
     weight: 2,
     text: "Hej igen! Nu skriver jag för en *helt annan* tidning. Min vinkel idag är att ni är aggressiva. Stämmer det?",
     choices: [
-      { label: "Nej, vi är fredliga", effect: { panic: +10 }, result: "Journalisten skriver 'protestens våldsamma stämning'. Av vana." },
-      { label: "Ja, vi är arga", effect: { hype: +20 }, result: "Story går till första sidan. Ni blir kända." },
-      { label: "Vad gav du oss förra gången?", effect: { bored: +5 }, result: "Journalisten låtsas inte minnas. Det är samma frågor." },
+      { label: "Nej, vi är fredliga", effect: { panic: +10 }, news: "'Protestens våldsamma stämning' — vinkeln skrivs trots fredlig respons", result: "Journalisten skriver 'protestens våldsamma stämning'. Av vana." },
+      { label: "Ja, vi är arga", effect: { hype: +20 }, news: "Demonstration tar förstasidan — 'tåget bekräftar ilska' i stora bokstäver", result: "Story går till första sidan. Ni blir kända." },
+      { label: "Vad gav du oss förra gången?", effect: { bored: +5 }, news: "Journalist konfronteras med tidigare artikel — minnet tycks luckras", result: "Journalisten låtsas inte minnas. Det är samma frågor." },
     ],
   },
   {
@@ -222,9 +222,9 @@ const EVENTS = [
     weight: 2,
     text: "Ni är medvetna om att linjen för tåget passerar gammal urbefolkningsmark, va? Vi behöver erkänna det.",
     choices: [
-      { label: "Erkänn allt", effect: { hype: +10, exhausted: +10 }, result: "Erkännandet tar 20 minuter. Det är genomtänkt." },
-      { label: "Vi är på Sergels torg", effect: { bored: +15 }, result: "Aktivisten förklarar att allt är urbefolkningsmark." },
-      { label: "Fråga om Tesla", effect: { hype: +5, panic: +5 }, result: "Aktivisten blir tyst. Kollar sin telefon." },
+      { label: "Erkänn allt", effect: { hype: +10, exhausted: +10 }, news: "20-minuters markerkännande på torget — genomtänkt och uttömmande", result: "Erkännandet tar 20 minuter. Det är genomtänkt." },
+      { label: "Vi är på Sergels torg", effect: { bored: +15 }, news: "Aktivist informerar tåget — 'allt är urbefolkningsmark, även Sergels torg'", result: "Aktivisten förklarar att allt är urbefolkningsmark." },
+      { label: "Fråga om Tesla", effect: { hype: +5, panic: +5 }, news: "Aktivist blir tyst när Tesla nämns — kollar plötsligt mobilen", result: "Aktivisten blir tyst. Kollar sin telefon." },
     ],
   },
   {
@@ -234,9 +234,9 @@ const EVENTS = [
     weight: 3,
     text: "Hörni! Klart med tåget? Vi kör afterski på Söder. Open bar. Bara om ni signar ett NDA.",
     choices: [
-      { label: "Vi kommer", effect: { hype: +25, exhausted: +10 }, result: "300 demonstranter signar NDA. Ingen läser det." },
-      { label: "Vi har riktiga jobb", effect: { bored: +10 }, result: "Grundaren ser sårad ut. Lägger upp story om 'gatekeeping'." },
-      { label: "Bara om vi får bolagsandelar", effect: { hype: +10, panic: +5 }, result: "Grundaren tappar käken. Föreslår options istället." },
+      { label: "Vi kommer", effect: { hype: +25, exhausted: +10 }, news: "300 demonstranter signar NDA för open bar — ingen läser papperet", result: "300 demonstranter signar NDA. Ingen läser det." },
+      { label: "Vi har riktiga jobb", effect: { bored: +10 }, news: "Grundare publicerar story om 'gatekeeping' — får 47 reaktioner", result: "Grundaren ser sårad ut. Lägger upp story om 'gatekeeping'." },
+      { label: "Bara om vi får bolagsandelar", effect: { hype: +10, panic: +5 }, news: "Demonstration kräver options för afterski — grundare blir blek", result: "Grundaren tappar käken. Föreslår options istället." },
     ],
   },
   {
@@ -246,9 +246,9 @@ const EVENTS = [
     weight: 2,
     text: "Hej. Ursäkta tidigare. Min chef sa att jag måste fråga: är ni egentligen oroliga, eller bara… *tänker*?",
     choices: [
-      { label: "Vi är oroliga", effect: { panic: +20 }, result: "Polischefen antecknar 'samhällsoro'. Förstärkning kommer." },
-      { label: "Vi tänker bara", effect: { bored: +20 }, result: "Polischefen är lättad. Ringer av förstärkningen." },
-      { label: "Vad bryr du dig?", effect: { panic: +15, hype: +5 }, result: "Polischefen mumlar 'jag jobbade nattskift'. Går." },
+      { label: "Vi är oroliga", effect: { panic: +20 }, news: "'Samhällsoro' antecknat — förstärkning kallas till torget", result: "Polischefen antecknar 'samhällsoro'. Förstärkning kommer." },
+      { label: "Vi tänker bara", effect: { bored: +20 }, news: "Demonstrationen omklassad till 'tankeyttring' — förstärkning ringd av", result: "Polischefen är lättad. Ringer av förstärkningen." },
+      { label: "Vad bryr du dig?", effect: { panic: +15, hype: +5 }, news: "Polischef avslöjar nattskift — lämnar torget i tyst protest", result: "Polischefen mumlar 'jag jobbade nattskift'. Går." },
     ],
   },
   {
@@ -258,9 +258,9 @@ const EVENTS = [
     weight: 2,
     text: "Jag har tänkt vidare på saken. Era paroller behöver mer empirisk grund. Får jag föreslå en peer-review-process?",
     choices: [
-      { label: "Ja, peer-review allt", effect: { bored: +25, exhausted: +15 }, result: "1 maj 2027 har vi fortfarande inte fått igenom första parollen." },
-      { label: "Tack, vi klarar oss", effect: { hype: +5 }, result: "Professorn skriver en arg artikel om anti-intellektualism." },
-      { label: "Du står på vår banderoll", effect: { bored: +10 }, result: "Professorn rör sig långsamt åt sidan. Mumlar 'oväntat'." },
+      { label: "Ja, peer-review allt", effect: { bored: +25, exhausted: +15 }, news: "Demonstration startar peer-review — första parollen lär ta år", result: "1 maj 2027 har vi fortfarande inte fått igenom första parollen." },
+      { label: "Tack, vi klarar oss", effect: { hype: +5 }, news: "Anti-intellektualism-artikel förbereds — professorn upprörd vid skrivblock", result: "Professorn skriver en arg artikel om anti-intellektualism." },
+      { label: "Du står på vår banderoll", effect: { bored: +10 }, news: "Professor flyttar sig sakta från banderoll-position — 'oväntat' mumlas", result: "Professorn rör sig långsamt åt sidan. Mumlar 'oväntat'." },
     ],
   },
 ];

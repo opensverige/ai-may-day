@@ -849,17 +849,34 @@ function pulseTickerFromPlayerChoice() {
   tickerReactTimer = setTimeout(() => bar.classList.remove("ticker--react"), 2400);
 }
 
-/** Rubrik efter dialog-event (kopplar val → BREAKING). Påverkar inte newsCount. */
+/** Rubrik efter dialog-event — föredra explicit choice.news (rapport-stil),
+ *  annars auto-generera journalistisk one-liner från archetype + effekt.
+ *  Påverkar inte newsCount. */
 function pushEventNews({ choice, archetypeName }) {
   if (!choice) return;
-  const unlock = choice.unlock ? `${choice.unlock} · ` : "";
-  const core = `${archetypeName}: ${choice.label}`;
-  let text = unlock + core;
-  if (choice.result) {
-    const r = String(choice.result).replace(/\s+/g, " ").trim();
-    const maxTail = 160;
-    text += r.length > maxTail ? ` — ${r.slice(0, maxTail)}…` : ` — ${r}`;
+
+  let text;
+  if (choice.news) {
+    // Spel-skribenten har skrivit en explicit nyhetsrubrik
+    text = choice.news;
+  } else {
+    // Auto-generator: bygg en reporter-stil headline från archetype + delta
+    const eff = choice.effect || {};
+    const entries = Object.entries(eff);
+    let domState = null, domDelta = 0;
+    for (const [k, v] of entries) {
+      if (Math.abs(v) > Math.abs(domDelta)) { domState = k; domDelta = v; }
+    }
+    const verb = (domState === "hype"  && domDelta > 0)  ? "exalterar tåget"
+              : (domState === "hype"  && domDelta < 0)  ? "dämpar parollerna"
+              : (domState === "panic" && domDelta > 0)  ? "skapar oro på torget"
+              : (domState === "panic" && domDelta < 0)  ? "lugnar paniken"
+              : (domState === "bored" && domDelta > 0)  ? "tråkar ut massan"
+              : (domState === "exhausted" && domDelta > 0) ? "utmattar leden"
+              : "möter tåget";
+    text = `${archetypeName} ${verb}`;
   }
+  if (choice.unlock) text = `Ny paroll: '${choice.unlock}' · ${text}`;
   pushNews({ text, fromEvent: true, skipNewsBump: true });
 }
 
@@ -1031,6 +1048,33 @@ function bindUI() {
     const t = e.touches[0];
     engageAt(t.clientX, t.clientY);
   }, { passive: true });
+
+  // howto-modal: klick på MÅL-baren öppnar speltips
+  const howtoEl = $("#howto");
+  const goalBtn = $("#goal");
+  let howtoPausedGame = false;
+  function openHowto() {
+    if (!howtoEl) return;
+    howtoEl.hidden = false;
+    requestAnimationFrame(() => howtoEl.classList.add("is-visible"));
+    if (!game.paused) { howtoPausedGame = true; game.paused = true; document.body.classList.add("is-paused"); }
+  }
+  function closeHowto() {
+    if (!howtoEl) return;
+    howtoEl.classList.remove("is-visible");
+    setTimeout(() => { howtoEl.hidden = true; }, 240);
+    if (howtoPausedGame) { howtoPausedGame = false; game.paused = false; document.body.classList.remove("is-paused"); }
+  }
+  if (goalBtn) goalBtn.addEventListener("click", openHowto);
+  $("#howto-close")?.addEventListener("click", closeHowto);
+  $("#howto-ok")?.addEventListener("click", closeHowto);
+  howtoEl?.addEventListener("click", (e) => { if (e.target === howtoEl) closeHowto(); });
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && howtoEl && !howtoEl.hidden) {
+      e.preventDefault();
+      closeHowto();
+    }
+  });
 
   // action-knappar med cooldown
   const cooldowns = { engage: 1.5, chant: 4, disperse: 5, police: 6 };
