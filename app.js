@@ -889,7 +889,7 @@ const GOAL_THRESHOLDS = {
 // Match-tid + dramaturgi
 const MATCH_DURATION  = 90;  // sek total speltid
 const FINAL_SPURT_AT  = 70;  // sek då slutspurt triggas (20s kvar)
-const BOSS_EVENT_AT   = 55;  // sek då boss-eventet triggas
+const BOSS_EVENT_AT   = 28;  // sek då boss-eventet triggas (tidigt så de flesta hinner se det)
 const SPURT_WIN_BOOST = 1.7; // win-timer multiplier under spurt
 
 function tickGoal(dt) {
@@ -908,12 +908,14 @@ function tickGoal(dt) {
   game.elapsedSec += dt;
   const elapsedSec = game.elapsedSec;
 
-  // Boss-event på 55s — alltid (om event-system finns och inget redan kör)
+  // Boss-event — alltid (om event-system finns och inget redan kör)
   if (elapsedSec >= BOSS_EVENT_AT && !game.bossTriggered && !game.paused) {
-    game.bossTriggered = true;
-    if (window.AIMayDayEvents && typeof window.AIMayDayEvents.triggerById === "function") {
-      window.AIMayDayEvents.triggerById("statsminister-anlander");
+    const evMgr = window.AIMayDayEvents;
+    if (evMgr && !evMgr.activeModal && typeof evMgr.triggerById === "function") {
+      game.bossTriggered = true;
+      evMgr.triggerById("statsminister-anlander");
     }
+    // om event-system inte redo eller annan modal kör → vänta nästa tick
   }
 
   // Slutspurt: 70s in
@@ -1083,26 +1085,28 @@ function endGame(outcome) {
   const endingInfo = trackEnding(key);
   const bestInfo   = trackBestTime(key, elapsed);
 
-  // Tidsrad: visa rekord om vinst, "NYTT REKORD" om bättre än innan
-  let tidStr = elapsed.toFixed(1) + "s";
+  // Kompakt stat-grid — varje fält kort så de får plats i 2-kolumns layout
+  const tidStr = elapsed.toFixed(1) + "s";
+  let rekordStr;
   if (bestInfo) {
     if (bestInfo.isNew && bestInfo.previous) {
-      tidStr = `${elapsed.toFixed(1)}s · NYTT REKORD (var ${bestInfo.previous.toFixed(1)}s)`;
+      rekordStr = `★ NY ${elapsed.toFixed(1)}s`;
     } else if (bestInfo.isNew) {
-      tidStr = `${elapsed.toFixed(1)}s · FÖRSTA VINSTEN PÅ DETTA UTFALL`;
+      rekordStr = `★ FÖRSTA`;
     } else {
-      tidStr = `${elapsed.toFixed(1)}s · rekord ${bestInfo.time.toFixed(1)}s`;
+      rekordStr = bestInfo.time.toFixed(1) + "s";
     }
+  } else {
+    rekordStr = "—";
   }
 
   const stats = [
     ["Tid", tidStr],
-    ["Utfall hittade", `${endingInfo.count}/${endingInfo.total}` + (endingInfo.isNew ? " · NYTT" : "")],
+    ["Rekord", rekordStr],
+    ["Utfall", `${endingInfo.count}/${endingInfo.total}` + (endingInfo.isNew ? " ★" : "")],
     ["Topp UPPRÖRD", Math.round(game.peakHype) + "%"],
     ["Topp PANIK", Math.round(game.peakPanic) + "%"],
-    ["Demonstranter", Math.floor(game.marchers).toLocaleString("sv-SE")],
-    ["Nyhetshändelser", String(game.newsCount)],
-    ["Polis-attacker", String(game.policeCount)],
+    ["Polis", String(game.policeCount)],
   ];
   $("#finale-stats").innerHTML = stats.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
 
