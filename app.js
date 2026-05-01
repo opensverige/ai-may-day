@@ -137,11 +137,17 @@ function mountScene(config, sheets) {
     pos.className = "sprite-pos";
     const widthPct = (SPRITE_BASE_W * layerStyle.scale / SCENE_BASE_W) * 100;
     pos.style.left = inst.x + "%";
-    pos.style.top = inst.y + "%";
     pos.style.width = widthPct + "%";
     pos.style.aspectRatio = `${sprite.crop[2]} / ${sprite.crop[3]}`;
     const tilt = inst.tilt || 0;
-    pos.style.transform = `translate(-50%, -50%) rotate(${tilt}deg)`;
+    // FRONT-lager anchoras till scen-bottom så crowden inte floatar
+    if (inst.layer === "front") {
+      pos.style.bottom = "0";
+      pos.style.transform = `translateX(-50%) rotate(${tilt}deg)`;
+    } else {
+      pos.style.top = inst.y + "%";
+      pos.style.transform = `translate(-50%, -50%) rotate(${tilt}deg)`;
+    }
 
     const el = document.createElement("div");
     el.className = "sprite" + (inst.flip ? " sprite--flipped" : "");

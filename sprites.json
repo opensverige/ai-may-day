@@ -29,9 +29,9 @@
       "banner": { "x": 19.5, "y": 9, "w": 61, "h": 21, "textColor": "dark" },
       "hotspots": "auto"
     },
-    "row-back":  { "sheet": "crowd-band", "crop": [0, 4, 1536, 226],   "type": "crowd", "banner": null, "hotspots": "auto" },
-    "row-mid":   { "sheet": "crowd-band", "crop": [0, 260, 1536, 226], "type": "crowd", "banner": null, "hotspots": "auto" },
-    "row-front": { "sheet": "crowd-band", "crop": [0, 770, 1536, 226], "type": "crowd", "banner": null, "hotspots": "auto" }
+    "row-back":  { "sheet": "crowd-band", "crop": [0, 4, 1536, 200],   "type": "crowd", "banner": null, "hotspots": "auto" },
+    "row-mid":   { "sheet": "crowd-band", "crop": [0, 260, 1536, 200], "type": "crowd", "banner": null, "hotspots": "auto" },
+    "row-front": { "sheet": "crowd-band", "crop": [0, 800, 1536, 155], "type": "crowd", "banner": null, "hotspots": "auto" }
   },
 
   "layerStyles": {
@@ -46,9 +46,9 @@
   },
 
   "scene": [
-    { "id": "back",  "spriteId": "row-back",  "layer": "back",  "x": 50, "y": 38, "flip": false, "tilt": 0, "bannerText": "" },
-    { "id": "mid",   "spriteId": "row-mid",   "layer": "mid",   "x": 50, "y": 65, "flip": false, "tilt": 0, "bannerText": "" },
-    { "id": "front", "spriteId": "row-front", "layer": "front", "x": 50, "y": 84, "flip": false, "tilt": 0, "bannerText": "" }
+    { "id": "back",  "spriteId": "row-back",  "layer": "back",  "x": 50, "y": 28, "flip": false, "tilt": 0, "bannerText": "" },
+    { "id": "mid",   "spriteId": "row-mid",   "layer": "mid",   "x": 50, "y": 50, "flip": false, "tilt": 0, "bannerText": "" },
+    { "id": "front", "spriteId": "row-front", "layer": "front", "x": 50, "y": 0,  "flip": false, "tilt": 0, "bannerText": "" }
   ],
 
   "bannerSlogans": [
