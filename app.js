@@ -702,9 +702,9 @@ function endGame(outcome) {
   // välj namngiven variant baserat på spelar-stats
   let key = outcome;
   if (outcome === "win") {
-    if (game.peakPanic > 50) key = "win-eqt";          // pengarna räddade dagen
-    else if (game.policeCount === 0) key = "win-flag"; // ren seger
-    else key = "win-bali";                              // hade lite skit i ärmen
+    if (game.peakPanic > 50) key = "win-eqt";
+    else if (game.policeCount === 0) key = "win-flag";
+    else key = "win-bali";
   } else if (outcome === "police") {
     if (game.newsCount > 6) key = "police-eu";
     else key = "police-fika";
@@ -731,7 +731,65 @@ function endGame(outcome) {
     ["Polis-attacker", String(game.policeCount)],
   ];
   $("#finale-stats").innerHTML = stats.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
+
+  // SHARE-knappar: bygg share-text + render knappar
+  buildShareButtons(f, { elapsed, key });
+
   el.hidden = false;
+}
+
+function buildShareButtons(finale, ctx) {
+  const url = "https://ai-may-day.vercel.app";
+  const isWin = finale.cls === "finale--win";
+  const verb = isWin ? "vann" : "förlorade";
+  const text =
+    `Jag ${verb} AI MAY DAY 1 maj 2026: ${finale.title} 🇸🇪\n` +
+    `${finale.sub}\n\n` +
+    `Topp UPPRÖRD ${Math.round(game.peakHype)}% · ${Math.floor(game.marchers).toLocaleString("sv-SE")} demonstranter · ${game.newsCount} nyheter\n\n` +
+    `Spela: ${url}`;
+
+  const targets = [
+    { id: "x",        label: "𝕏",       title: "Dela på X",        url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}` },
+    { id: "bsky",     label: "BSKY",    title: "Dela på Bluesky",  url: `https://bsky.app/intent/compose?text=${encodeURIComponent(text)}` },
+    { id: "linkedin", label: "IN",      title: "Dela på LinkedIn", url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}` },
+    { id: "copy",     label: "KOPIERA", title: "Kopiera text",     url: null },
+  ];
+
+  let host = $("#finale-share");
+  if (!host) {
+    host = document.createElement("div");
+    host.id = "finale-share";
+    host.className = "finale__share";
+    const card = $(".finale__card");
+    const btn = $("#finale-replay");
+    if (card && btn) card.insertBefore(host, btn);
+  }
+  host.innerHTML =
+    `<div class="finale__share-label">DELA UTFALLET</div>
+     <div class="finale__share-buttons"></div>`;
+  const btnHost = host.querySelector(".finale__share-buttons");
+  for (const t of targets) {
+    const b = document.createElement("button");
+    b.className = "finale__share-btn finale__share-btn--" + t.id;
+    b.type = "button";
+    b.title = t.title;
+    b.innerHTML = `<span class="finale__share-btn__icon">${t.label}</span>`;
+    b.addEventListener("click", (e) => {
+      if (t.id === "copy") {
+        navigator.clipboard.writeText(text).then(() => {
+          b.classList.add("finale__share-btn--copied");
+          b.querySelector(".finale__share-btn__icon").textContent = "KOPIERAT!";
+          setTimeout(() => {
+            b.classList.remove("finale__share-btn--copied");
+            b.querySelector(".finale__share-btn__icon").textContent = t.label;
+          }, 1800);
+        }).catch(() => {});
+      } else {
+        window.open(t.url, "_blank", "noopener,noreferrer,width=560,height=620");
+      }
+    });
+    btnHost.appendChild(b);
+  }
 }
 
 /* =========================================================================
