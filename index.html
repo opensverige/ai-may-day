@@ -276,6 +276,9 @@
 
   <!-- Toggles -->
   <aside class="toggles">
+    <button class="toggle is-on" data-toggle="audio" type="button">
+      <span class="toggle__dot"></span>LJUD
+    </button>
     <button class="toggle" data-toggle="snow" type="button">
       <span class="toggle__dot"></span>REGN
     </button>
@@ -298,6 +301,7 @@
   <!-- Debug-overlay -->
   <div class="debug-info" id="debug-info" hidden></div>
 
+  <script src="./audio.js" defer></script>
   <script type="module" src="./app.js"></script>
   <script src="./events.js" defer></script>
 </body>

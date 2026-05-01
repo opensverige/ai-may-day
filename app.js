@@ -425,6 +425,8 @@ function engageAt(clientX, clientY) {
     }, i * 35);
   });
 
+  window.AIMDAudio?.engage();
+
   // floater-feedback efter att klustret hunnit landa
   setTimeout(() => {
     const lines = [];
@@ -506,6 +508,7 @@ function autoEngage() {
 
 function chant() {
   // våg bakifrån fram — lyfter exhausted/bored med lägre chans (de ÄR slutkörda)
+  window.AIMDAudio?.chant();
   const layerOrder = ["back", "mid", "front"];
   let totalHyped = 0;
   layerOrder.forEach((layer, i) => {
@@ -1359,6 +1362,15 @@ function initOnboarding() {
 }
 
 function bindUI() {
+  // Audio: init på första user-gesture, starta bed direkt efter
+  const ensureAudio = () => {
+    if (!window.AIMDAudio) return;
+    window.AIMDAudio.init();
+    window.AIMDAudio.startBed();
+  };
+  document.addEventListener("pointerdown", ensureAudio, { once: true });
+  document.addEventListener("keydown", ensureAudio, { once: true });
+
   // klick på scen → engage
   $("#scene").addEventListener("click", (e) => {
     if (e.target.closest(".btn") || e.target.closest(".toggle")) return;
@@ -1440,9 +1452,24 @@ function bindUI() {
   });
 
   // toggles
+  // sätt initial audio-toggle-state från localStorage
+  const audioToggleEl = document.querySelector('.toggle[data-toggle="audio"]');
+  if (audioToggleEl) {
+    const on = window.AIMDAudio ? window.AIMDAudio.isEnabled() : true;
+    audioToggleEl.classList.toggle("is-on", on);
+  }
   $$(".toggle").forEach((t) => {
     t.addEventListener("click", () => {
       const k = t.dataset.toggle;
+      if (k === "audio") {
+        if (!window.AIMDAudio) return;
+        window.AIMDAudio.init();
+        const next = !window.AIMDAudio.isEnabled();
+        window.AIMDAudio.setEnabled(next);
+        t.classList.toggle("is-on", next);
+        if (next) window.AIMDAudio.startBed();
+        return;
+      }
       if (k === "snow") {
         game.snowing = !game.snowing;
         t.classList.toggle("is-on", game.snowing);
