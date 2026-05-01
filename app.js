@@ -404,7 +404,7 @@ function engageAt(clientX, clientY) {
     .map((h) => ({ h, d: (h.absX - px) ** 2 + (h.absY - py) ** 2 }))
     .sort((a, b) => a.d - b.d);
 
-  const cluster = sorted.slice(0, 4).filter((x) => x.d < 280);
+  const cluster = sorted.slice(0, 5).filter((x) => x.d < 320);
   if (!cluster.length) return;
 
   let hyped = 0;
@@ -434,22 +434,17 @@ function engageAt(clientX, clientY) {
   }, cluster.length * 35 + 30);
 
   trackComboHit();
-  trackOpenclawStreak(cluster[0].h);
+  trackOpenclawStreak();
 }
 
 /* ── OPENCLAW · auto-engage agent ──────────────────────── */
 
-function trackOpenclawStreak(centerHotspot) {
+function trackOpenclawStreak() {
   if (game.openclaw.active) return; // ingen streak-tracking medan agent kör
   const t = now();
-  const last = game.openclaw.lastHotspot;
-  // räknas som "samma område" om det är samma hotspot eller väldigt nära (~10% radie)
-  const dx = last ? last.absX - centerHotspot.absX : 999;
-  const dy = last ? last.absY - centerHotspot.absY : 999;
-  const same = last && (dx * dx + dy * dy < 110) && (t - game.openclaw.lastAt < 1800);
-
-  game.openclaw.streak = same ? game.openclaw.streak + 1 : 1;
-  game.openclaw.lastHotspot = centerHotspot;
+  // 7s-fönster mellan engages — räknas oavsett knapp eller scen-klick
+  const within = (t - game.openclaw.lastAt) < 7000;
+  game.openclaw.streak = within ? game.openclaw.streak + 1 : 1;
   game.openclaw.lastAt = t;
 
   if (game.openclaw.streak >= 5) {
@@ -555,7 +550,7 @@ function disperse() {
  *  Combo-ready → fri och dubbelt så stark. */
 function megafon() {
   const ready = consumeCombo();
-  const cut = ready ? 0.55 : 0.35;
+  const cut = ready ? 0.60 : 0.42;
 
   const candidates = game.hotspots.filter((h) => h.state !== "hype" && h.state !== "panic");
   const target = Math.ceil(candidates.length * cut);
@@ -828,9 +823,9 @@ function updateMarcherCount(dt) {
    ========================================================================= */
 
 const GOAL_THRESHOLDS = {
-  winThreshold: 75, winSustain: 14,
+  winThreshold: 70, winSustain: 11,
   loseThreshold: 70, loseSustain: 10,
-  boredThreshold: 72, boredSustain: 28,
+  boredThreshold: 75, boredSustain: 32,
 };
 
 function tickGoal(dt) {
@@ -1237,7 +1232,7 @@ function tickHotspots(dt) {
   for (const h of game.hotspots) if (h.state === "hype") hypeCount++;
   const hypePct = (hypeCount / Math.max(1, game.hotspots.length)) * 100;
   let overheatChance = 0;
-  if (hypePct > 70) overheatChance = (hypePct - 70) / 100; // 0–0.30 över hype 70–100%
+  if (hypePct > 80) overheatChance = (hypePct - 80) / 140; // mildare leak, först över 80%
 
   for (const h of game.hotspots) {
     h.timer += dt;
@@ -1405,7 +1400,7 @@ function bindUI() {
   });
 
   // action-knappar med cooldown
-  const cooldowns = { engage: 1.1, chant: 6, disperse: 4, megafon: 14 };
+  const cooldowns = { engage: 1.0, chant: 5, disperse: 4, megafon: 12 };
   $$(".btn").forEach((b) => {
     // se till att cd-bar finns
     if (!b.querySelector(".btn__cd-bar")) {
