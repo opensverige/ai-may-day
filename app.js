@@ -169,23 +169,7 @@ function mountScene(config, sheets) {
     if (sheet.featherEdges) img.classList.add("sprite__img--feathered");
     el.appendChild(img);
 
-    // banner-text-overlay
-    if (sprite.banner && inst.bannerText) {
-      const banner = document.createElement("div");
-      banner.className = "banner-text banner-text--" + (sprite.banner.textColor || "dark");
-      // korrigera x vid flip (banderollens x i bilden är spegelvänd)
-      const bx = inst.flip ? (100 - sprite.banner.x - sprite.banner.w) : sprite.banner.x;
-      banner.style.left = bx + "%";
-      banner.style.top = sprite.banner.y + "%";
-      banner.style.width = sprite.banner.w + "%";
-      banner.style.height = sprite.banner.h + "%";
-      banner.dataset.role = "banner";
-      const inner = document.createElement("span");
-      inner.className = "banner-text__inner";
-      inner.textContent = inst.bannerText;
-      banner.appendChild(inner);
-      el.appendChild(banner);
-    }
+    // banner-text-overlay (inaktiverat — texten ligger på sprite-bilden direkt)
 
     if (DEBUG && sprite.banner) {
       const dbg = document.createElement("div");
@@ -341,7 +325,7 @@ function generateHotspots(scene) {
 }
 
 const STATE_TIMEOUTS = {
-  neutral:   15,   // → bored om idle
+  neutral:   25,   // → bored om idle
   hype:      10,   // → exhausted
   panic:      6,   // → bored
   exhausted: 12,   // → bored
@@ -600,7 +584,7 @@ function updateMarcherCount(dt) {
 const GOAL_THRESHOLDS = {
   winThreshold: 75, winSustain: 12,
   loseThreshold: 65, loseSustain: 8,
-  boredThreshold: 80, boredSustain: 20,
+  boredThreshold: 85, boredSustain: 45,
 };
 
 function tickGoal(dt) {
@@ -761,31 +745,37 @@ function resizeSnow() {
 }
 function spawnFlakes() {
   if (snowFlakes.length > 0) return;
-  for (let i = 0; i < 110; i++) {
+  const dpr = window.devicePixelRatio || 1;
+  for (let i = 0; i < 180; i++) {
     snowFlakes.push({
       x: rand(0, snowCanvas.width),
-      y: rand(0, snowCanvas.height),
-      r: rand(0.6, 2.6),
-      vy: rand(0.2, 1.4),
-      vx: rand(-0.4, 0.4),
-      a: rand(0.5, 0.95),
+      y: rand(-snowCanvas.height, snowCanvas.height),
+      len: rand(8, 22) * dpr,
+      vy: rand(14, 24),       // snabbare → regn
+      vx: rand(-3.5, -1.8),   // tvärfall
+      a: rand(0.25, 0.6),
+      w: rand(0.7, 1.4) * dpr,
     });
   }
 }
 function drawSnow(dt) {
   if (!game.snowing || !snowCtx) return;
   snowCtx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
-  const dpr = window.devicePixelRatio || 1;
+  snowCtx.lineCap = "round";
   for (const f of snowFlakes) {
     f.x += f.vx * dt * 30;
     f.y += f.vy * dt * 30;
-    if (f.y > snowCanvas.height) { f.y = -5; f.x = rand(0, snowCanvas.width); }
-    if (f.x < -10) f.x = snowCanvas.width + 10;
-    if (f.x > snowCanvas.width + 10) f.x = -10;
+    if (f.y > snowCanvas.height + 20) {
+      f.y = -20;
+      f.x = rand(0, snowCanvas.width + 200);
+    }
+    if (f.x < -30) f.x = snowCanvas.width + 30;
     snowCtx.beginPath();
-    snowCtx.arc(f.x, f.y, f.r * dpr, 0, Math.PI * 2);
-    snowCtx.fillStyle = `rgba(240, 245, 255, ${f.a})`;
-    snowCtx.fill();
+    snowCtx.moveTo(f.x, f.y);
+    snowCtx.lineTo(f.x + f.vx * 1.6, f.y + f.len);
+    snowCtx.strokeStyle = `rgba(195, 210, 225, ${f.a})`;
+    snowCtx.lineWidth = f.w;
+    snowCtx.stroke();
   }
 }
 

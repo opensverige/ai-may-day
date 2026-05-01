@@ -5,9 +5,9 @@
    ========================================================================= */
 
 :root {
-  --bg-deep:    #07100e;
-  --bg-mid:     #0e1a18;
-  --bg-soft:    #182624;
+  --bg-deep:    #2a3132;
+  --bg-mid:     #3a4244;
+  --bg-soft:    #4a5354;
   --gold:       #d4a55c;
   --gold-soft:  #b88947;
   --gold-bright:#f1c781;
@@ -46,7 +46,7 @@ html, body {
 
 body {
   display: grid;
-  grid-template-rows: auto auto 1fr auto auto;
+  grid-template-rows: auto auto auto 1fr auto;
   position: relative;
   min-height: 100dvh;
 }
@@ -58,29 +58,28 @@ body {
 .sky {
   position: fixed; inset: 0;
   background:
-    radial-gradient(ellipse 70% 55% at 50% 18%, #1c2c2a 0%, #0e1817 45%, var(--bg-deep) 80%),
-    linear-gradient(180deg, #0d1816 0%, #050a09 100%);
+    radial-gradient(ellipse 90% 70% at 50% 22%, #c2c0b4 0%, #94978f 45%, #5e6562 100%),
+    linear-gradient(180deg, #b3b6ad 0%, #4a5251 100%);
   z-index: 0;
   overflow: hidden;
 }
 
+/* "moon" återanvänd som inbäddad sol bakom moln — mjuk varm cirkel */
 .moon {
   position: absolute;
-  top: 9%; right: 14%;
-  width: 78px; height: 78px;
+  top: 16%; right: 18%;
+  width: 130px; height: 130px;
   border-radius: 50%;
-  background:
-    radial-gradient(circle at 35% 35%, #fff7e0 0%, #f0d68a 40%, #b88947 80%);
-  box-shadow:
-    inset -10px -8px 18px rgba(80,40,10,0.55),
-    0 0 30px rgba(241,199,129,0.35);
-  filter: contrast(1.05);
+  background: radial-gradient(circle at 50% 50%, rgba(255,240,205,0.85) 0%, rgba(245,225,180,0.45) 35%, transparent 75%);
+  filter: blur(4px);
 }
 .moon-glow {
   position: absolute;
-  top: -2%; right: -6%;
-  width: 50vw; height: 50vw;
-  background: radial-gradient(circle, rgba(241,199,129,0.15) 0%, transparent 60%);
+  top: 0; left: 0; right: 0; height: 60%;
+  background:
+    radial-gradient(ellipse 60% 80% at 30% 10%, rgba(220,225,225,0.55) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 60% at 75% 25%, rgba(195,200,200,0.45) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 50% at 50% 5%, rgba(225,230,225,0.4) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -94,21 +93,21 @@ body {
     repeating-linear-gradient(
       90deg,
       transparent 0px, transparent 22px,
-      rgba(7,18,16,0.55) 22px, rgba(7,18,16,0.55) 28px,
+      rgba(40,50,52,0.55) 22px, rgba(40,50,52,0.55) 28px,
       transparent 28px, transparent 60px,
-      rgba(7,18,16,0.4) 60px, rgba(7,18,16,0.4) 80px,
+      rgba(40,50,52,0.4) 60px, rgba(40,50,52,0.4) 80px,
       transparent 80px, transparent 110px,
-      rgba(7,18,16,0.65) 110px, rgba(7,18,16,0.65) 118px,
+      rgba(40,50,52,0.65) 110px, rgba(40,50,52,0.65) 118px,
       transparent 118px, transparent 160px
     );
   mask-image: linear-gradient(180deg, black 0%, black 60%, transparent 100%);
-  opacity: 0.55;
+  opacity: 0.45;
 }
 .skyline--far {
   bottom: 30%;
   height: 22%;
   filter: blur(0.8px);
-  opacity: 0.32;
+  opacity: 0.25;
   transform: scaleY(0.7);
 }
 
@@ -456,6 +455,7 @@ body {
           mask-image: radial-gradient(ellipse 70% 70% at 50% 60%, black 45%, transparent 96%);
 }
 
+
 /* bobb-animationer per lager (olika duration så de inte synkar)
    back/mid har march-stomp för "marscherar på stället"-illusion */
 @keyframes bob-front { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-8px) } }
@@ -743,11 +743,11 @@ body {
 
 .ticker {
   position: relative;
-  z-index: 5;
+  z-index: 6;
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: stretch;
-  border-top: 1px solid #3a0e0e;
+  border-bottom: 1px solid #3a0e0e;
   background: linear-gradient(180deg, #2a0a0a 0%, #1a0606 100%);
   font-family: var(--font-mono);
   font-size: 12px;
