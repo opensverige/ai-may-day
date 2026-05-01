@@ -326,8 +326,8 @@ function generateHotspots(scene) {
 }
 
 const STATE_TIMEOUTS = {
-  neutral:   30,   // → bored om idle
-  hype:      14,   // → exhausted (höjt så win blir nåbar)
+  neutral:   50,   // → bored om idle (sänkt entropi)
+  hype:      22,   // → exhausted (mer andrum för win)
   panic:      6,   // → bored
   exhausted: 12,   // → bored
   bored:    Infinity,
@@ -367,6 +367,13 @@ const game = {
   peakPanic: 0,
   newsCount: 0,
   policeCount: 0,
+  // combo / power-state
+  combo: 0,
+  comboReady: false,
+  comboLastAt: 0,
+  // ambient polis-trigger
+  panicHighSince: 0,
+  policeLastAuto: 0,
 };
 
 const GOAL = {
@@ -383,56 +390,171 @@ function engageAt(clientX, clientY) {
   const px = ((clientX - sceneRect.left) / sceneRect.width) * 100;
   const py = ((clientY - sceneRect.top)  / sceneRect.height) * 100;
 
-  // hitta närmsta hotspot
-  let best = null, bestD = Infinity;
-  for (const h of game.hotspots) {
-    const d = (h.absX - px) ** 2 + (h.absY - py) ** 2;
-    if (d < bestD) { bestD = d; best = h; }
-  }
-  if (!best) return;
+  // sortera på avstånd, ta upp till 6 närmsta inom rimlig radie
+  const sorted = [...game.hotspots]
+    .map((h) => ({ h, d: (h.absX - px) ** 2 + (h.absY - py) ** 2 }))
+    .sort((a, b) => a.d - b.d);
 
-  setHotspotState(best, "hype");
+  const cluster = sorted.slice(0, 6).filter((x) => x.d < 380);
+  if (!cluster.length) return;
 
-  // 30% chans grannar tändas också
-  for (const nid of best.neighbors) {
-    if (Math.random() < 0.3) {
-      const n = game.hotspots[nid];
-      if (n && n.state === "neutral") setHotspotState(n, "hype");
-    }
-  }
+  let hyped = 0;
+  let revived = 0;
 
-  trySpawnBubble(best);
-  pulse(best.el);
+  cluster.forEach(({ h }, i) => {
+    setTimeout(() => {
+      // bored/exhausted → lyft till neutral; resten → hype
+      if (h.state === "bored" || h.state === "exhausted") {
+        setHotspotState(h, "neutral");
+        revived++;
+      } else if (h.state !== "panic") {
+        setHotspotState(h, "hype");
+        hyped++;
+        if (i === 0) trySpawnBubble(h);
+      }
+      pulse(h.el);
+    }, i * 35);
+  });
+
+  // floater-feedback efter att klustret hunnit landa
+  setTimeout(() => {
+    const lines = [];
+    if (hyped > 0)   lines.push(`+${hyped} HYPE`);
+    if (revived > 0) lines.push(`+${revived} VAKEN`);
+    if (lines.length) spawnFloater(clientX, clientY, lines.join(" · "), "hype");
+  }, cluster.length * 35 + 30);
+
+  trackComboHit();
 }
 
 function chant() {
-  // våg bakifrån fram, lager för lager med delay
+  // våg bakifrån fram — lyfter exhausted och bored också (energin återvänder)
   const layerOrder = ["back", "mid", "front"];
+  let totalHyped = 0;
   layerOrder.forEach((layer, i) => {
     setTimeout(() => {
       for (const h of game.hotspots) {
         if (h.layer !== layer) continue;
-        if (h.state === "panic" || h.state === "exhausted") continue;
-        if (Math.random() < 0.78) {
+        if (h.state === "panic") continue; // panik immun
+        if (Math.random() < 0.82) {
           setHotspotState(h, "hype");
+          totalHyped++;
           if (Math.random() < 0.08) trySpawnBubble(h);
         }
       }
     }, i * 380);
   });
+  setTimeout(() => {
+    const pct = Math.round((totalHyped / Math.max(1, game.hotspots.length)) * 100);
+    spawnFloaterCenter(`CHANT! +${pct}% HYPE`, "chant");
+  }, 1200);
 }
 
 function disperse() {
+  // BARA panic — defensiv lugn-knapp
   game.dispersedAt = now();
-  const active = game.hotspots.filter((h) => h.state === "hype" || h.state === "panic");
-  // shuffle och ta 50%
-  for (let i = active.length - 1; i > 0; i--) {
-    const j = randi(0, i + 1);
-    [active[i], active[j]] = [active[j], active[i]];
-  }
-  active.slice(0, Math.ceil(active.length * 0.5)).forEach((h) => {
-    setHotspotState(h, "neutral");
+  const panicked = game.hotspots.filter((h) => h.state === "panic");
+  panicked.forEach((h, i) => {
+    setTimeout(() => {
+      setHotspotState(h, "neutral");
+      pulse(h.el);
+    }, i * 30);
   });
+  if (panicked.length > 0) {
+    spawnFloaterCenter(`LUGNT! −${panicked.length} PANIK`, "calm");
+  } else {
+    spawnFloaterCenter("INGEN PANIK ATT LUGNA", "muted");
+  }
+}
+
+/** MEGAFON — power-move. Stort hype-spike, screen-flash, shake.
+ *  Combo-ready → fri och dubbelt så stark. */
+function megafon() {
+  const ready = consumeCombo();
+  const cut = ready ? 0.85 : 0.55;
+
+  const candidates = game.hotspots.filter((h) => h.state !== "hype" && h.state !== "panic");
+  const target = Math.ceil(candidates.length * cut);
+  const shuffled = [...candidates].sort(() => Math.random() - 0.5).slice(0, target);
+
+  shuffled.forEach((h, i) => {
+    setTimeout(() => {
+      setHotspotState(h, "hype");
+      if (Math.random() < 0.15) trySpawnBubble(h);
+      pulse(h.el);
+    }, i * 10);
+  });
+
+  // EA-touch: fullskärms-flash + shake + scen-puls
+  const flash = document.createElement("div");
+  flash.className = "megafon-flash" + (ready ? " megafon-flash--combo" : "");
+  document.body.appendChild(flash);
+  setTimeout(() => flash.remove(), 850);
+
+  game.scene.sceneEl.classList.remove("is-shaking");
+  void game.scene.sceneEl.offsetWidth;
+  game.scene.sceneEl.classList.add("is-shaking");
+  setTimeout(() => game.scene.sceneEl.classList.remove("is-shaking"), 600);
+
+  const pct = Math.round((shuffled.length / Math.max(1, game.hotspots.length)) * 100);
+  spawnFloaterCenter(ready ? `COMBO! MEGAFON +${pct}%` : `MEGAFON! +${pct}% HYPE`, "megafon");
+}
+
+/* ── COMBO / FLOATERS — feel-juice ─────────────────────── */
+
+function trackComboHit() {
+  const t = now();
+  // combo-fönster: 3.5s mellan hits för att räknas
+  if (t - game.comboLastAt > 3500) game.combo = 0;
+  game.comboLastAt = t;
+  game.combo++;
+
+  if (game.combo >= 5 && !game.comboReady) {
+    game.comboReady = true;
+    const mb = $(".btn--megafon");
+    mb?.classList.add("btn--ready");
+    spawnFloaterCenter("COMBO! MEGAFON FRI", "combo");
+  }
+  updateComboUI();
+}
+
+function consumeCombo() {
+  if (!game.comboReady) return false;
+  game.comboReady = false;
+  game.combo = 0;
+  $(".btn--megafon")?.classList.remove("btn--ready");
+  updateComboUI();
+  return true;
+}
+
+function updateComboUI() {
+  const meter = $("#combo-meter");
+  if (!meter) return;
+  const pct = clamp(game.combo / 5, 0, 1);
+  meter.style.setProperty("--combo-fill", (pct * 100).toFixed(1) + "%");
+  meter.classList.toggle("combo--ready", game.comboReady);
+  const lbl = $("#combo-label");
+  if (lbl) lbl.textContent = game.comboReady ? "MEGAFON FRI" : `KOMBO ${game.combo}/5`;
+}
+
+function spawnFloater(clientX, clientY, text, type = "hype") {
+  const f = document.createElement("div");
+  f.className = "floater floater--" + type;
+  f.textContent = text;
+  // mikro-jitter så staplade pop-ups inte överlappar
+  const jx = (Math.random() - 0.5) * 24;
+  f.style.left = (clientX + jx) + "px";
+  f.style.top  = clientY + "px";
+  document.body.appendChild(f);
+  setTimeout(() => f.remove(), 1300);
+}
+
+function spawnFloaterCenter(text, type = "hype") {
+  if (!game.scene?.sceneEl) return;
+  const r = game.scene.sceneEl.getBoundingClientRect();
+  const x = r.left + r.width / 2;
+  const y = r.top + r.height / 3;
+  spawnFloater(x, y, text, type);
 }
 
 function police() {
@@ -638,6 +760,19 @@ function tickGoal(dt) {
   game.winTimer   = hypePct  >= GOAL_THRESHOLDS.winThreshold   ? game.winTimer + dt   : Math.max(0, game.winTimer - dt * 1.4);
   game.panicTimer = panicPct >= GOAL_THRESHOLDS.loseThreshold  ? game.panicTimer + dt : Math.max(0, game.panicTimer - dt * 1.4);
   game.boredTimer = boredPct >= GOAL_THRESHOLDS.boredThreshold ? game.boredTimer + dt : Math.max(0, game.boredTimer - dt * 0.8);
+
+  // Ambient polis-trigger: när panic ligger högt en stund anländer polisen själv
+  if (panicPct >= 50) {
+    if (game.panicHighSince === 0) game.panicHighSince = now();
+    const sustained = (now() - game.panicHighSince) / 1000;
+    if (sustained > 4 && now() - game.policeLastAuto > 9000) {
+      game.policeLastAuto = now();
+      police();
+      pushNews({ text: "Polisen anländer från Klarabergsgatan — paniken har triggat insats" });
+    }
+  } else {
+    game.panicHighSince = 0;
+  }
 
   renderGoal(hypePct);
 
@@ -1167,7 +1302,7 @@ function bindUI() {
   });
 
   // action-knappar med cooldown
-  const cooldowns = { engage: 1.5, chant: 4, disperse: 5, police: 6 };
+  const cooldowns = { engage: 0.9, chant: 5, disperse: 4, megafon: 10 };
   $$(".btn").forEach((b) => {
     // se till att cd-bar finns
     if (!b.querySelector(".btn__cd-bar")) {
@@ -1176,19 +1311,30 @@ function bindUI() {
       b.appendChild(bar);
     }
     b.addEventListener("click", () => {
-      if (b.classList.contains("btn--cooling") || game.isOver) return;
       const a = b.dataset.action;
+      const isFreeMegafon = (a === "megafon" && game.comboReady);
+      if (!isFreeMegafon && b.classList.contains("btn--cooling")) return;
+      if (game.isOver) return;
+
+      // klicka anywhere på ENGAGE-knappen → skjut floater från knapp-mitten
       if (a === "engage") {
+        // pick-and-engage på en slumpmässig hotspot från knapptryck (utan koord)
         const r = pick(game.hotspots);
-        if (r) { setHotspotState(r, "hype"); trySpawnBubble(r); }
+        if (r) {
+          const sceneR = game.scene.sceneEl.getBoundingClientRect();
+          const cx = sceneR.left + (r.absX / 100) * sceneR.width;
+          const cy = sceneR.top  + (r.absY / 100) * sceneR.height;
+          engageAt(cx, cy);
+        }
       } else if (a === "chant") chant();
       else if (a === "disperse") disperse();
-      else if (a === "police") police();
-      // cooldown
+      else if (a === "megafon") megafon();
+
+      // cooldown — hoppa över för fri combo-megafon
+      if (isFreeMegafon) return;
       const dur = cooldowns[a] || 2;
       b.style.setProperty("--cd-duration", dur + "s");
       b.classList.add("btn--cooling");
-      // restart animation
       const bar = b.querySelector(".btn__cd-bar");
       if (bar) { bar.style.animation = "none"; void bar.offsetWidth; bar.style.animation = ""; }
       setTimeout(() => b.classList.remove("btn--cooling"), dur * 1000);
@@ -1223,9 +1369,9 @@ function bindUI() {
   window.addEventListener("keydown", (e) => {
     const k = e.key.toLowerCase();
     if (k === "a") $$(".btn--engage")[0]?.click();
-    else if (k === "s") chant();
-    else if (k === "d") disperse();
-    else if (k === "f") police();
+    else if (k === "s") $$(".btn--chant")[0]?.click();
+    else if (k === "d") $$(".btn--disperse")[0]?.click();
+    else if (k === "f") $$(".btn--megafon")[0]?.click();
     else if (k === "m") $$(".toggle")[0]?.click();
     else if (k === "n") $$(".toggle")[1]?.click();
     else if (k === "r") $$(".toggle")[2]?.click();
@@ -1316,6 +1462,7 @@ function loop(t) {
     window.addEventListener("resize", fitAllBanners);
     initSnow();
     bindUI();
+    updateComboUI();
     tickClock();
     setInterval(tickClock, 30000);
     $("#finale-replay").addEventListener("click", () => location.reload());

@@ -137,7 +137,7 @@
           <span class="onboard__btn-pill onboard__btn-pill--engage">ENGAGE</span>
           <span class="onboard__btn-pill onboard__btn-pill--chant">CHANT</span>
           <span class="onboard__btn-pill onboard__btn-pill--disperse">DISPERSE</span>
-          <span class="onboard__btn-pill onboard__btn-pill--police">POLICE</span>
+          <span class="onboard__btn-pill onboard__btn-pill--megafon">MEGAFON</span>
         </div>
         <p class="onboard__small">Karaktärer dyker upp och kräver beslut. Lycka till.</p>
 
@@ -181,10 +181,10 @@
       <div class="howto__section">
         <div class="howto__sub">DINA FYRA KNAPPAR</div>
         <div class="howto__keys">
-          <span><kbd>A</kbd> ENGAGE — tänd en gnista</span>
-          <span><kbd>S</kbd> CHANT — våg från bakre led</span>
-          <span><kbd>D</kbd> DISPERSE — lugna ner massan</span>
-          <span><kbd>F</kbd> POLICE — extern panikkälla</span>
+          <span><kbd>A</kbd> ENGAGE — kluster + väck trötta</span>
+          <span><kbd>S</kbd> CHANT — våg, alla utom panik</span>
+          <span><kbd>D</kbd> DISPERSE — lugna paniken</span>
+          <span><kbd>F</kbd> MEGAFON — power-move (combo: 5 engages = fri)</span>
         </div>
       </div>
 
@@ -241,27 +241,34 @@
     <div class="ground-fade" aria-hidden="true"></div>
   </main>
 
+  <!-- Combo-meter -->
+  <div class="combo" id="combo-meter" aria-live="polite">
+    <span class="combo__label" id="combo-label">KOMBO 0/5</span>
+    <span class="combo__bar"><i></i></span>
+  </div>
+
   <!-- Actions -->
   <nav class="actions" aria-label="Crowd actions">
     <button class="btn btn--engage"   data-action="engage"   type="button">
       <span class="btn__kbd">A</span>
       <span class="btn__title">ENGAGE</span>
-      <span class="btn__sub">tända en gnista</span>
+      <span class="btn__sub">+ kluster · väck trötta</span>
     </button>
     <button class="btn btn--chant"    data-action="chant"    type="button">
       <span class="btn__kbd">S</span>
       <span class="btn__title">CHANT</span>
-      <span class="btn__sub">våg från bakre led</span>
+      <span class="btn__sub">våg · alla utom panik</span>
     </button>
     <button class="btn btn--disperse" data-action="disperse" type="button">
       <span class="btn__kbd">D</span>
       <span class="btn__title">DISPERSE</span>
-      <span class="btn__sub">lugna ner massan</span>
+      <span class="btn__sub">lugna paniken</span>
     </button>
-    <button class="btn btn--police"   data-action="police"   type="button">
+    <button class="btn btn--megafon"  data-action="megafon"  type="button">
       <span class="btn__kbd">F</span>
-      <span class="btn__title">POLICE</span>
-      <span class="btn__sub">extern panikkälla</span>
+      <span class="btn__title">MEGAFON</span>
+      <span class="btn__sub">power-move · 10s</span>
+      <span class="btn__ready-badge" aria-hidden="true">FRI</span>
     </button>
   </nav>
 
@@ -280,6 +287,8 @@
     </span>
     <span class="credits__sep" aria-hidden="true">·</span>
     <span class="credits__item">av Baltsar</span>
+    <span class="credits__sep" aria-hidden="true">·</span>
+    <a class="credits__item credits__legal" href="./changelog.html" target="_blank" rel="noopener">Patch Notes</a>
     <span class="credits__sep" aria-hidden="true">·</span>
     <a class="credits__item credits__legal" href="./juridik.html" target="_blank" rel="noopener">Juridik &amp; Fiktion</a>
   </footer>

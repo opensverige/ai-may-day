@@ -410,7 +410,17 @@ class EventManager {
         const btn = document.createElement("button");
         btn.className = "event-choice";
         btn.type = "button";
-        btn.innerHTML = `<span class="event-choice__num">${i + 1}</span><span class="event-choice__label">${this._escape(choice.label)}</span>`;
+        const effect = this._formatEffect(choice.effect);
+        const unlock = choice.unlock
+          ? `<span class="effect-pill effect-pill--unlock">+ PAROLL</span>`
+          : "";
+        btn.innerHTML = `
+          <span class="event-choice__num">${i + 1}</span>
+          <span class="event-choice__body">
+            <span class="event-choice__label">${this._escape(choice.label)}</span>
+            ${(effect || unlock) ? `<span class="event-choice__effect">${effect}${unlock}</span>` : ""}
+          </span>
+        `;
         btn.addEventListener("click", () => this._choose(event, choice));
         choicesEl.appendChild(btn);
       });
@@ -482,6 +492,21 @@ class EventManager {
 
     // delay 3.5s så man hinner läsa svaret
     this._closeTimeout = setTimeout(() => this._close(), 3500);
+  }
+
+  _formatEffect(eff) {
+    if (!eff) return "";
+    const labels = { hype: "HYPE", panic: "PANIK", bored: "TRÖTT", exhausted: "UTBR", neutral: "LUGN" };
+    // Sortera så största absolut-värdet kommer först
+    const entries = Object.entries(eff).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]));
+    return entries
+      .map(([k, v]) => {
+        const lbl = labels[k] || k.toUpperCase();
+        const sign = v > 0 ? "+" : "";
+        const cls = v > 0 ? "pos" : "neg";
+        return `<span class="effect-pill effect-pill--${k} effect-pill--${cls}">${sign}${v} ${lbl}</span>`;
+      })
+      .join("");
   }
 
   _deriveState(effect) {

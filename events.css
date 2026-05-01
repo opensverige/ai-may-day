@@ -208,7 +208,7 @@ body.is-paused .ticker__item {
   padding: 10px 12px;
   cursor: pointer;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   text-align: left;
   font-family: inherit;
@@ -216,6 +216,7 @@ body.is-paused .ticker__item {
   transition: transform 0.06s ease;
   border-radius: 0;
 }
+.event-choice__num { margin-top: 1px; }
 .event-choice:hover { background: #ffeeb0; transform: translate(-1px, -1px); box-shadow: 4px 4px 0 #1a1208; }
 .event-choice:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #1a1208; }
 .event-choice:focus-visible { outline: 3px solid #d4a55c; outline-offset: 3px; }

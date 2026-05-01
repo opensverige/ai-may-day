@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#1a1208" />
+  <title>AI MAY DAY · Patch Notes</title>
+  <meta name="description" content="Uppdateringslogg för AI MAY DAY — alla förändringar sedan spelet lanserades." />
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <style>
+    :root {
+      --bg:          #0e1a18;
+      --card:        #f0e3c0;
+      --ink:         #1a1208;
+      --gold:        #d4a55c;
+      --gold-bright: #f1c781;
+      --red:         #b03030;
+      --green:       #2d6b3e;
+      --green-dim:   #d4ead9;
+      --hairline:    rgba(212,165,92,0.22);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: #efe3c8;
+      font-family: "Trebuchet MS", Tahoma, Verdana, sans-serif;
+      min-height: 100vh;
+      padding: 32px 20px 80px;
+      line-height: 1.55;
+    }
+    .wrap { max-width: 760px; margin: 0 auto; }
+
+    /* ── nav ─────────────────────────────── */
+    .nav {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 32px;
+      font-family: "Courier New", Consolas, monospace;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #c9bb98;
+    }
+    .nav a {
+      color: var(--gold-bright);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--gold);
+    }
+    .nav a:hover { color: #fff; }
+
+    /* ── page header ─────────────────────── */
+    .page-header { margin-bottom: 36px; }
+    .page-eyebrow {
+      font-family: "Courier New", Consolas, monospace;
+      font-size: 10px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+    h1 {
+      font-weight: 900;
+      font-size: clamp(32px, 6vw, 56px);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: #efe3c8;
+      text-shadow:
+        2px 0 0 #000, -2px 0 0 #000, 0 2px 0 #000,
+        4px 4px 0 #1a1208, 6px 6px 0 rgba(0,0,0,0.4);
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+    .lead {
+      font-style: italic;
+      color: #c9bb98;
+      font-size: 14px;
+    }
+    .lead a { color: var(--gold-bright); text-decoration: none; border-bottom: 1px dotted var(--gold); }
+    .lead a:hover { color: #fff; }
+
+    /* ── loading / error ─────────────────── */
+    .state-msg {
+      font-family: "Courier New", Consolas, monospace;
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #6e8a82;
+      padding: 32px 0;
+    }
+    .error-card {
+      background: #1c0c0c;
+      border: 3px solid #7a1818;
+      box-shadow: 5px 5px 0 #1a1208;
+      padding: 20px 24px;
+      color: #e8c8c8;
+      font-size: 14px;
+    }
+    .error-card .muted { color: #8a6060; font-style: italic; font-size: 12px; margin-top: 6px; }
+
+    /* ── patch card ──────────────────────── */
+    .patch {
+      margin-bottom: 20px;
+      border: 3px solid var(--ink);
+      box-shadow: 5px 5px 0 var(--ink);
+    }
+    .patch--latest { box-shadow: 5px 5px 0 var(--ink), 0 0 0 2px var(--gold-bright); }
+
+    .patch__header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: var(--ink);
+      padding: 10px 16px;
+      border-bottom: 3px solid var(--ink);
+    }
+    .patch__version {
+      font-family: "Courier New", Consolas, monospace;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .patch__date {
+      font-family: "Trebuchet MS", Tahoma, Verdana, sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #efe3c8;
+      flex: 1;
+    }
+    .patch__badge {
+      font-family: "Courier New", Consolas, monospace;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      background: var(--gold-bright);
+      color: var(--ink);
+      padding: 2px 7px 2px 8px;
+      border: 2px solid var(--gold);
+    }
+    .patch__build {
+      font-family: "Courier New", Consolas, monospace;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: #6e8a82;
+      text-transform: uppercase;
+    }
+
+    /* ── patch items ─────────────────────── */
+    .patch__list {
+      background: var(--card);
+      padding: 4px 0;
+      list-style: none;
+    }
+    .patch__item {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      padding: 8px 16px;
+      border-bottom: 1px solid rgba(26,18,8,0.1);
+      color: var(--ink);
+      font-size: 13.5px;
+      line-height: 1.4;
+    }
+    .patch__item:last-child { border-bottom: none; }
+
+    .patch__tag {
+      flex-shrink: 0;
+      font-family: "Courier New", Consolas, monospace;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border: 1.5px solid currentColor;
+      line-height: 1.6;
+      white-space: nowrap;
+      opacity: 0.9;
+    }
+    .patch__text {
+      flex: 1;
+      font-weight: 500;
+    }
+
+    /* ── footer sig ──────────────────────── */
+    .footer-sig {
+      margin-top: 44px;
+      text-align: center;
+      font-family: "Courier New", monospace;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #6e5e3a;
+    }
+    .footer-sig a { color: var(--gold-bright); text-decoration: none; }
+    .footer-sig a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="./index.html">← TILLBAKA TILL TÅGET</a>
+    </div>
+
+    <div class="page-header">
+      <p class="page-eyebrow">AI MAY DAY · UPPDATERINGSLOGG</p>
+      <h1>Patch Notes</h1>
+      <p class="lead">
+        Varje förändring i spelet, senast överst.
+        Hämtas direkt från
+        <a href="https://github.com/opensverige/ai-may-day" target="_blank" rel="noopener">github.com/opensverige/ai-may-day</a>.
+      </p>
+    </div>
+
+    <div id="changelog">
+      <p class="state-msg">▌ HÄMTAR UPPDATERINGAR…</p>
+    </div>
+
+    <p class="footer-sig">
+      <a href="./index.html">AI MAY DAY</a>
+      &nbsp;·&nbsp;
+      Skapad i <a href="https://opensverige.se" target="_blank" rel="noopener">OPENSVERIGE</a>
+      &nbsp;·&nbsp;
+      av Baltsar
+    </p>
+  </div>
+
+  <script>
+    const REPO = 'opensverige/ai-may-day';
+
+    const TYPE_META = {
+      feat:     { label: 'NY',      color: '#2d6b3e' },
+      fix:      { label: 'BUGFIX',  color: '#9e2828' },
+      balance:  { label: 'BALANS',  color: '#8a6820' },
+      chore:    { label: 'SYSTEM',  color: '#4a5a58' },
+      refactor: { label: 'REFAKT',  color: '#2a4a7a' },
+      docs:     { label: 'DOCS',    color: '#4a5a58' },
+      perf:     { label: 'PERF',    color: '#3a2a7a' },
+      style:    { label: 'STIL',    color: '#5a3a6a' },
+      test:     { label: 'TEST',    color: '#3a5a3a' },
+    };
+
+    function parseMsg(raw) {
+      const firstLine = raw.split('\n')[0].trim();
+      const m = firstLine.match(/^(\w+)(?:\([^)]+\))?:\s*(.+)/);
+      if (!m) return { type: null, body: firstLine };
+      return { type: m[1].toLowerCase(), body: m[2].trim() };
+    }
+
+    function formatDate(isoStr) {
+      const d = new Date(isoStr);
+      return d.toLocaleDateString('sv-SE', {
+        day: 'numeric', month: 'long', year: 'numeric'
+      }).toUpperCase();
+    }
+
+    function groupByDate(commits) {
+      const groups = new Map();
+      for (const c of commits) {
+        const day = c.commit.committer.date.slice(0, 10);
+        if (!groups.has(day)) groups.set(day, []);
+        groups.get(day).push(c);
+      }
+      return [...groups.entries()].sort((a, b) => b[0].localeCompare(a[0]));
+    }
+
+    function esc(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    async function load() {
+      const container = document.getElementById('changelog');
+      try {
+        const res = await fetch(
+          `https://api.github.com/repos/${REPO}/commits?per_page=100`
+        );
+        if (!res.ok) throw new Error(`GitHub API: HTTP ${res.status}`);
+        const commits = await res.json();
+        if (!Array.isArray(commits) || commits.length === 0) {
+          container.innerHTML = '<p class="state-msg">Inga commits hittades.</p>';
+          return;
+        }
+
+        const groups = groupByDate(commits);
+        const total = groups.length;
+        let html = '';
+
+        groups.forEach(([, dayCommits], idx) => {
+          const patchNum = total - idx;
+          const isLatest = idx === 0;
+          const dateLabel = formatDate(dayCommits[0].commit.committer.date);
+          const buildId   = dayCommits[0].sha.slice(0, 7);
+
+          html += `<div class="patch${isLatest ? ' patch--latest' : ''}">`;
+          html += `<div class="patch__header">`;
+          html += `<span class="patch__version">PATCH ${patchNum}</span>`;
+          html += `<span class="patch__date">${esc(dateLabel)}</span>`;
+          if (isLatest) html += `<span class="patch__badge">SENASTE</span>`;
+          html += `<span class="patch__build">BUILD ${buildId}</span>`;
+          html += `</div>`;
+          html += `<ul class="patch__list">`;
+
+          for (const c of dayCommits) {
+            const { type, body } = parseMsg(c.commit.message);
+            const meta = TYPE_META[type] ?? { label: type ? type.toUpperCase() : 'UPDATE', color: '#4a5a58' };
+            html += `<li class="patch__item">`;
+            html += `<span class="patch__tag" style="color:${meta.color}">${esc(meta.label)}</span>`;
+            html += `<span class="patch__text">${esc(body)}</span>`;
+            html += `</li>`;
+          }
+
+          html += `</ul></div>`;
+        });
+
+        container.innerHTML = html;
+      } catch (err) {
+        container.innerHTML = `
+          <div class="error-card">
+            <p>Kunde inte hämta patch notes från GitHub.</p>
+            <p class="muted">${esc(err.message)}</p>
+          </div>`;
+      }
+    }
+
+    load();
+  </script>
+</body>
+</html>
