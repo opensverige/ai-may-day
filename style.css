@@ -441,6 +441,7 @@ body {
   position: relative;
   transform-origin: 50% 80%;
   will-change: transform;
+  backface-visibility: hidden;
 }
 .sprite__img {
   display: block;
@@ -448,11 +449,23 @@ body {
   height: 100%;
   background-repeat: no-repeat;
   background-size: 100% 100%;
+  transform: translateZ(0); /* GPU-layer */
 }
 .sprite--flipped .sprite__img { transform: scaleX(-1); }
 .sprite__img--feathered {
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
           mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+}
+
+/* Smooth blend mellan lager — back/mid fadas i botten så de smälter in i lagret framför */
+.layer--back .sprite__img,
+.layer--mid .sprite__img {
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 65%, transparent 100%) !important;
+          mask-image: linear-gradient(to bottom, black 0%, black 65%, transparent 100%) !important;
+}
+.layer--front .sprite__img {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 5%, black 100%) !important;
+          mask-image: linear-gradient(to bottom, transparent 0%, black 5%, black 100%) !important;
 }
 
 
@@ -521,12 +534,11 @@ body {
 /* sprite-bild flippas via .sprite__img — banner-text ska INTE counter-flippas
    (den ligger ovanpå sprite-elementet, inte inom det flippade img-elementet) */
 
-/* mood-overlay per lager */
+/* mood-overlay per lager — använder rgba istället för mix-blend-mode (mycket lättare GPU) */
 .mood-overlay {
   position: absolute; inset: 0;
   pointer-events: none;
-  mix-blend-mode: multiply;
-  transition: background-color 0.6s ease, opacity 0.6s ease;
+  transition: background-color 0.5s ease, opacity 0.5s ease;
   opacity: 0;
 }
 
@@ -607,6 +619,25 @@ body {
   font-size: 15px;
   opacity: 0.92;
 }
+
+/* per-lager-storlekar: bakre led mindre/dimmade så det blir djup */
+.bubble--layer-mid {
+  font-size: 14px;
+  padding: 9px 14px 10px;
+  opacity: 0.92;
+}
+.bubble--layer-mid.bubble--visible { opacity: 0.92; }
+.bubble--layer-mid.bubble--shout { font-size: 16px; }
+
+.bubble--layer-back {
+  font-size: 12px;
+  padding: 7px 11px 8px;
+  opacity: 0.78;
+  border-width: 1.5px;
+}
+.bubble--layer-back.bubble--visible { opacity: 0.78; }
+.bubble--layer-back.bubble--shout { font-size: 13px; }
+.bubble--layer-back::after { width: 12px; height: 12px; bottom: -8px; }
 
 .bubble::after {
   content: "";

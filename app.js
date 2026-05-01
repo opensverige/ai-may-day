@@ -353,7 +353,7 @@ const game = {
   snowing: false,
   marchers: 1247,
   lastNews: 0,
-  newsInterval: 6, // sek
+  newsInterval: 4, // sek
   visibleBubbles: 0,
   dispersedAt: -Infinity,
   // mål-tracking
@@ -484,7 +484,6 @@ const BUBBLE_COOLDOWN = 14000;
 const BUBBLE_HOLD = 4500;
 
 function trySpawnBubble(h) {
-  if (h.layer !== "front") return; // bubblor bara från front-crowd för fokus
   if (game.visibleBubbles >= BUBBLE_MAX) return;
   if (now() - h.lastBubble < BUBBLE_COOLDOWN) return;
 
@@ -493,7 +492,7 @@ function trySpawnBubble(h) {
   const text = pick(pool);
 
   const b = document.createElement("div");
-  b.className = "bubble bubble--" + h.state;
+  b.className = "bubble bubble--" + h.state + " bubble--layer-" + h.layer;
   if (h.state === "hype") b.classList.add("bubble--shout");
   if (h.state === "panic") b.classList.add("bubble--panic");
   b.textContent = text;
@@ -678,23 +677,41 @@ function endGame(outcome) {
    BREAKING NEWS-TICKER
    ========================================================================= */
 
+// Kö-baserad news — rotera fritt mellan flera nyheter, byt vid animation-iteration
+const newsQueue = [];
+let newsTickerEl = null;
+
 function pushNews(item) {
   game.newsCount++;
-  const track = $("#ticker-track");
-  const el = document.createElement("div");
-  el.className = "ticker__item is-fresh";
-  el.textContent = "BREAKING: " + item.text + "  ◆  ";
-  // ersätt nuvarande
-  track.innerHTML = "";
-  track.appendChild(el);
+  newsQueue.push(item);
 
-  // applicera state-deltas på hotspots
+  // applicera state-deltas direkt
   if (item.deltaHype)  applyDelta("hype",   item.deltaHype);
   if (item.deltaPanic) applyDelta("panic",  item.deltaPanic);
   if (item.deltaBored) applyDelta("bored",  item.deltaBored);
 
   $("#marcher-count").classList.add("flicker");
   setTimeout(() => $("#marcher-count").classList.remove("flicker"), 400);
+
+  // om ingen ticker körs, starta direkt
+  if (!newsTickerEl) renderNextNews();
+}
+
+function renderNextNews() {
+  if (!newsQueue.length) {
+    newsTickerEl = null;
+    return;
+  }
+  const next = newsQueue.shift();
+  const track = $("#ticker-track");
+  track.innerHTML = "";
+  const el = document.createElement("div");
+  el.className = "ticker__item is-fresh";
+  el.textContent = "BREAKING: " + next.text + "  ◆  ";
+  track.appendChild(el);
+  newsTickerEl = el;
+  // när hela texten har scrollat ut → byt till nästa
+  el.addEventListener("animationiteration", renderNextNews, { once: true });
 }
 
 function applyDelta(state, percent) {
@@ -721,7 +738,7 @@ function tickNews(dt) {
   game.lastNews += dt;
   if (game.lastNews >= game.newsInterval) {
     game.lastNews = 0;
-    game.newsInterval = rand(6, 12);
+    game.newsInterval = rand(4, 8);
     const item = pick(game.config.news);
     pushNews(item);
   }
@@ -943,13 +960,19 @@ function debugInfo() {
    ========================================================================= */
 
 let lastT = 0;
+let moodAcc = 0;
 function loop(t) {
   const dt = lastT ? Math.min(0.1, (t - lastT) / 1000) : 0;
   lastT = t;
   tickHotspots(dt);
-  updateMood();
+  // throttle DOM-update (mood + goal) till 5 Hz — sparar GPU och DOM-updates
+  moodAcc += dt;
+  if (moodAcc >= 0.2) {
+    updateMood();
+    tickGoal(moodAcc);
+    moodAcc = 0;
+  }
   updateMarcherCount(dt);
-  tickGoal(dt);
   tickNews(dt);
   drawSnow(dt);
   debugInfo();
