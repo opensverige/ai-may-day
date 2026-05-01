@@ -374,6 +374,11 @@ const game = {
   // ambient polis-trigger
   panicHighSince: 0,
   policeLastAuto: 0,
+  // dramaturgi
+  finalSpurt: false,
+  bossTriggered: false,
+  countdownLastShown: -1,
+  elapsedSec: 0,    // ackumulerad aktiv speltid (ej wall-clock — paus pausar)
   // OPENCLAW — auto-engage agent
   openclaw: {
     streak: 0,
@@ -438,6 +443,8 @@ function engageAt(clientX, clientY) {
   trackComboHit();
   trackOpenclawStreak();
 }
+
+// audio-anrop togs bort — prototypen var inte i kvalitet ännu
 
 /* ── OPENCLAW · auto-engage agent ──────────────────────── */
 
@@ -508,7 +515,6 @@ function autoEngage() {
 
 function chant() {
   // våg bakifrån fram — lyfter exhausted/bored med lägre chans (de ÄR slutkörda)
-  window.AIMDAudio?.chant();
   const layerOrder = ["back", "mid", "front"];
   let totalHyped = 0;
   layerOrder.forEach((layer, i) => {
@@ -641,6 +647,55 @@ function spawnFloaterCenter(text, type = "hype") {
   const x = r.left + r.width / 2;
   const y = r.top + r.height / 3;
   spawnFloater(x, y, text, type);
+}
+
+/* ── SLUTSPURT-banner — visuellt klimax på 70s ─────────── */
+function showSpurtBanner() {
+  const banner = document.createElement("div");
+  banner.className = "spurt-banner";
+  banner.innerHTML = `
+    <span class="spurt-banner__eyebrow">SISTA 20 SEKUNDERNA</span>
+    <span class="spurt-banner__title">SLUTSPURT</span>
+    <span class="spurt-banner__sub">Win-timer räknas snabbare · varje sekund avgör</span>
+  `;
+  document.body.appendChild(banner);
+  requestAnimationFrame(() => banner.classList.add("is-visible"));
+  setTimeout(() => {
+    banner.classList.remove("is-visible");
+    setTimeout(() => banner.remove(), 500);
+  }, 2600);
+  pushNews({ text: "SISTA 20 SEKUNDERNA — torget håller andan" });
+}
+
+/* ── ENDING TRACKER + best-time ───────────────────────── */
+const REACHABLE_ENDINGS = [
+  "win-eqt", "win-flag", "win-bali",
+  "police-eu", "police-fika",
+  "bored-acquired", "bored-cellucor", "bored-arland",
+];
+
+function trackEnding(key) {
+  let seen = [];
+  try { seen = JSON.parse(localStorage.getItem("aimd_endings_seen") || "[]"); } catch (e) {}
+  const isNew = !seen.includes(key);
+  if (isNew) {
+    seen.push(key);
+    try { localStorage.setItem("aimd_endings_seen", JSON.stringify(seen)); } catch (e) {}
+  }
+  return { isNew, count: seen.filter((k) => REACHABLE_ENDINGS.includes(k)).length, total: REACHABLE_ENDINGS.length };
+}
+
+function trackBestTime(key, elapsed) {
+  if (!key.startsWith("win")) return null;
+  let store = {};
+  try { store = JSON.parse(localStorage.getItem("aimd_best_times") || "{}"); } catch (e) {}
+  const prev = store[key];
+  const isNew = !prev || elapsed < prev;
+  if (isNew) {
+    store[key] = elapsed;
+    try { localStorage.setItem("aimd_best_times", JSON.stringify(store)); } catch (e) {}
+  }
+  return { isNew, time: store[key], previous: prev };
 }
 
 function police() {
@@ -831,6 +886,12 @@ const GOAL_THRESHOLDS = {
   boredThreshold: 75, boredSustain: 32,
 };
 
+// Match-tid + dramaturgi
+const MATCH_DURATION  = 90;  // sek total speltid
+const FINAL_SPURT_AT  = 70;  // sek då slutspurt triggas (20s kvar)
+const BOSS_EVENT_AT   = 55;  // sek då boss-eventet triggas
+const SPURT_WIN_BOOST = 1.7; // win-timer multiplier under spurt
+
 function tickGoal(dt) {
   if (game.isOver) return;
   const counts = { neutral: 0, hype: 0, bored: 0, panic: 0, exhausted: 0 };
@@ -843,9 +904,46 @@ function tickGoal(dt) {
   game.peakHype  = Math.max(game.peakHype,  hypePct);
   game.peakPanic = Math.max(game.peakPanic, panicPct);
 
-  game.winTimer   = hypePct  >= GOAL_THRESHOLDS.winThreshold   ? game.winTimer + dt   : Math.max(0, game.winTimer - dt * 1.4);
-  game.panicTimer = panicPct >= GOAL_THRESHOLDS.loseThreshold  ? game.panicTimer + dt : Math.max(0, game.panicTimer - dt * 1.4);
-  game.boredTimer = boredPct >= GOAL_THRESHOLDS.boredThreshold ? game.boredTimer + dt : Math.max(0, game.boredTimer - dt * 0.8);
+  // ── DRAMATURGI: match-tid, boss-event, slutspurt, hard time-out ──
+  game.elapsedSec += dt;
+  const elapsedSec = game.elapsedSec;
+
+  // Boss-event på 55s — alltid (om event-system finns och inget redan kör)
+  if (elapsedSec >= BOSS_EVENT_AT && !game.bossTriggered && !game.paused) {
+    game.bossTriggered = true;
+    if (window.AIMayDayEvents && typeof window.AIMayDayEvents.triggerById === "function") {
+      window.AIMayDayEvents.triggerById("statsminister-anlander");
+    }
+  }
+
+  // Slutspurt: 70s in
+  if (elapsedSec >= FINAL_SPURT_AT && !game.finalSpurt) {
+    game.finalSpurt = true;
+    document.body.classList.add("is-final-spurt");
+    showSpurtBanner();
+  }
+
+  // Sista 5 sekunderna: stor countdown 5,4,3,2,1
+  if (game.finalSpurt) {
+    const remaining = Math.max(0, MATCH_DURATION - elapsedSec);
+    const sec = Math.ceil(remaining);
+    if (sec <= 5 && sec >= 1 && sec !== game.countdownLastShown) {
+      game.countdownLastShown = sec;
+      spawnFloaterCenter(String(sec), "countdown");
+    }
+  }
+
+  // 90s nådd utan win/lose → defaulta utfallet på dominant state
+  if (elapsedSec >= MATCH_DURATION) {
+    if (hypePct >= 50)        return endGame("win");
+    if (panicPct >= boredPct) return endGame("police");
+    return endGame("bored");
+  }
+
+  const winMul = game.finalSpurt ? SPURT_WIN_BOOST : 1;
+  game.winTimer   = hypePct  >= GOAL_THRESHOLDS.winThreshold   ? game.winTimer + dt * winMul : Math.max(0, game.winTimer - dt * 1.4);
+  game.panicTimer = panicPct >= GOAL_THRESHOLDS.loseThreshold  ? game.panicTimer + dt        : Math.max(0, game.panicTimer - dt * 1.4);
+  game.boredTimer = boredPct >= GOAL_THRESHOLDS.boredThreshold ? game.boredTimer + dt        : Math.max(0, game.boredTimer - dt * 0.8);
 
   // Ambient polis-trigger: när panic ligger högt en stund anländer polisen själv
   if (panicPct >= 50) {
@@ -979,9 +1077,27 @@ function endGame(outcome) {
     keyArtEl.style.display = "none";
   }
 
-  const elapsed = (now() - game.startTime) / 1000;
+  const elapsed = game.elapsedSec || ((now() - game.startTime) / 1000);
+
+  // Ending-tracker + best-time
+  const endingInfo = trackEnding(key);
+  const bestInfo   = trackBestTime(key, elapsed);
+
+  // Tidsrad: visa rekord om vinst, "NYTT REKORD" om bättre än innan
+  let tidStr = elapsed.toFixed(1) + "s";
+  if (bestInfo) {
+    if (bestInfo.isNew && bestInfo.previous) {
+      tidStr = `${elapsed.toFixed(1)}s · NYTT REKORD (var ${bestInfo.previous.toFixed(1)}s)`;
+    } else if (bestInfo.isNew) {
+      tidStr = `${elapsed.toFixed(1)}s · FÖRSTA VINSTEN PÅ DETTA UTFALL`;
+    } else {
+      tidStr = `${elapsed.toFixed(1)}s · rekord ${bestInfo.time.toFixed(1)}s`;
+    }
+  }
+
   const stats = [
-    ["Tid", elapsed.toFixed(1) + "s"],
+    ["Tid", tidStr],
+    ["Utfall hittade", `${endingInfo.count}/${endingInfo.total}` + (endingInfo.isNew ? " · NYTT" : "")],
     ["Topp UPPRÖRD", Math.round(game.peakHype) + "%"],
     ["Topp PANIK", Math.round(game.peakPanic) + "%"],
     ["Demonstranter", Math.floor(game.marchers).toLocaleString("sv-SE")],
@@ -989,6 +1105,13 @@ function endGame(outcome) {
     ["Polis-attacker", String(game.policeCount)],
   ];
   $("#finale-stats").innerHTML = stats.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
+
+  // Visa "NYTT UTFALL HITTAT"-celebration om första gången på detta key
+  if (endingInfo.isNew) {
+    el.classList.add("finale--new-ending");
+  } else {
+    el.classList.remove("finale--new-ending");
+  }
 
   // SHARE-knappar: bygg share-text + render knappar
   buildShareButtons(f, { elapsed, key });
@@ -1362,15 +1485,6 @@ function initOnboarding() {
 }
 
 function bindUI() {
-  // Audio: init på första user-gesture, starta bed direkt efter
-  const ensureAudio = () => {
-    if (!window.AIMDAudio) return;
-    window.AIMDAudio.init();
-    window.AIMDAudio.startBed();
-  };
-  document.addEventListener("pointerdown", ensureAudio, { once: true });
-  document.addEventListener("keydown", ensureAudio, { once: true });
-
   // klick på scen → engage
   $("#scene").addEventListener("click", (e) => {
     if (e.target.closest(".btn") || e.target.closest(".toggle")) return;
@@ -1452,24 +1566,9 @@ function bindUI() {
   });
 
   // toggles
-  // sätt initial audio-toggle-state från localStorage
-  const audioToggleEl = document.querySelector('.toggle[data-toggle="audio"]');
-  if (audioToggleEl) {
-    const on = window.AIMDAudio ? window.AIMDAudio.isEnabled() : true;
-    audioToggleEl.classList.toggle("is-on", on);
-  }
   $$(".toggle").forEach((t) => {
     t.addEventListener("click", () => {
       const k = t.dataset.toggle;
-      if (k === "audio") {
-        if (!window.AIMDAudio) return;
-        window.AIMDAudio.init();
-        const next = !window.AIMDAudio.isEnabled();
-        window.AIMDAudio.setEnabled(next);
-        t.classList.toggle("is-on", next);
-        if (next) window.AIMDAudio.startBed();
-        return;
-      }
       if (k === "snow") {
         game.snowing = !game.snowing;
         t.classList.toggle("is-on", game.snowing);

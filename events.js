@@ -40,6 +40,7 @@ const ARCHETYPES = {
   "influencer":   { name: "INFLUENCERN",   ...chr("journalist") },
   "borasare":     { name: "BORÅSAREN",     ...chr("pensionar")  }, // tant-pensionär-vibe
   "pensionar":    { name: "PENSIONÄREN",   ...chr("pensionar")  },
+  "statsminister": { name: "STATSMINISTERN", ...chr("kommun")    }, // egen, fallback till kommun
 };
 
 /* -------------------------- EVENT-BIBLIOTEK ----------------------------- */
@@ -261,6 +262,20 @@ const EVENTS = [
       { label: "Ja, peer-review allt", effect: { bored: +25, exhausted: +15 }, news: "Demonstration startar peer-review — första parollen lär ta år", result: "1 maj 2027 har vi fortfarande inte fått igenom första parollen." },
       { label: "Tack, vi klarar oss", effect: { hype: +5 }, news: "Anti-intellektualism-artikel förbereds — professorn upprörd vid skrivblock", result: "Professorn skriver en arg artikel om anti-intellektualism." },
       { label: "Du står på vår banderoll", effect: { bored: +10 }, news: "Professor flyttar sig sakta från banderoll-position — 'oväntat' mumlas", result: "Professorn rör sig långsamt åt sidan. Mumlar 'oväntat'." },
+    ],
+  },
+
+  // ──────────── BOSS · alltid 55s in i körningen ────────────
+  {
+    id: "statsminister-anlander",
+    archetype: "statsminister",
+    trigger: "boss",   // markerar att den triggas explicit, inte ambient
+    weight: 0,         // 0 = picka aldrig random
+    text: "Hej. Jag är statsministern. Jag har sett *bilden* med flaggan. Vi behöver prata. Riksdagen lyssnar live. Tre alternativ — välj ett.",
+    choices: [
+      { label: "Kräv att EU AI Act rivs", effect: { hype: +28, panic: +12 }, unlock: "RIV LAGEN", news: "Statsministern lovar att lyfta saken i Riksdagen — tåget skanderar viralt", result: "Hen ler stelt. Säger 'vi tar med oss det'. Tweetar något ostligt direkt efteråt.", portraitState: "intense" },
+      { label: "Acceptera tillsättning av utredning", effect: { bored: +25, panic: -15 }, news: "Demonstrationen omklassad — 18-månaders utredning utlovas, ingen orkar vänta", result: "En utredning tillsätts. Slutdatum: efter nästa val. Ingen är glad.", portraitState: "default" },
+      { label: "Bjud upp till valsen", effect: { hype: +18, bored: +5 }, unlock: "1 MAJ DANCE CHALLENGE", news: "Statsministern dansar med demonstranter — bilden går omedelbart viralt", result: "Hen tvekar, sen accepterar. Hela torget får sin TikTok-moment.", portraitState: "reacting" },
     ],
   },
 ];
