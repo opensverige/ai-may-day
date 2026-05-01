@@ -16,16 +16,16 @@ const FALLBACK_PORTRAIT = "./sprites/character/lovable.png";
 const ARCHETYPES = {
   "vc-partner":   { name: "VC-PARTNERN",   portrait: "./sprites/character/sana.png" },
   "ai-grundare":  { name: "AI-GRUNDAREN",  portrait: "./sprites/character/lovable.png" },
-  "fackpamp":     { name: "FACKPAMPEN",    portrait: "./sprites/character/portrait-fackpamp.webp" },
-  "aktivist":     { name: "AKTIVISTEN",    portrait: "./sprites/character/portrait-aktivist.webp" },
-  "eu-byrakrat":  { name: "EU-BYRÅKRATEN", portrait: "./sprites/character/portrait-eu.webp" },
-  "journalist":   { name: "JOURNALISTEN",  portrait: "./sprites/character/portrait-journalist.webp" },
-  "polischef":    { name: "POLISCHEFEN",   portrait: "./sprites/character/portrait-polis.webp" },
-  "professor":    { name: "PROFESSORN",    portrait: "./sprites/character/portrait-professor.webp" },
-  "kommunalrad":  { name: "KOMMUNALRÅDET", portrait: "./sprites/character/portrait-kommun.webp" },
-  "influencer":   { name: "INFLUENCERN",   portrait: "./sprites/character/portrait-influencer.webp" },
-  "borasare":     { name: "BORÅSAREN",     portrait: "./sprites/character/portrait-borasare.webp" },
-  "pensionar":    { name: "PENSIONÄREN",   portrait: "./sprites/character/portrait-pensionar.webp" },
+  "fackpamp":     { name: "FACKPAMPEN",    portrait: "./sprites/character/facket.png" },
+  "aktivist":     { name: "AKTIVISTEN",    portrait: "./sprites/character/lovable.png" },
+  "eu-byrakrat":  { name: "EU-BYRÅKRATEN", portrait: "./sprites/character/sana.png" },
+  "journalist":   { name: "JOURNALISTEN",  portrait: "./sprites/character/lovable.png" },
+  "polischef":    { name: "POLISCHEFEN",   portrait: "./sprites/character/polis.png" },
+  "professor":    { name: "PROFESSORN",    portrait: "./sprites/character/sana.png" },
+  "kommunalrad":  { name: "KOMMUNALRÅDET", portrait: "./sprites/character/facket.png" },
+  "influencer":   { name: "INFLUENCERN",   portrait: "./sprites/character/lovable.png" },
+  "borasare":     { name: "BORÅSAREN",     portrait: "./sprites/character/lovable.png" },
+  "pensionar":    { name: "PENSIONÄREN",   portrait: "./sprites/character/facket.png" },
 };
 
 /* -------------------------- EVENT-BIBLIOTEK ----------------------------- */
