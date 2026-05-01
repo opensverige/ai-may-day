@@ -8,24 +8,45 @@ const PARAMS = new URLSearchParams(location.search);
 const NO_EVENTS = PARAMS.has("noevents");
 const FORCE_EVENT_ID = PARAMS.get("event");
 
-/* -------------------------- ARKETYPER + porträtt -------------------------- */
-// Vi har bara två faktiska bilder. Övriga arketyper får fallback (lovable.png),
-// och om bild misslyckas visas grå platshållare med arketyp-namn.
-const FALLBACK_PORTRAIT = "./sprites/character/lovable.png";
+/* -------------------------- ARKETYPER + porträtt-states ----------------------
+   Tre karaktärsblad (sana/facket/polis) har 3 poser i samma bild. Vi cropar
+   ut varje pose via background-position. Lovable har bara 1 pose → samma
+   crop för alla states. Choice.portraitState bestämmer vilken pose som
+   visas EFTER spelaren valt (default: 'reacting'). -------------------------- */
+
+// Standard 3-state crop för 1024×1536-blad med 3 poser:
+// top-left, top-right, bottom-center.
+const TRIPLE_POSE_CROPS = {
+  default:  { x:  80, y:  20, w: 440, h: 760 }, // pose 1: lugn/talande
+  reacting: { x: 520, y:  20, w: 440, h: 760 }, // pose 2: avvaktande/funderande
+  intense:  { x: 270, y: 780, w: 500, h: 750 }, // pose 3: intensiv/arg/skrik
+};
+// Singel-pose crop (lovable): zoomar in på överkroppen
+const SINGLE_POSE_CROP = { x: 200, y: 100, w: 624, h: 1100 };
+
+function spriteWith(spriteSrc, crops) {
+  return { sprite: spriteSrc, spriteW: 1024, spriteH: 1536, portraits: crops };
+}
+const SANA   = spriteWith("./sprites/character/sana.png",   TRIPLE_POSE_CROPS);
+const FACKET = spriteWith("./sprites/character/facket.png", TRIPLE_POSE_CROPS);
+const POLIS  = spriteWith("./sprites/character/polis.png",  TRIPLE_POSE_CROPS);
+const LOVABLE = spriteWith("./sprites/character/lovable.png", {
+  default: SINGLE_POSE_CROP, reacting: SINGLE_POSE_CROP, intense: SINGLE_POSE_CROP,
+});
 
 const ARCHETYPES = {
-  "vc-partner":   { name: "VC-PARTNERN",   portrait: "./sprites/character/sana.png" },
-  "ai-grundare":  { name: "AI-GRUNDAREN",  portrait: "./sprites/character/lovable.png" },
-  "fackpamp":     { name: "FACKPAMPEN",    portrait: "./sprites/character/facket.png" },
-  "aktivist":     { name: "AKTIVISTEN",    portrait: "./sprites/character/lovable.png" },
-  "eu-byrakrat":  { name: "EU-BYRÅKRATEN", portrait: "./sprites/character/sana.png" },
-  "journalist":   { name: "JOURNALISTEN",  portrait: "./sprites/character/lovable.png" },
-  "polischef":    { name: "POLISCHEFEN",   portrait: "./sprites/character/polis.png" },
-  "professor":    { name: "PROFESSORN",    portrait: "./sprites/character/sana.png" },
-  "kommunalrad":  { name: "KOMMUNALRÅDET", portrait: "./sprites/character/facket.png" },
-  "influencer":   { name: "INFLUENCERN",   portrait: "./sprites/character/lovable.png" },
-  "borasare":     { name: "BORÅSAREN",     portrait: "./sprites/character/lovable.png" },
-  "pensionar":    { name: "PENSIONÄREN",   portrait: "./sprites/character/facket.png" },
+  "vc-partner":   { name: "VC-PARTNERN",   ...SANA   },
+  "ai-grundare":  { name: "AI-GRUNDAREN",  ...LOVABLE },
+  "fackpamp":     { name: "FACKPAMPEN",    ...FACKET },
+  "aktivist":     { name: "AKTIVISTEN",    ...LOVABLE },
+  "eu-byrakrat":  { name: "EU-BYRÅKRATEN", ...SANA   },
+  "journalist":   { name: "JOURNALISTEN",  ...LOVABLE },
+  "polischef":    { name: "POLISCHEFEN",   ...POLIS  },
+  "professor":    { name: "PROFESSORN",    ...SANA   },
+  "kommunalrad":  { name: "KOMMUNALRÅDET", ...FACKET },
+  "influencer":   { name: "INFLUENCERN",   ...LOVABLE },
+  "borasare":     { name: "BORÅSAREN",     ...LOVABLE },
+  "pensionar":    { name: "PENSIONÄREN",   ...FACKET },
 };
 
 /* -------------------------- EVENT-BIBLIOTEK ----------------------------- */
@@ -38,9 +59,9 @@ const EVENTS = [
     weight: 3,
     text: "Hej hej. Jag ser att stämningen är… spicy. Vi på fonden tänker att det här är en *fantastic opportunity*. Vill ni ta in 200 miljoner pre-seed?",
     choices: [
-      { label: "Ja, vi tar pengarna", effect: { hype: +30, panic: -20 }, unlock: "EQT BACKAR ALLT", result: "Tåget dirigeras om mot Stureplan. Ingen vet varför." },
-      { label: "Nej, vi är ideellt", effect: { bored: +20, hype: -10 }, result: "VC-partnern går missnöjt. Mumlar nåt om 'mindset'." },
-      { label: "Bara om Creandum är med", effect: { hype: +15, panic: +5 }, result: "Förhandlingen startar. Tåget pausar i 45 sekunder." },
+      { label: "Ja, vi tar pengarna", effect: { hype: +30, panic: -20 }, unlock: "EQT BACKAR ALLT", result: "Tåget dirigeras om mot Stureplan. Ingen vet varför.", portraitState: "intense" },
+      { label: "Nej, vi är ideellt", effect: { bored: +20, hype: -10 }, result: "VC-partnern går missnöjt. Mumlar nåt om 'mindset'.", portraitState: "reacting" },
+      { label: "Bara om Creandum är med", effect: { hype: +15, panic: +5 }, result: "Förhandlingen startar. Tåget pausar i 45 sekunder.", portraitState: "default" },
     ],
   },
   {
@@ -50,9 +71,9 @@ const EVENTS = [
     weight: 2,
     text: "Ursäkta. Är ni anmälda? Jag har en lapp här som säger fika-paus. Stämmer det?",
     choices: [
-      { label: "Ja, fikapaus", effect: { panic: -30, bored: +15 }, result: "Polischefen ler lättat. Tar en bulle." },
-      { label: "Visa tillstånd", effect: { panic: -10 }, result: "Tillståndet är från 2019 men polischefen orkar inte kolla." },
-      { label: "Starta CHANT", effect: { hype: +20, panic: +10 }, result: "Polischefen suckar djupt. Ringer förstärkning." },
+      { label: "Ja, fikapaus", effect: { panic: -30, bored: +15 }, result: "Polischefen ler lättat. Tar en bulle.", portraitState: "default" },
+      { label: "Visa tillstånd", effect: { panic: -10 }, result: "Tillståndet är från 2019 men polischefen orkar inte kolla.", portraitState: "reacting" },
+      { label: "Starta CHANT", effect: { hype: +20, panic: +10 }, result: "Polischefen suckar djupt. Ringer förstärkning.", portraitState: "intense" },
     ],
   },
   {
@@ -350,23 +371,59 @@ class EventManager {
   }
 
   _show(event) {
-    const arch = this.archetypes[event.archetype] || { name: event.archetype.toUpperCase(), portrait: FALLBACK_PORTRAIT };
+    const arch = this.archetypes[event.archetype] || { name: event.archetype.toUpperCase() };
+    this._currentArch = arch;
+    this._currentEvent = event;
 
     const overlay = document.createElement("div");
     overlay.className = "event-overlay";
     overlay.innerHTML = `
-      <div class="event-portrait">
-        <img src="${arch.portrait}" alt="${arch.name}" onerror="this.classList.add('event-portrait__missing'); this.replaceWith(Object.assign(document.createElement('div'), { className: 'event-portrait__placeholder', textContent: '${arch.name}' }))">
-      </div>
-      <div class="event-dialog">
-        <div class="event-name">${arch.name}</div>
-        <div class="event-text">${this._escape(event.text)}</div>
-        <div class="event-choices"></div>
-        <div class="event-result" hidden></div>
+      <button class="event-skip" type="button" title="Hoppa över (Esc)" aria-label="Hoppa över">×</button>
+      <div class="event-card">
+        <div class="event-card__inner">
+          <div class="event-portrait-box">
+            <div class="event-portrait-frame" role="img" aria-label="${arch.name}"></div>
+          </div>
+          <div class="event-dialog">
+            <div class="event-name">${arch.name}</div>
+            <div class="event-text">${this._escape(event.text)}</div>
+            <div class="event-choices"></div>
+            <div class="event-result" hidden></div>
+          </div>
+        </div>
       </div>
     `;
     document.body.appendChild(overlay);
     this.activeModal = overlay;
+
+    // sätt initial porträtt-pose (default)
+    if (arch.portraits) {
+      this._setPortraitState("default");
+    } else {
+      // ingen porträtt-config → text-platshållare
+      const frame = overlay.querySelector(".event-portrait-frame");
+      if (frame) {
+        frame.classList.add("event-portrait-frame--placeholder");
+        frame.textContent = arch.name;
+      }
+    }
+    // hantera 404 på sprite-bild via Image preload
+    if (arch.sprite) {
+      const probe = new Image();
+      probe.onerror = () => {
+        const frame = overlay.querySelector(".event-portrait-frame");
+        if (frame) {
+          frame.classList.add("event-portrait-frame--placeholder");
+          frame.style.backgroundImage = "none";
+          frame.textContent = arch.name;
+        }
+      };
+      probe.src = arch.sprite;
+    }
+
+    // skip-knapp
+    const skipBtn = overlay.querySelector(".event-skip");
+    skipBtn.addEventListener("click", () => this._skip());
 
     // Kör fade-in på nästa frame så transition triggas
     requestAnimationFrame(() => overlay.classList.add("event-overlay--visible"));
@@ -385,20 +442,30 @@ class EventManager {
       requestAnimationFrame(() => choicesEl.classList.add("event-choices--visible"));
     }, 550);
 
-    // Tangentbordsstöd: 1/2/3, Esc = första
+    // Tangentbordsstöd: 1/2/3 = val, Esc = skip (= första val om inget valt än, annars stäng)
     this._keyHandler = (e) => {
       if (!this.activeModal) return;
+      if (e.key === "Escape") { e.preventDefault(); this._skip(); return; }
       if (overlay.dataset.choosing === "1") return; // redan valt
       const num = parseInt(e.key, 10);
       if (!isNaN(num) && num >= 1 && num <= event.choices.length) {
         e.preventDefault();
         this._choose(event, event.choices[num - 1]);
-      } else if (e.key === "Escape") {
-        e.preventDefault();
-        this._choose(event, event.choices[0]);
       }
     };
     window.addEventListener("keydown", this._keyHandler);
+  }
+
+  _skip() {
+    if (!this.activeModal || !this._currentEvent) return;
+    if (this.activeModal.dataset.choosing === "1") {
+      // redan valt → cancel result-timer och stäng direkt
+      if (this._closeTimeout) clearTimeout(this._closeTimeout);
+      this._close();
+    } else {
+      // inget val gjort → välj alternativ 1 som default
+      this._choose(this._currentEvent, this._currentEvent.choices[0]);
+    }
   }
 
   _choose(event, choice) {
@@ -416,6 +483,10 @@ class EventManager {
       try { this.api.addBannerSlogan(choice.unlock); } catch (e) {}
     }
 
+    // härled porträtt-state från effekt om inte explicit
+    const portraitState = choice.portraitState || this._deriveState(choice.effect);
+    this._setPortraitState(portraitState);
+
     // visa resultat
     const choicesEl = this.activeModal.querySelector(".event-choices");
     const resultEl = this.activeModal.querySelector(".event-result");
@@ -427,7 +498,56 @@ class EventManager {
     `;
     requestAnimationFrame(() => resultEl.classList.add("event-result--visible"));
 
-    setTimeout(() => this._close(), 1800);
+    // visa skip-knapp under resultat-fasen så man kan hoppa förbi om man läst klart
+    const skipBtn = this.activeModal.querySelector(".event-skip");
+    if (skipBtn) skipBtn.classList.add("event-skip--visible");
+
+    // delay 3.5s så man hinner läsa svaret
+    this._closeTimeout = setTimeout(() => this._close(), 3500);
+  }
+
+  _deriveState(effect) {
+    if (!effect) return "default";
+    let max = 0, isHype = false, isPanic = false;
+    for (const [k, v] of Object.entries(effect)) {
+      const abs = Math.abs(v);
+      if (abs > max) {
+        max = abs;
+        isHype = (k === "hype");
+        isPanic = (k === "panic");
+      }
+    }
+    // stor delta + hype/panic → intense; medel → reacting; liten → default
+    if (max >= 20 && (isHype || isPanic)) return "intense";
+    if (max >= 12) return "reacting";
+    return "default";
+  }
+
+  _setPortraitState(state) {
+    const frame = this.activeModal?.querySelector(".event-portrait-frame");
+    if (!frame) return;
+    const arch = this._currentArch;
+    if (!arch || !arch.portraits) return;
+    const crop = arch.portraits[state] || arch.portraits.default;
+    if (!crop) return;
+    // animera reaktion
+    frame.classList.remove("event-portrait-frame--changing");
+    void frame.offsetWidth;
+    frame.classList.add("event-portrait-frame--changing");
+    this._applyCrop(frame, arch, crop);
+  }
+
+  _applyCrop(el, arch, crop) {
+    const W = arch.spriteW || 1024, H = arch.spriteH || 1536;
+    const bgX = (W / crop.w) * 100;
+    const bgY = (H / crop.h) * 100;
+    const posX = W === crop.w ? 0 : (crop.x / (W - crop.w)) * 100;
+    const posY = H === crop.h ? 0 : (crop.y / (H - crop.h)) * 100;
+    el.style.backgroundImage = `url(${arch.sprite})`;
+    el.style.backgroundSize = `${bgX}% ${bgY}%`;
+    el.style.backgroundPosition = `${posX}% ${posY}%`;
+    el.style.backgroundRepeat = "no-repeat";
+    el.style.aspectRatio = `${crop.w} / ${crop.h}`;
   }
 
   _close() {
