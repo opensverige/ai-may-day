@@ -38,7 +38,7 @@ const ARCHETYPES = {
   "professor":    { name: "PROFESSORN",    ...chr("byrakrat")   },
   "kommunalrad":  { name: "KOMMUNALRÅDET", ...chr("kommun")     }, // egen, reacting/intense fallar tillbaka till default
   "influencer":   { name: "INFLUENCERN",   ...chr("journalist") },
-  "borasare":     { name: "BORÅSAREN",     ...chr("protest")    }, // generisk demonstrant
+  "borasare":     { name: "BORÅSAREN",     ...chr("pensionar")  }, // tant-pensionär-vibe
   "pensionar":    { name: "PENSIONÄREN",   ...chr("pensionar")  },
 };
 
