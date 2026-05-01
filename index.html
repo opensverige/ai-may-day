@@ -55,6 +55,25 @@
     </div>
   </header>
 
+  <!-- Mål-progress -->
+  <div class="goal" id="goal" role="status" aria-live="polite">
+    <span class="goal__label">MÅL</span>
+    <span class="goal__text" id="goal-text">UPPRÖRD ≥ 75% I 12 SEK → REVOLUTION</span>
+    <span class="goal__bar"><i id="goal-bar"></i></span>
+    <span class="goal__time" id="goal-time">0.0s</span>
+  </div>
+
+  <!-- Finalskärm -->
+  <div class="finale" id="finale" hidden>
+    <div class="finale__card">
+      <div class="finale__eyebrow" id="finale-eyebrow">SPELET ÄR SLUT</div>
+      <h2 class="finale__title" id="finale-title">REVOLUTIONEN ÄR HÄR</h2>
+      <p class="finale__sub" id="finale-sub">Folket promptade igenom natten.</p>
+      <dl class="finale__stats" id="finale-stats"></dl>
+      <button class="finale__btn" id="finale-replay" type="button">SPELA IGEN</button>
+    </div>
+  </div>
+
   <!-- Scen: 3 lager + förgrund -->
   <main class="scene" id="scene">
 

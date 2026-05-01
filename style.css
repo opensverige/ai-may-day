@@ -46,7 +46,7 @@ html, body {
 
 body {
   display: grid;
-  grid-template-rows: auto 1fr auto auto;
+  grid-template-rows: auto auto 1fr auto auto;
   position: relative;
   min-height: 100dvh;
 }
@@ -247,6 +247,157 @@ body {
 }
 
 /* =========================================================================
+   GOAL bar
+   ========================================================================= */
+
+.goal {
+  position: relative;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: auto 1fr 200px auto;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 26px;
+  background: linear-gradient(180deg, rgba(7,16,14,0.7), rgba(7,16,14,0.4));
+  border-bottom: 1px solid var(--hairline);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--parchment-d);
+}
+.goal__label {
+  font-weight: 700;
+  color: var(--gold-bright);
+  letter-spacing: 0.28em;
+}
+.goal__text { text-transform: uppercase; }
+.goal__bar {
+  display: block;
+  height: 6px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.06);
+  overflow: hidden;
+}
+.goal__bar i {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: var(--gold-bright);
+  transition: width 0.3s ease;
+}
+.goal.is-winning .goal__bar i { background: #92c19c; box-shadow: 0 0 8px #92c19c; }
+.goal.is-danger  .goal__bar i { background: var(--red-bright); box-shadow: 0 0 8px var(--red-bright); }
+.goal.is-bored   .goal__bar i { background: #8a7a55; }
+.goal__time {
+  font-variant-numeric: tabular-nums;
+  color: var(--parchment);
+  min-width: 50px;
+  text-align: right;
+}
+
+/* =========================================================================
+   FINALE
+   ========================================================================= */
+
+.finale {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(7,16,14,0.86);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: fade-in 0.4s ease;
+}
+.finale[hidden] { display: none; }
+.finale__card {
+  background:
+    linear-gradient(180deg, rgba(28,42,40,0.96), rgba(15,25,23,0.98));
+  border: 1px solid var(--gold-soft);
+  padding: 38px 48px 30px;
+  max-width: 540px;
+  width: calc(100% - 40px);
+  text-align: center;
+  position: relative;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.03) inset;
+}
+.finale__card::after {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1' numOctaves='2'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.4 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity: 0.1;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+.finale__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.32em;
+  color: var(--gold-soft);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.finale__title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 900;
+  font-size: clamp(32px, 5vw, 48px);
+  line-height: 0.95;
+  margin: 0 0 12px;
+  color: var(--parchment);
+  text-shadow: 0 1px 0 #000, 0 2px 0 var(--red-deep), 2px 4px 0 rgba(0,0,0,0.5);
+}
+.finale--win .finale__title { color: #b6e2bf; text-shadow: 0 1px 0 #000, 0 2px 0 #1a3a22, 2px 4px 0 rgba(0,0,0,0.5); }
+.finale--police .finale__title { color: #c0d6ee; text-shadow: 0 1px 0 #000, 0 2px 0 #142640, 2px 4px 0 rgba(0,0,0,0.5); }
+.finale--bored .finale__title  { color: #d8c89c; text-shadow: 0 1px 0 #000, 0 2px 0 #4a3a1c, 2px 4px 0 rgba(0,0,0,0.5); }
+.finale__sub {
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--parchment-d);
+  margin: 0 0 22px;
+  font-size: 15px;
+}
+.finale__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 24px;
+  margin: 0 auto 26px;
+  max-width: 380px;
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+.finale__stats > div {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--hairline);
+}
+.finale__stats dt { color: var(--parchment-d); text-transform: uppercase; }
+.finale__stats dd { color: var(--gold-bright); margin: 0; font-variant-numeric: tabular-nums; }
+.finale__btn {
+  appearance: none;
+  background: linear-gradient(180deg, rgba(38,52,50,0.9), rgba(20,30,28,0.95));
+  border: 1px solid var(--gold-soft);
+  color: var(--gold-bright);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 900;
+  font-size: 16px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 12px 28px;
+  cursor: pointer;
+  transition: transform 0.08s, background 0.2s;
+}
+.finale__btn:hover { background: linear-gradient(180deg, rgba(48,68,64,0.95), rgba(25,38,35,0.98)); }
+.finale__btn:active { transform: translateY(1px); }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* =========================================================================
    SCENE
    ========================================================================= */
 
@@ -275,9 +426,9 @@ body {
   background: radial-gradient(ellipse 90% 70% at 50% 60%, transparent 50%, rgba(0,0,0,0.7) 100%);
 }
 .ground-fade {
-  position: absolute; left: 0; right: 0; bottom: 0; height: 18%; z-index: 4;
+  position: absolute; left: 0; right: 0; bottom: 0; height: 8%; z-index: 4;
   pointer-events: none;
-  background: linear-gradient(180deg, transparent 0%, rgba(7,16,14,0.55) 60%, var(--bg-deep) 100%);
+  background: linear-gradient(180deg, transparent 0%, rgba(7,16,14,0.35) 100%);
 }
 
 /* sprite-pos = positions-wrapper (translate-center + tilt) */
@@ -300,18 +451,40 @@ body {
   background-size: 100% 100%;
 }
 .sprite--flipped .sprite__img { transform: scaleX(-1); }
+.sprite__img--feathered {
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 60%, black 45%, transparent 96%);
+          mask-image: radial-gradient(ellipse 70% 70% at 50% 60%, black 45%, transparent 96%);
+}
 
-/* bobb-animationer per lager (olika duration så de inte synkar) */
-@keyframes bob-back  { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-3px) } }
-@keyframes bob-mid   { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
+/* bobb-animationer per lager (olika duration så de inte synkar)
+   back/mid har march-stomp för "marscherar på stället"-illusion */
 @keyframes bob-front { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-8px) } }
+
+@keyframes march-mid {
+  0%   { transform: translate(-2px, 0)  rotate(-0.3deg); }
+  25%  { transform: translate(2px, -3px) rotate(0.3deg); }
+  50%  { transform: translate(2px, 0)  rotate(0.3deg); }
+  75%  { transform: translate(-2px, -3px) rotate(-0.3deg); }
+  100% { transform: translate(-2px, 0) rotate(-0.3deg); }
+}
+@keyframes march-back {
+  0%   { transform: translate(-1px, 0)  rotate(-0.15deg); }
+  25%  { transform: translate(1px, -1.5px) rotate(0.15deg); }
+  50%  { transform: translate(1px, 0)  rotate(0.15deg); }
+  75%  { transform: translate(-1px, -1.5px) rotate(-0.15deg); }
+  100% { transform: translate(-1px, 0) rotate(-0.15deg); }
+}
 @keyframes bob-march { 0%,100% { transform: translateY(0) rotate(-0.4deg) } 50% { transform: translateY(-14px) rotate(0.4deg) } }
 
-.layer--back  .sprite { animation: bob-back  7.4s ease-in-out infinite; }
-.layer--mid   .sprite { animation: bob-mid   5.3s ease-in-out infinite; }
+.layer--back  .sprite { animation: march-back 1.3s steps(4) infinite; }
+.layer--mid   .sprite { animation: march-mid  0.95s steps(4) infinite; }
 .layer--front .sprite { animation: bob-front 4.1s ease-in-out infinite; }
-.scene.is-marching .sprite {
+.scene.is-marching .layer--front .sprite {
   animation: bob-march 0.55s ease-in-out infinite !important;
+}
+.scene.is-marching .layer--mid .sprite,
+.scene.is-marching .layer--back .sprite {
+  animation-duration: 0.55s !important;
 }
 
 /* banner-text overlay positionerad inom sprite */

@@ -6,6 +6,18 @@
       "h": 968,
       "removeWhiteBackground": true,
       "whiteThreshold": 232
+    },
+    "crowd-band": {
+      "src": "./sprites/nya spites/crowd-different.png",
+      "w": 1536,
+      "h": 1024,
+      "featherEdges": true
+    },
+    "crowd-cells": {
+      "src": "./sprites/nya spites/crowd-different-smaller.png",
+      "w": 1536,
+      "h": 1024,
+      "featherEdges": true
     }
   },
 
@@ -16,13 +28,48 @@
       "type": "crowd",
       "banner": { "x": 19.5, "y": 9, "w": 61, "h": 21, "textColor": "dark" },
       "hotspots": "auto"
+    },
+    "crowd-heads": {
+      "sheet": "crowd-main",
+      "crop": [0, 600, 1625, 368],
+      "type": "crowd",
+      "banner": null,
+      "hotspots": "auto"
+    },
+    "band-1": {
+      "sheet": "crowd-band",
+      "crop": [40, 8, 480, 248],
+      "type": "crowd",
+      "banner": { "x": 12, "y": 8, "w": 76, "h": 24, "textColor": "dark" },
+      "hotspots": "auto"
+    },
+    "band-2": {
+      "sheet": "crowd-band",
+      "crop": [560, 8, 460, 248],
+      "type": "crowd",
+      "banner": { "x": 14, "y": 10, "w": 72, "h": 22, "textColor": "dark" },
+      "hotspots": "auto"
+    },
+    "band-3": {
+      "sheet": "crowd-band",
+      "crop": [1060, 8, 460, 248],
+      "type": "crowd",
+      "banner": { "x": 12, "y": 8, "w": 76, "h": 24, "textColor": "dark" },
+      "hotspots": "auto"
+    },
+    "band-wide": {
+      "sheet": "crowd-band",
+      "crop": [20, 280, 1500, 240],
+      "type": "crowd",
+      "banner": { "x": 32, "y": 12, "w": 35, "h": 20, "textColor": "dark" },
+      "hotspots": "auto"
     }
   },
 
   "layerStyles": {
-    "back":  { "scale": 0.34, "opacity": 0.32, "brightness": 0.55, "saturate": 0.6,  "bobDuration": 7.4, "bobAmplitude": 2 },
-    "mid":   { "scale": 0.48, "opacity": 0.6,  "brightness": 0.72, "saturate": 0.78, "bobDuration": 5.3, "bobAmplitude": 4 },
-    "front": { "scale": 0.95, "opacity": 1.0,  "brightness": 1.05, "saturate": 1.05, "bobDuration": 4.1, "bobAmplitude": 8 }
+    "back":  { "scale": 0.36, "opacity": 0.45, "brightness": 0.65, "saturate": 0.7,  "bobDuration": 7.4, "bobAmplitude": 2 },
+    "mid":   { "scale": 0.5,  "opacity": 0.78, "brightness": 0.82, "saturate": 0.88, "bobDuration": 5.3, "bobAmplitude": 3 },
+    "front": { "scale": 1.6,  "opacity": 1.0,  "brightness": 1.0,  "saturate": 1.0,  "bobDuration": 4.1, "bobAmplitude": 6 }
   },
 
   "marchStyle": {
@@ -31,11 +78,14 @@
   },
 
   "scene": [
-    { "id": "crowd-back-far", "spriteId": "crowd-main", "layer": "back",  "x": 32, "y": 22, "flip": false, "tilt": -0.6, "bannerText": "BYGG GLOBALT FRÅN STOCKHOLM" },
-    { "id": "crowd-back-r",   "spriteId": "crowd-main", "layer": "back",  "x": 68, "y": 23, "flip": true,  "tilt": 0.5,  "bannerText": "JANTELAGEN MÖTER GPT" },
-    { "id": "crowd-mid-l",    "spriteId": "crowd-main", "layer": "mid",   "x": 22, "y": 35, "flip": false, "tilt": 0.6,  "bannerText": "MER GPU ÅT FOLKET" },
-    { "id": "crowd-mid-r",    "spriteId": "crowd-main", "layer": "mid",   "x": 78, "y": 36, "flip": true,  "tilt": -0.3, "bannerText": "RIV AI ACT" },
-    { "id": "crowd-front",    "spriteId": "crowd-main", "layer": "front", "x": 50, "y": 70, "flip": false, "tilt": 0,    "bannerText": "SILICON VALHALLA" }
+    { "id": "back-far",   "spriteId": "band-wide",  "layer": "back",  "x": 50, "y": 30, "flip": false, "tilt": 0,    "bannerText": "BYGG GLOBALT FRÅN STOCKHOLM" },
+    { "id": "back-l",     "spriteId": "band-1",     "layer": "back",  "x": 16, "y": 42, "flip": false, "tilt": -0.4, "bannerText": "MER GPU ÅT FOLKET" },
+    { "id": "back-c",     "spriteId": "band-2",     "layer": "back",  "x": 50, "y": 44, "flip": false, "tilt": 0.3,  "bannerText": "RIV AI ACT" },
+    { "id": "back-r",     "spriteId": "band-3",     "layer": "back",  "x": 84, "y": 42, "flip": true,  "tilt": -0.2, "bannerText": "JANTELAGEN MÖTER GPT" },
+    { "id": "mid-l",      "spriteId": "band-1",     "layer": "mid",   "x": 18, "y": 58, "flip": false, "tilt": 0.5,  "bannerText": "STOPPA DEPRECATION" },
+    { "id": "mid-r",      "spriteId": "band-3",     "layer": "mid",   "x": 82, "y": 60, "flip": true,  "tilt": -0.3, "bannerText": "INTENTIONAL BEHAVIOR" },
+    { "id": "front-bg",   "spriteId": "crowd-heads","layer": "front", "x": 50, "y": 88, "flip": false, "tilt": 0,    "bannerText": "" },
+    { "id": "front-fg",   "spriteId": "crowd-heads","layer": "front", "x": 50, "y": 100,"flip": false, "tilt": 0,    "bannerText": "" }
   ],
 
   "bannerSlogans": [

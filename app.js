@@ -48,7 +48,6 @@ function stripWhite(img, threshold = 232) {
     if (r >= threshold && g >= threshold && b >= threshold) {
       px[i + 3] = 0;
     } else if (r > 200 && g > 200 && b > 200) {
-      // mjuk fade på off-white kanter
       const m = (r + g + b) / 3;
       px[i + 3] = clamp(255 - (m - 200) * 5, 0, 255);
     }
@@ -57,13 +56,45 @@ function stripWhite(img, threshold = 232) {
   return c.toDataURL("image/png");
 }
 
+/** Tar bort mörka bakgrunds-pixlar med soft falloff över en range. */
+function stripDark(img, threshold = 55) {
+  const c = document.createElement("canvas");
+  c.width = img.naturalWidth;
+  c.height = img.naturalHeight;
+  const ctx = c.getContext("2d");
+  ctx.drawImage(img, 0, 0);
+  const d = ctx.getImageData(0, 0, c.width, c.height);
+  const px = d.data;
+  const fadeRange = 30; // pixel med max-värde threshold..threshold+fadeRange faller av
+  for (let i = 0; i < px.length; i += 4) {
+    const r = px[i], g = px[i + 1], b = px[i + 2];
+    const mx = Math.max(r, g, b);
+    if (mx <= threshold) {
+      px[i + 3] = 0;
+    } else if (mx < threshold + fadeRange) {
+      const t = (mx - threshold) / fadeRange;
+      px[i + 3] = Math.round(255 * t);
+    }
+  }
+  ctx.putImageData(d, 0, 0);
+  return c.toDataURL("image/png");
+}
+
+function encodeSrc(src) {
+  // url-encode path-segment (hanterar mellanslag mm), behåll /-separator
+  return src.split("/").map(encodeURIComponent).join("/");
+}
+
 async function loadSheets(config) {
   const out = {};
   for (const [id, sheet] of Object.entries(config.sheets)) {
-    const img = await loadImage(sheet.src);
-    let dataUrl = sheet.src;
+    const safeSrc = encodeSrc(sheet.src);
+    const img = await loadImage(safeSrc);
+    let dataUrl = safeSrc;
     if (sheet.removeWhiteBackground) {
       dataUrl = stripWhite(img, sheet.whiteThreshold ?? 232);
+    } else if (sheet.removeDarkBackground) {
+      dataUrl = stripDark(img, sheet.darkThreshold ?? 55);
     }
     out[id] = { ...sheet, dataUrl, img };
   }
@@ -126,13 +157,16 @@ function mountScene(config, sheets) {
     const img = document.createElement("div");
     img.className = "sprite__img";
     const [cx, cy, cw, ch] = sprite.crop;
-    const sx = (cw / sheet.w) * 100;
-    const sy = (ch / sheet.h) * 100;
-    const px = sheet.w / cw * 100;
-    const py = sheet.h / ch * 100;
+    const W = sheet.w, H = sheet.h;
+    const bgSizeX = (W / cw) * 100;
+    const bgSizeY = (H / ch) * 100;
+    const posX = W === cw ? 0 : (cx / (W - cw)) * 100;
+    const posY = H === ch ? 0 : (cy / (H - ch)) * 100;
     img.style.backgroundImage = `url(${sheet.dataUrl})`;
-    img.style.backgroundSize = `${px}% ${py}%`;
-    img.style.backgroundPosition = `-${(cx / cw) * 100}% -${(cy / ch) * 100}%`;
+    img.style.backgroundSize = `${bgSizeX}% ${bgSizeY}%`;
+    img.style.backgroundPosition = `${posX}% ${posY}%`;
+    if (sheet.blendMode) img.style.mixBlendMode = sheet.blendMode;
+    if (sheet.featherEdges) img.classList.add("sprite__img--feathered");
     el.appendChild(img);
 
     // banner-text-overlay
@@ -338,6 +372,25 @@ const game = {
   newsInterval: 14, // sek
   visibleBubbles: 0,
   dispersedAt: -Infinity,
+  // mål-tracking
+  startTime: 0,
+  isOver: false,
+  winTimer: 0,
+  panicTimer: 0,
+  boredTimer: 0,
+  peakHype: 0,
+  peakPanic: 0,
+  newsCount: 0,
+  policeCount: 0,
+};
+
+const GOAL = {
+  winThreshold: 75,    // % UPPRÖRD
+  winSustain: 12,      // sekunder
+  loseThreshold: 65,   // % PANIK
+  loseSustain: 8,
+  boredThreshold: 80,  // % TRÖTT
+  boredSustain: 20,
 };
 
 function engageAt(clientX, clientY) {
@@ -398,6 +451,7 @@ function disperse() {
 }
 
 function police() {
+  game.policeCount++;
   // visuell blob in från höger
   const blob = document.createElement("div");
   blob.className = "police-blob";
@@ -540,10 +594,107 @@ function updateMarcherCount(dt) {
 }
 
 /* =========================================================================
-   7. BREAKING NEWS-TICKER
+   MÅL · win / lose
+   ========================================================================= */
+
+const GOAL_THRESHOLDS = {
+  winThreshold: 75, winSustain: 12,
+  loseThreshold: 65, loseSustain: 8,
+  boredThreshold: 80, boredSustain: 20,
+};
+
+function tickGoal(dt) {
+  if (game.isOver) return;
+  const counts = { neutral: 0, hype: 0, bored: 0, panic: 0, exhausted: 0 };
+  for (const h of game.hotspots) counts[h.state]++;
+  const total = game.hotspots.length || 1;
+  const hypePct  = (counts.hype / total) * 100;
+  const panicPct = (counts.panic / total) * 100;
+  const boredPct = ((counts.bored + counts.exhausted) / total) * 100;
+
+  game.peakHype  = Math.max(game.peakHype,  hypePct);
+  game.peakPanic = Math.max(game.peakPanic, panicPct);
+
+  game.winTimer   = hypePct  >= GOAL_THRESHOLDS.winThreshold   ? game.winTimer + dt   : Math.max(0, game.winTimer - dt * 1.4);
+  game.panicTimer = panicPct >= GOAL_THRESHOLDS.loseThreshold  ? game.panicTimer + dt : Math.max(0, game.panicTimer - dt * 1.4);
+  game.boredTimer = boredPct >= GOAL_THRESHOLDS.boredThreshold ? game.boredTimer + dt : Math.max(0, game.boredTimer - dt * 0.8);
+
+  renderGoal(hypePct);
+
+  if (game.winTimer   >= GOAL_THRESHOLDS.winSustain)   return endGame("win");
+  if (game.panicTimer >= GOAL_THRESHOLDS.loseSustain)  return endGame("police");
+  if (game.boredTimer >= GOAL_THRESHOLDS.boredSustain) return endGame("bored");
+}
+
+function renderGoal(hypePct) {
+  const bar = $("#goal-bar");
+  const time = $("#goal-time");
+  const text = $("#goal-text");
+  const goalEl = $("#goal");
+
+  const winFrac    = clamp(game.winTimer   / GOAL_THRESHOLDS.winSustain,   0, 1);
+  const policeFrac = clamp(game.panicTimer / GOAL_THRESHOLDS.loseSustain,  0, 1);
+  const boredFrac  = clamp(game.boredTimer / GOAL_THRESHOLDS.boredSustain, 0, 1);
+  const top = Math.max(winFrac, policeFrac, boredFrac);
+
+  goalEl.classList.remove("is-winning", "is-danger", "is-bored");
+  if (top === winFrac && winFrac > 0.05) {
+    goalEl.classList.add("is-winning");
+    text.textContent = `REVOLUTION OM ${Math.max(0, GOAL_THRESHOLDS.winSustain - game.winTimer).toFixed(1)}S — HÅLL UPPRÖRD ÖVER ${GOAL_THRESHOLDS.winThreshold}%`;
+    bar.style.width = winFrac * 100 + "%";
+    time.textContent = game.winTimer.toFixed(1) + "s";
+  } else if (top === policeFrac && policeFrac > 0.05) {
+    goalEl.classList.add("is-danger");
+    text.textContent = `POLISEN VINNER OM ${Math.max(0, GOAL_THRESHOLDS.loseSustain - game.panicTimer).toFixed(1)}S — DÄMPA PANIKEN`;
+    bar.style.width = policeFrac * 100 + "%";
+    time.textContent = game.panicTimer.toFixed(1) + "s";
+  } else if (top === boredFrac && boredFrac > 0.05) {
+    goalEl.classList.add("is-bored");
+    text.textContent = `FOLK GÅR HEM OM ${Math.max(0, GOAL_THRESHOLDS.boredSustain - game.boredTimer).toFixed(1)}S — VÄCK MASSAN`;
+    bar.style.width = boredFrac * 100 + "%";
+    time.textContent = game.boredTimer.toFixed(1) + "s";
+  } else {
+    text.textContent = `UPPRÖRD ≥ ${GOAL_THRESHOLDS.winThreshold}% I ${GOAL_THRESHOLDS.winSustain}S → REVOLUTION`;
+    bar.style.width = clamp(hypePct / GOAL_THRESHOLDS.winThreshold, 0, 1) * 100 + "%";
+    time.textContent = "0.0s";
+  }
+}
+
+const FINALE = {
+  win:    { eyebrow: "DEMONSTRATIONEN VINNER",  title: "REVOLUTIONEN ÄR HÄR", sub: "Folket promptade igenom natten. EU AI Act ligger i spillror. Anton Osika har tweetat något ostligt.", cls: "finale--win" },
+  police: { eyebrow: "DEMONSTRATIONEN UPPLÖST", title: "POLISEN VANN",        sub: "Sergels torg är spärrat. Compute är beslagtagen. Alla blev rate-limitade.",                       cls: "finale--police" },
+  bored:  { eyebrow: "DEMONSTRATIONEN UPPLÖST", title: "FOLK GICK HEM",       sub: "Token budget slut. Ingen orkade chanta längre. Kaféerna stänger 19:00.",                          cls: "finale--bored" },
+};
+
+function endGame(outcome) {
+  game.isOver = true;
+  const f = FINALE[outcome];
+  const el = $("#finale");
+  el.classList.remove("finale--win", "finale--police", "finale--bored");
+  el.classList.add(f.cls);
+  $("#finale-eyebrow").textContent = f.eyebrow;
+  $("#finale-title").textContent = f.title;
+  $("#finale-sub").textContent = f.sub;
+
+  const elapsed = (now() - game.startTime) / 1000;
+  const stats = [
+    ["Tid", elapsed.toFixed(1) + "s"],
+    ["Topp UPPRÖRD", Math.round(game.peakHype) + "%"],
+    ["Topp PANIK", Math.round(game.peakPanic) + "%"],
+    ["Demonstranter", Math.floor(game.marchers).toLocaleString("sv-SE")],
+    ["Nyhetshändelser", String(game.newsCount)],
+    ["Polis-attacker", String(game.policeCount)],
+  ];
+  $("#finale-stats").innerHTML = stats.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
+  el.hidden = false;
+}
+
+/* =========================================================================
+   BREAKING NEWS-TICKER
    ========================================================================= */
 
 function pushNews(item) {
+  game.newsCount++;
   const track = $("#ticker-track");
   const el = document.createElement("div");
   el.className = "ticker__item is-fresh";
@@ -643,6 +794,7 @@ function drawSnow(dt) {
    ========================================================================= */
 
 function tickHotspots(dt) {
+  if (game.isOver) return;
   const dispersed = (now() - game.dispersedAt) < 3000;
 
   for (const h of game.hotspots) {
@@ -791,6 +943,7 @@ function loop(t) {
   tickHotspots(dt);
   updateMood();
   updateMarcherCount(dt);
+  tickGoal(dt);
   tickNews(dt);
   drawSnow(dt);
   debugInfo();
@@ -814,12 +967,14 @@ function loop(t) {
     await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 
     game.hotspots = generateHotspots(game.scene);
+    game.startTime = now();
     fitAllBanners();
     window.addEventListener("resize", fitAllBanners);
     initSnow();
     bindUI();
     tickClock();
     setInterval(tickClock, 30000);
+    $("#finale-replay").addEventListener("click", () => location.reload());
 
     // välkomst-news
     setTimeout(() => pushNews({ text: "AI-tåget samlas vid Sergels torg" }), 1200);
