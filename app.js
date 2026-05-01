@@ -326,8 +326,8 @@ function generateHotspots(scene) {
 }
 
 const STATE_TIMEOUTS = {
-  neutral:   42,   // → bored om idle
-  hype:      18,   // → exhausted (åter åtstramat efter "för enkelt"-feedback)
+  neutral:   38,   // → bored om idle (snabbare entropi)
+  hype:      13,   // → exhausted (kortare topp så momentum kostar)
   panic:      6,   // → bored
   exhausted: 12,   // → bored
   bored:    Infinity,
@@ -411,7 +411,7 @@ function engageAt(clientX, clientY) {
     .map((h) => ({ h, d: (h.absX - px) ** 2 + (h.absY - py) ** 2 }))
     .sort((a, b) => a.d - b.d);
 
-  const cluster = sorted.slice(0, 5).filter((x) => x.d < 320);
+  const cluster = sorted.slice(0, 3).filter((x) => x.d < 240);
   if (!cluster.length) return;
 
   let hyped = 0;
@@ -419,10 +419,12 @@ function engageAt(clientX, clientY) {
 
   cluster.forEach(({ h }, i) => {
     setTimeout(() => {
-      // bored/exhausted → lyft till neutral; resten → hype
       if (h.state === "bored" || h.state === "exhausted") {
-        setHotspotState(h, "neutral");
-        revived++;
+        // bara 50% chans att lyfta trötta → måste jobba aktivt
+        if (Math.random() < 0.5) {
+          setHotspotState(h, "neutral");
+          revived++;
+        }
       } else if (h.state !== "panic") {
         setHotspotState(h, "hype");
         hyped++;
@@ -518,17 +520,16 @@ function autoEngage() {
 }
 
 function chant() {
-  // våg bakifrån fram — lyfter exhausted/bored med lägre chans (de ÄR slutkörda)
+  // våg bakifrån fram — påverkar bara levande lager (panic/exhausted/bored är immuna)
   const layerOrder = ["back", "mid", "front"];
   let totalHyped = 0;
   layerOrder.forEach((layer, i) => {
     setTimeout(() => {
       for (const h of game.hotspots) {
         if (h.layer !== layer) continue;
-        if (h.state === "panic") continue;
-        // tröttare folk = svårare att tända
-        const p = (h.state === "exhausted" || h.state === "bored") ? 0.42 : 0.62;
-        if (Math.random() < p) {
+        // chant kan inte lyfta tunga state — du måste väcka först (engage)
+        if (h.state === "panic" || h.state === "exhausted" || h.state === "bored") continue;
+        if (Math.random() < 0.55) {
           setHotspotState(h, "hype");
           totalHyped++;
           if (Math.random() < 0.08) trySpawnBubble(h);
@@ -543,17 +544,24 @@ function chant() {
 }
 
 function disperse() {
-  // BARA panic — defensiv lugn-knapp
+  // Lugnar bara ~60% av paniken (hela massan kan inte stillas av ett rop)
   game.dispersedAt = now();
   const panicked = game.hotspots.filter((h) => h.state === "panic");
-  panicked.forEach((h, i) => {
+  // shuffle och ta 60%
+  for (let i = panicked.length - 1; i > 0; i--) {
+    const j = randi(0, i + 1);
+    [panicked[i], panicked[j]] = [panicked[j], panicked[i]];
+  }
+  const target = Math.ceil(panicked.length * 0.6);
+  const subset = panicked.slice(0, target);
+  subset.forEach((h, i) => {
     setTimeout(() => {
       setHotspotState(h, "neutral");
       pulse(h.el);
     }, i * 30);
   });
-  if (panicked.length > 0) {
-    spawnFloaterCenter(`LUGNT! −${panicked.length} PANIK`, "calm");
+  if (subset.length > 0) {
+    spawnFloaterCenter(`LUGNT! −${subset.length} PANIK`, "calm");
   } else {
     spawnFloaterCenter("INGEN PANIK ATT LUGNA", "muted");
   }
@@ -563,7 +571,7 @@ function disperse() {
  *  Combo-ready → fri och dubbelt så stark. */
 function megafon() {
   const ready = consumeCombo();
-  const cut = ready ? 0.60 : 0.42;
+  const cut = ready ? 0.42 : 0.28;
 
   const candidates = game.hotspots.filter((h) => h.state !== "hype" && h.state !== "panic");
   const target = Math.ceil(candidates.length * cut);
@@ -935,16 +943,16 @@ function updateMarcherCount(dt) {
    ========================================================================= */
 
 const GOAL_THRESHOLDS = {
-  winThreshold: 70, winSustain: 11,
-  loseThreshold: 70, loseSustain: 10,
-  boredThreshold: 75, boredSustain: 32,
+  winThreshold: 75, winSustain: 14,
+  loseThreshold: 65, loseSustain: 9,
+  boredThreshold: 70, boredSustain: 26,
 };
 
 // Match-tid + dramaturgi
 const MATCH_DURATION  = 90;  // sek total speltid
 const FINAL_SPURT_AT  = 70;  // sek då slutspurt triggas (20s kvar)
 const BOSS_EVENT_AT   = 28;  // sek då boss-eventet triggas (tidigt så de flesta hinner se det)
-const SPURT_WIN_BOOST = 1.35; // win-timer multiplier under spurt (mildare comeback)
+const SPURT_WIN_BOOST = 1.15; // win-timer multiplier under spurt (mild boost — drama, inte gratis)
 
 function tickGoal(dt) {
   if (game.isOver) return;
@@ -1438,7 +1446,8 @@ function tickHotspots(dt) {
   for (const h of game.hotspots) if (h.state === "hype") hypeCount++;
   const hypePct = (hypeCount / Math.max(1, game.hotspots.length)) * 100;
   let overheatChance = 0;
-  if (hypePct > 80) overheatChance = (hypePct - 80) / 140; // mildare leak, först över 80%
+  // En överhettad massa kantrar — ju högre hype desto större panic-leak
+  if (hypePct > 65) overheatChance = (hypePct - 65) / 70; // 0–0.5 över hype 65–100%
 
   for (const h of game.hotspots) {
     h.timer += dt;
@@ -1606,7 +1615,7 @@ function bindUI() {
   });
 
   // action-knappar med cooldown
-  const cooldowns = { engage: 1.0, chant: 5, disperse: 4, megafon: 12 };
+  const cooldowns = { engage: 1.2, chant: 6, disperse: 4, megafon: 16 };
   $$(".btn").forEach((b) => {
     // se till att cd-bar finns
     if (!b.querySelector(".btn__cd-bar")) {
