@@ -374,6 +374,15 @@ const game = {
   // ambient polis-trigger
   panicHighSince: 0,
   policeLastAuto: 0,
+  // OPENCLAW — auto-engage agent
+  openclaw: {
+    streak: 0,
+    lastHotspot: null,
+    lastAt: 0,
+    active: false,
+    activeUntil: 0,
+    intervalId: null,
+  },
 };
 
 const GOAL = {
@@ -425,6 +434,79 @@ function engageAt(clientX, clientY) {
   }, cluster.length * 35 + 30);
 
   trackComboHit();
+  trackOpenclawStreak(cluster[0].h);
+}
+
+/* ── OPENCLAW · auto-engage agent ──────────────────────── */
+
+function trackOpenclawStreak(centerHotspot) {
+  if (game.openclaw.active) return; // ingen streak-tracking medan agent kör
+  const t = now();
+  const last = game.openclaw.lastHotspot;
+  // räknas som "samma område" om det är samma hotspot eller väldigt nära (~10% radie)
+  const dx = last ? last.absX - centerHotspot.absX : 999;
+  const dy = last ? last.absY - centerHotspot.absY : 999;
+  const same = last && (dx * dx + dy * dy < 110) && (t - game.openclaw.lastAt < 1800);
+
+  game.openclaw.streak = same ? game.openclaw.streak + 1 : 1;
+  game.openclaw.lastHotspot = centerHotspot;
+  game.openclaw.lastAt = t;
+
+  if (game.openclaw.streak >= 5) {
+    activateOpenclaw();
+  }
+}
+
+function activateOpenclaw() {
+  const DURATION = 6500;
+  game.openclaw.active = true;
+  game.openclaw.streak = 0;
+  game.openclaw.activeUntil = now() + DURATION;
+
+  const flap = $("#openclaw-flap");
+  if (flap) {
+    flap.classList.remove("is-active");
+    void flap.offsetWidth; // restart bar-animation
+    flap.style.setProperty("--openclaw-duration", (DURATION / 1000) + "s");
+    flap.classList.add("is-active");
+  }
+  $(".btn--engage")?.classList.add("has-openclaw");
+
+  spawnFloaterCenter("OPENCLAW DEPLOYED", "openclaw");
+  pushNews({ text: "OpenClaw släpper agent på torget — auto-engage aktiverat" });
+
+  game.openclaw.intervalId = setInterval(() => {
+    if (game.isOver || !game.openclaw.active || now() > game.openclaw.activeUntil) {
+      deactivateOpenclaw();
+      return;
+    }
+    autoEngage();
+  }, 700);
+}
+
+function deactivateOpenclaw() {
+  game.openclaw.active = false;
+  if (game.openclaw.intervalId) {
+    clearInterval(game.openclaw.intervalId);
+    game.openclaw.intervalId = null;
+  }
+  $("#openclaw-flap")?.classList.remove("is-active");
+  $(".btn--engage")?.classList.remove("has-openclaw");
+}
+
+/** Lättare än manuell engage — 1 hotspot, ingen cluster, ingen combo. */
+function autoEngage() {
+  const targets = game.hotspots.filter(
+    (h) => h.state === "neutral" || h.state === "bored" || h.state === "exhausted"
+  );
+  if (!targets.length) return;
+  const h = pick(targets);
+  if (h.state === "bored" || h.state === "exhausted") {
+    setHotspotState(h, "neutral"); // bara väck
+  } else {
+    setHotspotState(h, "hype");
+  }
+  pulse(h.el);
 }
 
 function chant() {

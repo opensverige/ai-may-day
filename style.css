@@ -1079,6 +1079,95 @@ body {
 .floater--combo   { color: var(--gold-bright); font-size: 28px; text-shadow: 3px 3px 0 #3a2410, 0 0 16px rgba(241,199,129,0.65); }
 .floater--muted   { color: var(--parchment-d); font-size: 16px; font-style: italic; opacity: 0.85; }
 .floater--wake    { color: #d4a55c; }
+.floater--openclaw { color: #88c5e0; font-size: 30px; letter-spacing: 0.06em; text-shadow: 3px 3px 0 #0a1a2a, 0 0 18px rgba(136,197,224,0.7); }
+
+/* ── OPENCLAW FLAP — sitter ovanför ENGAGE-knappen ─────── */
+.openclaw-flap {
+  --openclaw-duration: 6.5s;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, #1f2a3a 0%, #0e1620 100%);
+  border: 2px solid #1a1208;
+  box-shadow: 3px 3px 0 #1a1208;
+  padding: 6px 12px 9px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: #88c5e0;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(8px) scale(0.94);
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s cubic-bezier(.4,1.6,.4,1);
+  z-index: 4;
+  overflow: hidden;
+}
+.openclaw-flap::before {
+  /* liten "tail" mot knappen */
+  content: "";
+  position: absolute;
+  left: 18px;
+  bottom: -7px;
+  width: 12px; height: 12px;
+  background: #0e1620;
+  border-right: 2px solid #1a1208;
+  border-bottom: 2px solid #1a1208;
+  transform: rotate(45deg);
+}
+.openclaw-flap.is-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.openclaw-flap__icon {
+  display: inline-block;
+  font-size: 14px;
+  line-height: 1;
+  color: #b3e0f4;
+  animation: openclaw-spin 1.4s linear infinite;
+}
+.openclaw-flap__label { flex: 1; white-space: nowrap; }
+.openclaw-flap__bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 100%;
+  background: rgba(136, 197, 224, 0.18);
+  overflow: hidden;
+}
+.openclaw-flap__bar i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #88c5e0 0%, #b3e0f4 100%);
+  transform-origin: left center;
+}
+.openclaw-flap.is-active .openclaw-flap__bar i {
+  animation: openclaw-drain var(--openclaw-duration, 6.5s) linear forwards;
+}
+@keyframes openclaw-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes openclaw-drain {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
+
+/* ENGAGE-knappen får blå glöd när OPENCLAW är aktiv */
+.btn--engage.has-openclaw {
+  border-color: #88c5e0;
+  animation: openclaw-pulse 1.2s ease-in-out infinite;
+}
+@keyframes openclaw-pulse {
+  0%, 100% { box-shadow: 4px 4px 0 #1a1208, 0 0 0 0 rgba(136,197,224,0); }
+  50%      { box-shadow: 4px 4px 0 #1a1208, 0 0 0 4px rgba(136,197,224,0.55); }
+}
 
 /* ── MEGAFON SCREEN-FLASH ──────────────────────────────── */
 .megafon-flash {
