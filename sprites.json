@@ -29,16 +29,16 @@
       "banner": { "x": 19.5, "y": 9, "w": 61, "h": 21, "textColor": "dark" },
       "hotspots": "auto"
     },
-    "row-1": { "sheet": "crowd-band", "crop": [0, 0, 1536, 256],   "type": "crowd", "banner": null, "hotspots": "auto" },
-    "row-2": { "sheet": "crowd-band", "crop": [0, 256, 1536, 256], "type": "crowd", "banner": null, "hotspots": "auto" },
-    "row-3": { "sheet": "crowd-band", "crop": [0, 512, 1536, 256], "type": "crowd", "banner": null, "hotspots": "auto" },
-    "row-4": { "sheet": "crowd-band", "crop": [0, 768, 1536, 256], "type": "crowd", "banner": null, "hotspots": "auto" }
+    "cell-a": { "sheet": "crowd-band", "crop": [20, 4, 500, 250],    "type": "crowd", "banner": null, "hotspots": "auto" },
+    "cell-b": { "sheet": "crowd-band", "crop": [540, 4, 480, 250],   "type": "crowd", "banner": null, "hotspots": "auto" },
+    "cell-c": { "sheet": "crowd-band", "crop": [1040, 4, 490, 250],  "type": "crowd", "banner": null, "hotspots": "auto" },
+    "cell-d": { "sheet": "crowd-band", "crop": [20, 770, 740, 254],  "type": "crowd", "banner": null, "hotspots": "auto" }
   },
 
   "layerStyles": {
-    "back":  { "scale": 0.42, "opacity": 0.5,  "brightness": 0.7,  "saturate": 0.75, "bobDuration": 7.4, "bobAmplitude": 2 },
-    "mid":   { "scale": 0.7,  "opacity": 0.85, "brightness": 0.9,  "saturate": 0.92, "bobDuration": 5.3, "bobAmplitude": 3 },
-    "front": { "scale": 1.25, "opacity": 1.0,  "brightness": 1.05, "saturate": 1.0,  "bobDuration": 4.1, "bobAmplitude": 5 }
+    "back":  { "scale": 0.5,  "opacity": 0.6,  "brightness": 0.7,  "saturate": 0.75, "bobDuration": 7.4, "bobAmplitude": 2 },
+    "mid":   { "scale": 0.85, "opacity": 0.9,  "brightness": 0.9,  "saturate": 0.92, "bobDuration": 5.3, "bobAmplitude": 3 },
+    "front": { "scale": 1.5,  "opacity": 1.0,  "brightness": 1.05, "saturate": 1.0,  "bobDuration": 4.1, "bobAmplitude": 5 }
   },
 
   "marchStyle": {
@@ -47,11 +47,12 @@
   },
 
   "scene": [
-    { "id": "row-1-back", "spriteId": "row-1", "layer": "back",  "x": 50, "y": 22, "flip": false, "tilt": 0, "bannerText": "" },
-    { "id": "row-2-mid",  "spriteId": "row-2", "layer": "mid",   "x": 50, "y": 38, "flip": false, "tilt": 0, "bannerText": "" },
-    { "id": "row-3-mid",  "spriteId": "row-3", "layer": "mid",   "x": 50, "y": 54, "flip": true,  "tilt": 0, "bannerText": "" },
-    { "id": "row-3-front","spriteId": "row-3", "layer": "front", "x": 50, "y": 72, "flip": false, "tilt": 0, "bannerText": "" },
-    { "id": "row-4-front","spriteId": "row-4", "layer": "front", "x": 50, "y": 90, "flip": false, "tilt": 0, "bannerText": "" }
+    { "id": "back-l",  "spriteId": "cell-a", "layer": "back", "x": 15, "y": 28, "flip": false, "tilt": -0.4, "bannerText": "" },
+    { "id": "back-c",  "spriteId": "cell-b", "layer": "back", "x": 50, "y": 22, "flip": false, "tilt": 0.3,  "bannerText": "" },
+    { "id": "back-r",  "spriteId": "cell-c", "layer": "back", "x": 85, "y": 26, "flip": true,  "tilt": -0.2, "bannerText": "" },
+    { "id": "mid-l",   "spriteId": "cell-c", "layer": "mid",  "x": 22, "y": 50, "flip": false, "tilt": 0.5,  "bannerText": "" },
+    { "id": "mid-r",   "spriteId": "cell-a", "layer": "mid",  "x": 78, "y": 52, "flip": true,  "tilt": -0.3, "bannerText": "" },
+    { "id": "front",   "spriteId": "cell-d", "layer": "front","x": 50, "y": 78, "flip": false, "tilt": 0,    "bannerText": "" }
   ],
 
   "bannerSlogans": [
