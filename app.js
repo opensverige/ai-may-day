@@ -530,13 +530,17 @@ function consumeCombo() {
 }
 
 function updateComboUI() {
-  const meter = $("#combo-meter");
-  if (!meter) return;
-  const pct = clamp(game.combo / 7, 0, 1);
-  meter.style.setProperty("--combo-fill", (pct * 100).toFixed(1) + "%");
-  meter.classList.toggle("combo--ready", game.comboReady);
-  const lbl = $("#combo-label");
-  if (lbl) lbl.textContent = game.comboReady ? "MEGAFON FRI" : `KOMBO ${game.combo}/7`;
+  const pips = $("#megafon-pips");
+  const sub  = $("#megafon-sub");
+  if (pips) {
+    const lit = clamp(game.combo, 0, 7);
+    [...pips.children].forEach((el, i) => el.classList.toggle("is-on", i < lit));
+  }
+  if (sub) {
+    sub.textContent = game.comboReady
+      ? "KOMBO FRI · DUBBEL EFFEKT"
+      : (game.combo > 0 ? `KOMBO ${game.combo}/7 · power-move` : "power-move · 14s");
+  }
 }
 
 function spawnFloater(clientX, clientY, text, type = "hype") {

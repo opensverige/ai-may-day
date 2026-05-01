@@ -1016,48 +1016,39 @@ body {
   50%      { box-shadow: 4px 4px 0 #1a1208, 0 0 0 4px rgba(241,199,129,0.55); }
 }
 
-/* ── COMBO METER ───────────────────────────────────────── */
-.combo {
-  --combo-fill: 0%;
-  position: relative;
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 0 22px 8px;
-  padding: 6px 12px 7px;
-  background: rgba(7,16,14,0.65);
-  border: 2px solid #1a1208;
-  border-left: 4px solid var(--gold-soft);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  color: var(--parchment-d);
-  text-transform: uppercase;
+/* ── COMBO PIPS — sitter inuti MEGAFON-knappen ─────────── */
+.btn__combo-pips {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 6px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  height: 4px;
+  pointer-events: none;
+  z-index: 1;
 }
-.combo__label { flex-shrink: 0; font-weight: 700; }
-.combo__bar {
-  flex: 1;
-  height: 8px;
-  background: rgba(212,165,92,0.12);
-  border: 1.5px solid #1a1208;
-  position: relative;
-  overflow: hidden;
-}
-.combo__bar i {
+.btn__combo-pips i {
   display: block;
-  height: 100%;
-  width: var(--combo-fill, 0%);
-  background: linear-gradient(90deg, var(--gold-soft) 0%, var(--gold-bright) 100%);
-  transition: width 0.18s cubic-bezier(.4,1.6,.4,1);
-  background-image: repeating-linear-gradient(-25deg, rgba(0,0,0,0.18) 0 5px, transparent 5px 10px);
+  background: rgba(26, 18, 8, 0.18);
+  border: 1px solid rgba(26, 18, 8, 0.35);
+  transition: background 0.15s ease, transform 0.18s cubic-bezier(.4,1.6,.4,1), box-shadow 0.18s ease;
 }
-.combo.combo--ready {
-  border-left-color: var(--gold-bright);
-  color: var(--gold-bright);
-  animation: ready-pulse 1.2s ease-in-out infinite;
+.btn__combo-pips i.is-on {
+  background: var(--gold);
+  border-color: var(--gold-soft);
+  transform: scaleY(1.4);
 }
-.combo.combo--ready .combo__bar i { background: var(--gold-bright); }
+.btn--megafon.btn--ready .btn__combo-pips i {
+  background: var(--gold-bright);
+  border-color: #b88947;
+  box-shadow: 0 0 6px rgba(241, 199, 129, 0.7);
+  transform: scaleY(1.4);
+}
+/* lite extra utrymme i botten på megafon-knappen så pips inte krockar med cd-bar */
+.btn--megafon { padding-bottom: 16px; }
+.btn--megafon .btn__cd-bar { bottom: 0; height: 3px; }
 
 /* ── FLOATERS — visuella +X HYPE-popups ────────────────── */
 .floater {
@@ -1867,8 +1858,8 @@ body {
   .mood {
     position: fixed;
     left: max(14px, env(safe-area-inset-left, 0px));
-    /* ovanför actions + combo-meter så inget täcks */
-    bottom: calc(160px + env(safe-area-inset-bottom, 0px));
+    /* ovanför actions-raden så knappar inte täcks */
+    bottom: calc(118px + env(safe-area-inset-bottom, 0px));
     z-index: 6;
     margin: 0;
     min-width: min(260px, 36vw);
@@ -1894,12 +1885,8 @@ body {
     padding: 10px 12px;
   }
   .btn__sub { display: none; }
-  .combo {
-    margin: 0 12px 6px;
-    padding: 5px 10px 6px;
-    font-size: 9px;
-    letter-spacing: 0.16em;
-  }
+  .btn--megafon { padding-bottom: 14px; }
+  .btn__combo-pips { left: 8px; right: 8px; bottom: 5px; height: 3px; gap: 2px; }
   .floater { font-size: 18px; }
   .floater--chant   { font-size: 24px; }
   .floater--megafon { font-size: 28px; }

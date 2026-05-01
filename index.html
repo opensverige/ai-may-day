@@ -241,12 +241,6 @@
     <div class="ground-fade" aria-hidden="true"></div>
   </main>
 
-  <!-- Combo-meter -->
-  <div class="combo" id="combo-meter" aria-live="polite">
-    <span class="combo__label" id="combo-label">KOMBO 0/5</span>
-    <span class="combo__bar"><i></i></span>
-  </div>
-
   <!-- Actions -->
   <nav class="actions" aria-label="Crowd actions">
     <button class="btn btn--engage"   data-action="engage"   type="button">
@@ -267,7 +261,10 @@
     <button class="btn btn--megafon"  data-action="megafon"  type="button">
       <span class="btn__kbd">F</span>
       <span class="btn__title">MEGAFON</span>
-      <span class="btn__sub">power-move · 10s</span>
+      <span class="btn__sub" id="megafon-sub">power-move · 14s</span>
+      <span class="btn__combo-pips" id="megafon-pips" aria-hidden="true">
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      </span>
       <span class="btn__ready-badge" aria-hidden="true">FRI</span>
     </button>
   </nav>
