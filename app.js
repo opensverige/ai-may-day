@@ -326,8 +326,8 @@ function generateHotspots(scene) {
 }
 
 const STATE_TIMEOUTS = {
-  neutral:   50,   // → bored om idle (sänkt entropi)
-  hype:      22,   // → exhausted (mer andrum för win)
+  neutral:   42,   // → bored om idle
+  hype:      18,   // → exhausted (åter åtstramat efter "för enkelt"-feedback)
   panic:      6,   // → bored
   exhausted: 12,   // → bored
   bored:    Infinity,
@@ -395,7 +395,7 @@ function engageAt(clientX, clientY) {
     .map((h) => ({ h, d: (h.absX - px) ** 2 + (h.absY - py) ** 2 }))
     .sort((a, b) => a.d - b.d);
 
-  const cluster = sorted.slice(0, 6).filter((x) => x.d < 380);
+  const cluster = sorted.slice(0, 4).filter((x) => x.d < 280);
   if (!cluster.length) return;
 
   let hyped = 0;
@@ -428,15 +428,17 @@ function engageAt(clientX, clientY) {
 }
 
 function chant() {
-  // våg bakifrån fram — lyfter exhausted och bored också (energin återvänder)
+  // våg bakifrån fram — lyfter exhausted/bored med lägre chans (de ÄR slutkörda)
   const layerOrder = ["back", "mid", "front"];
   let totalHyped = 0;
   layerOrder.forEach((layer, i) => {
     setTimeout(() => {
       for (const h of game.hotspots) {
         if (h.layer !== layer) continue;
-        if (h.state === "panic") continue; // panik immun
-        if (Math.random() < 0.82) {
+        if (h.state === "panic") continue;
+        // tröttare folk = svårare att tända
+        const p = (h.state === "exhausted" || h.state === "bored") ? 0.42 : 0.62;
+        if (Math.random() < p) {
           setHotspotState(h, "hype");
           totalHyped++;
           if (Math.random() < 0.08) trySpawnBubble(h);
@@ -471,7 +473,7 @@ function disperse() {
  *  Combo-ready → fri och dubbelt så stark. */
 function megafon() {
   const ready = consumeCombo();
-  const cut = ready ? 0.85 : 0.55;
+  const cut = ready ? 0.55 : 0.35;
 
   const candidates = game.hotspots.filter((h) => h.state !== "hype" && h.state !== "panic");
   const target = Math.ceil(candidates.length * cut);
@@ -504,12 +506,12 @@ function megafon() {
 
 function trackComboHit() {
   const t = now();
-  // combo-fönster: 3.5s mellan hits för att räknas
-  if (t - game.comboLastAt > 3500) game.combo = 0;
+  // combo-fönster: 3s mellan hits för att räknas
+  if (t - game.comboLastAt > 3000) game.combo = 0;
   game.comboLastAt = t;
   game.combo++;
 
-  if (game.combo >= 5 && !game.comboReady) {
+  if (game.combo >= 7 && !game.comboReady) {
     game.comboReady = true;
     const mb = $(".btn--megafon");
     mb?.classList.add("btn--ready");
@@ -530,11 +532,11 @@ function consumeCombo() {
 function updateComboUI() {
   const meter = $("#combo-meter");
   if (!meter) return;
-  const pct = clamp(game.combo / 5, 0, 1);
+  const pct = clamp(game.combo / 7, 0, 1);
   meter.style.setProperty("--combo-fill", (pct * 100).toFixed(1) + "%");
   meter.classList.toggle("combo--ready", game.comboReady);
   const lbl = $("#combo-label");
-  if (lbl) lbl.textContent = game.comboReady ? "MEGAFON FRI" : `KOMBO ${game.combo}/5`;
+  if (lbl) lbl.textContent = game.comboReady ? "MEGAFON FRI" : `KOMBO ${game.combo}/7`;
 }
 
 function spawnFloater(clientX, clientY, text, type = "hype") {
@@ -740,9 +742,9 @@ function updateMarcherCount(dt) {
    ========================================================================= */
 
 const GOAL_THRESHOLDS = {
-  winThreshold: 65, winSustain: 10,
-  loseThreshold: 75, loseSustain: 10,
-  boredThreshold: 75, boredSustain: 35,
+  winThreshold: 75, winSustain: 14,
+  loseThreshold: 70, loseSustain: 10,
+  boredThreshold: 72, boredSustain: 28,
 };
 
 function tickGoal(dt) {
@@ -837,9 +839,11 @@ function endGame(outcome) {
   // om outcome redan är en specifik key (t.ex. 'win-eqt') — använd den direkt
   let key = outcome;
   if (outcome === "win") {
-    if (game.peakPanic > 50) key = "win-eqt";
-    else if (game.policeCount === 0) key = "win-flag";
-    else key = "win-bali";
+    // Diversifierat så blå-gul kräver verkligen lugnt spel
+    if (game.peakPanic > 35) key = "win-eqt";              // hög-energi/risk-väg → EQT
+    else if (game.policeCount > 0) key = "win-bali";       // polis kom men ni vann ändå
+    else if (game.newsCount > 7) key = "win-bali";         // mycket händelser, ändå vinst
+    else key = "win-flag";                                 // kvar: lugnt + utan polis = blå-gul
   } else if (outcome === "police") {
     if (game.newsCount > 6) key = "police-eu";
     else key = "police-fika";
@@ -1141,6 +1145,14 @@ function tickHotspots(dt) {
   if (game.isOver) return;
   const dispersed = (now() - game.dispersedAt) < 3000;
 
+  // OVERHEAT — när hype-pct är hög leakar enstaka hyped → panic
+  // (en överhettad massa kantrar lätt; gör trivial mass-hype-strategi orealistisk)
+  let hypeCount = 0;
+  for (const h of game.hotspots) if (h.state === "hype") hypeCount++;
+  const hypePct = (hypeCount / Math.max(1, game.hotspots.length)) * 100;
+  let overheatChance = 0;
+  if (hypePct > 70) overheatChance = (hypePct - 70) / 100; // 0–0.30 över hype 70–100%
+
   for (const h of game.hotspots) {
     h.timer += dt;
 
@@ -1151,6 +1163,11 @@ function tickHotspots(dt) {
       else if (h.state === "panic")    setHotspotState(h, "bored");
       else if (h.state === "exhausted") setHotspotState(h, "bored");
       else if (h.state === "neutral")  setHotspotState(h, "bored");
+    }
+
+    // overheat-spillover: hyped i het massa kan kantra till panik
+    if (h.state === "hype" && overheatChance > 0 && Math.random() < dt * overheatChance) {
+      setHotspotState(h, "panic");
     }
 
     // spread från grannar (sänkt under disperse-cooldown)
@@ -1302,7 +1319,7 @@ function bindUI() {
   });
 
   // action-knappar med cooldown
-  const cooldowns = { engage: 0.9, chant: 5, disperse: 4, megafon: 10 };
+  const cooldowns = { engage: 1.1, chant: 6, disperse: 4, megafon: 14 };
   $$(".btn").forEach((b) => {
     // se till att cd-bar finns
     if (!b.querySelector(".btn__cd-bar")) {
