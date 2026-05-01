@@ -83,43 +83,11 @@ body {
   pointer-events: none;
 }
 
-/* skyline-stripes som vag silhuett */
-.skyline {
-  position: absolute;
-  bottom: 22%;
-  left: 0; right: 0;
-  height: 38%;
-  background:
-    repeating-linear-gradient(
-      90deg,
-      transparent 0px, transparent 22px,
-      rgba(40,50,52,0.55) 22px, rgba(40,50,52,0.55) 28px,
-      transparent 28px, transparent 60px,
-      rgba(40,50,52,0.4) 60px, rgba(40,50,52,0.4) 80px,
-      transparent 80px, transparent 110px,
-      rgba(40,50,52,0.65) 110px, rgba(40,50,52,0.65) 118px,
-      transparent 118px, transparent 160px
-    );
-  mask-image: linear-gradient(180deg, black 0%, black 60%, transparent 100%);
-  opacity: 0.45;
-}
-.skyline--far {
-  bottom: 30%;
-  height: 22%;
-  filter: blur(0.8px);
-  opacity: 0.25;
-  transform: scaleY(0.7);
-}
+/* skyline borttaget — skapade artefakt-streck i bakgrunden */
+.skyline, .skyline--far { display: none; }
 
-/* SVG noise via inline data-uri for instant grain */
-.grain {
-  position: absolute; inset: 0;
-  pointer-events: none;
-  opacity: 0.22;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.05  0 0 0 0 0.07  0 0 0 0 0.06  0 0 0 0.85 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-  background-size: 160px 160px;
-}
+/* grain borttagen — mix-blend-mode overlay var GPU-tung */
+.grain { display: none; }
 
 /* =========================================================================
    HUD
@@ -416,7 +384,7 @@ body {
 .layer--back  { z-index: 1; }
 .layer--mid   { z-index: 2; }
 .layer--front { z-index: 3; pointer-events: auto; cursor: crosshair; }
-.layer--bubbles { z-index: 6; }
+.layer--bubbles { z-index: 50; }
 .layer--police  { z-index: 4; pointer-events: none; }
 .layer--snow    { z-index: 7; pointer-events: none; width: 100%; height: 100%; }
 
@@ -457,47 +425,25 @@ body {
           mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
 }
 
-/* Smooth blend mellan lager — back/mid fadas i botten så de smälter in i lagret framför */
+/* Smooth blend mellan lager — bara back/mid fadas i botten, front är full */
 .layer--back .sprite__img,
 .layer--mid .sprite__img {
   -webkit-mask-image: linear-gradient(to bottom, black 0%, black 65%, transparent 100%) !important;
           mask-image: linear-gradient(to bottom, black 0%, black 65%, transparent 100%) !important;
 }
 .layer--front .sprite__img {
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 5%, black 100%) !important;
-          mask-image: linear-gradient(to bottom, transparent 0%, black 5%, black 100%) !important;
+  -webkit-mask-image: none !important;
+          mask-image: none !important;
 }
 
 
-/* bobb-animationer per lager (olika duration så de inte synkar)
-   back/mid har march-stomp för "marscherar på stället"-illusion */
-@keyframes bob-front { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-8px) } }
+/* bobb bara på front — back/mid är statiska för perf */
+@keyframes bob-front { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-6px) } }
+@keyframes bob-march { 0%,100% { transform: translateY(0) rotate(-0.4deg) } 50% { transform: translateY(-12px) rotate(0.4deg) } }
 
-@keyframes march-mid {
-  0%   { transform: translate(-2px, 0)  rotate(-0.3deg); }
-  25%  { transform: translate(2px, -3px) rotate(0.3deg); }
-  50%  { transform: translate(2px, 0)  rotate(0.3deg); }
-  75%  { transform: translate(-2px, -3px) rotate(-0.3deg); }
-  100% { transform: translate(-2px, 0) rotate(-0.3deg); }
-}
-@keyframes march-back {
-  0%   { transform: translate(-1px, 0)  rotate(-0.15deg); }
-  25%  { transform: translate(1px, -1.5px) rotate(0.15deg); }
-  50%  { transform: translate(1px, 0)  rotate(0.15deg); }
-  75%  { transform: translate(-1px, -1.5px) rotate(-0.15deg); }
-  100% { transform: translate(-1px, 0) rotate(-0.15deg); }
-}
-@keyframes bob-march { 0%,100% { transform: translateY(0) rotate(-0.4deg) } 50% { transform: translateY(-14px) rotate(0.4deg) } }
-
-.layer--back  .sprite { animation: march-back 1.3s steps(4) infinite; }
-.layer--mid   .sprite { animation: march-mid  0.95s steps(4) infinite; }
-.layer--front .sprite { animation: bob-front 4.1s ease-in-out infinite; }
+.layer--front .sprite { animation: bob-front 4.5s ease-in-out infinite; }
 .scene.is-marching .layer--front .sprite {
-  animation: bob-march 0.55s ease-in-out infinite !important;
-}
-.scene.is-marching .layer--mid .sprite,
-.scene.is-marching .layer--back .sprite {
-  animation-duration: 0.55s !important;
+  animation: bob-march 0.6s ease-in-out infinite !important;
 }
 
 /* banner-text overlay positionerad inom sprite */
@@ -586,7 +532,7 @@ body {
   pointer-events: none;
   opacity: 0;
   transition: opacity 220ms ease, transform 220ms ease;
-  z-index: 30;
+  z-index: 100;
 }
 .bubble--visible { opacity: 1; transform: translate(-50%, calc(-100% - 10px)); }
 .bubble--shout {
@@ -687,14 +633,7 @@ body {
   row-gap: 2px;
   align-items: baseline;
 }
-.btn::after {
-  content: "";
-  position: absolute; inset: 0;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='2'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-  opacity: 0.08;
-  pointer-events: none;
-  mix-blend-mode: overlay;
-}
+/* btn::after noise borttagen — mix-blend-mode overlay var onödig GPU-cost */
 .btn__kbd {
   grid-row: span 2;
   align-self: center;

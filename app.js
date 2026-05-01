@@ -522,6 +522,10 @@ function trySpawnBubble(h) {
    6. STÄMNINGSMÄTARE + DEMONSTRANT-RÄKNARE
    ========================================================================= */
 
+// cache senaste mood för att undvika onödiga DOM-writes
+const lastMood = { hype: -1, calm: -1, panic: -1, bored: -1 };
+const lastTint = { back: "", mid: "", front: "" };
+
 function updateMood() {
   const counts = { neutral: 0, hype: 0, bored: 0, panic: 0, exhausted: 0 };
   for (const h of game.hotspots) counts[h.state]++;
@@ -534,20 +538,22 @@ function updateMood() {
     bored: Math.round(((counts.bored + counts.exhausted) / total) * 100),
   };
 
+  // bara skriv DOM om värdet faktiskt ändrats
   for (const k of Object.keys(pct)) {
+    if (pct[k] === lastMood[k]) continue;
+    lastMood[k] = pct[k];
     const row = $(`[data-mood="${k}"]`);
     if (!row) continue;
     row.querySelector(".mood__bar i").style.width = pct[k] + "%";
     row.querySelector(".mood__pct").textContent = pct[k] + "%";
   }
 
-  // mood-overlay-tinta lager beroende på dominant state
-  const tints = {
-    back:  rgbForLayer("back",  pct),
-    mid:   rgbForLayer("mid",   pct),
-    front: rgbForLayer("front", pct),
-  };
-  for (const [layer, tint] of Object.entries(tints)) {
+  // mood-overlay-tinta lager — bara update om signifikant ändring
+  for (const layer of ["back", "mid", "front"]) {
+    const tint = rgbForLayer(layer, pct);
+    const key = tint.color + "|" + tint.opacity.toFixed(2);
+    if (key === lastTint[layer]) continue;
+    lastTint[layer] = key;
     const o = game.scene.moodOverlays[layer];
     o.style.background = tint.color;
     o.style.opacity = tint.opacity;
