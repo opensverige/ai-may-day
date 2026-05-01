@@ -258,10 +258,10 @@ class EventManager {
     this.archetypes = archetypes;
     this.api = api;
     this.lastEventTime = 0;
-    this.cooldownMs = 30000;
+    this.cooldownMs = 12000;       // var 30000
     this.checkIntervalMs = 3000;
-    this.ambientMin = 60000;
-    this.ambientMax = 120000;
+    this.ambientMin = 15000;       // var 60000
+    this.ambientMax = 30000;       // var 120000
     this.nextAmbientAt = performance.now() + this._randAmbient();
     this.activeModal = null;
     this.shown = new Set(); // för att inte loopa samma event direkt efter varandra
@@ -302,12 +302,28 @@ class EventManager {
   }
 
   _pickAmbient() {
-    const candidates = this.events.filter((e) => e.trigger === "ambient" && !this.shown.has(e.id));
+    let candidates = this.events.filter((e) => e.trigger === "ambient" && !this.shown.has(e.id));
     if (!candidates.length) {
       this.shown.clear();
-      return this._weighted(this.events.filter((e) => e.trigger === "ambient"));
+      candidates = this.events.filter((e) => e.trigger === "ambient");
     }
-    return this._weighted(candidates);
+    // Reigns-style "card bag" — boosta vikter baserat på crowd-state
+    const state = this.api.getCrowdState();
+    const boosted = candidates.map((e) => {
+      let w = e.weight || 1;
+      if (state.hype  > 50 && e.archetype === "vc-partner")    w *= 3;   // pengar luktar hype
+      if (state.hype  > 50 && e.archetype === "influencer")    w *= 2;
+      if (state.panic > 40 && e.archetype === "polischef")     w *= 3;   // ordningsmakten dyker upp i kaos
+      if (state.panic > 40 && e.archetype === "journalist")    w *= 2;
+      if (state.bored > 50 && e.archetype === "professor")     w *= 4;   // tråkig akademiker passar trött crowd
+      if (state.bored > 50 && e.archetype === "eu-byrakrat")   w *= 3;
+      if (state.exhausted > 50 && e.archetype === "ai-grundare") w *= 3;
+      if (state.exhausted > 50 && e.archetype === "pensionar")   w *= 2;
+      if (state.neutral > 60 && e.archetype === "borasare")    w *= 2;   // nån random kommer förbi
+      if (state.neutral > 60 && e.archetype === "kommunalrad") w *= 2;
+      return { ...e, weight: w };
+    });
+    return this._weighted(boosted);
   }
 
   _weighted(arr) {

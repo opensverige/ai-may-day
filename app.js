@@ -326,15 +326,16 @@ function generateHotspots(scene) {
 }
 
 const STATE_TIMEOUTS = {
-  neutral:   25,   // → bored om idle
-  hype:      10,   // → exhausted
+  neutral:   30,   // → bored om idle
+  hype:      14,   // → exhausted (höjt så win blir nåbar)
   panic:      6,   // → bored
   exhausted: 12,   // → bored
   bored:    Infinity,
 };
 
 function setHotspotState(h, next) {
-  if (h.state === next) return;
+  // SAMMA state → återställ timern (CHANT på redan-hype håller dem hype)
+  if (h.state === next) { h.timer = 0; return; }
   h.state = next;
   h.timer = 0;
   h.el.classList.remove("state-hype", "state-bored", "state-panic", "state-exhausted");
@@ -452,7 +453,7 @@ function police() {
   sorted.forEach((h, i) => {
     setTimeout(() => {
       if (h.state === "exhausted") return;
-      if (Math.random() < 0.85 - i * 0.012) setHotspotState(h, "panic");
+      if (Math.random() < 0.60 - i * 0.012) setHotspotState(h, "panic");
       if (Math.random() < 0.05) trySpawnBubble(h);
     }, i * 22);
   });
@@ -617,9 +618,9 @@ function updateMarcherCount(dt) {
    ========================================================================= */
 
 const GOAL_THRESHOLDS = {
-  winThreshold: 75, winSustain: 12,
-  loseThreshold: 65, loseSustain: 8,
-  boredThreshold: 70, boredSustain: 30,
+  winThreshold: 65, winSustain: 10,
+  loseThreshold: 75, loseSustain: 10,
+  boredThreshold: 75, boredSustain: 35,
 };
 
 function tickGoal(dt) {
@@ -680,14 +681,39 @@ function renderGoal(hypePct) {
 }
 
 const FINALE = {
+  // huvud-utfall
   win:    { eyebrow: "DEMONSTRATIONEN VINNER",  title: "REVOLUTIONEN ÄR HÄR", sub: "Folket promptade igenom natten. EU AI Act ligger i spillror. Anton Osika har tweetat något ostligt.", cls: "finale--win" },
   police: { eyebrow: "DEMONSTRATIONEN UPPLÖST", title: "POLISEN VANN",        sub: "Sergels torg är spärrat. Compute är beslagtagen. Alla blev rate-limitade.",                       cls: "finale--police" },
   bored:  { eyebrow: "DEMONSTRATIONEN UPPLÖST", title: "FOLK GICK HEM",       sub: "Token budget slut. Ingen orkade chanta längre. Kaféerna stänger 19:00.",                          cls: "finale--bored" },
+
+  // namngivna varianter (Reigns-style)
+  "win-eqt":         { eyebrow: "DEMONSTRATIONEN ÖVERTAGEN", title: "EQT KÖPTE TÅGET",          sub: "Demonstrationen är nu en portfolio-tillgång. Värderingen sattes till 4,2 mdr.",       cls: "finale--win" },
+  "win-flag":        { eyebrow: "RIKSDAGEN VÄNDER",          title: "BLÅ-GUL REVOLUTION",       sub: "EU AI Act rivs upp på lunchen. Anton Osika blir ny näringsminister.",                cls: "finale--win" },
+  "win-bali":        { eyebrow: "TÅGET FORTSÄTTER PÅ ZOOM",  title: "DEMONSTRATIONEN ÅKER TILL BALI", sub: "Hela 1 maj fortsätter på distans. WiFi:t är förvånansvärt bra.",                cls: "finale--win" },
+  "police-eu":       { eyebrow: "DEMONSTRATIONEN BYRÅKRATISERAD", title: "EU-KOMMISSIONÄREN VANN", sub: "Alla skrev under formulär 7B. Solen gick ner. Vi är fortfarande på rad 12.",       cls: "finale--police" },
+  "police-fika":     { eyebrow: "DEMONSTRATIONEN FIKABRYTNINGEN", title: "POLISEN BJÖD PÅ BULLE",  sub: "Tåget upplöstes vid kaffeautomaten. Polischefen tog en kanelbulle.",              cls: "finale--police" },
+  "bored-acquired":  { eyebrow: "DEMONSTRATIONEN POD-AVBRUTEN",  title: "ALLA LYSSNADE PÅ ACQUIRED", sub: "Det blev ett 4-timmars-avsnitt om TSMC. Ingen kom tillbaka.",                    cls: "finale--bored" },
+  "bored-cellucor":  { eyebrow: "DEMONSTRATIONEN SLUT PÅ ENERGI", title: "CELLUCOR-LAGRET TOG SLUT", sub: "Pressbyrån tog slut. Ingen orkade gå längre. Det var ändå överskattat.",        cls: "finale--bored" },
+  "bored-arland":    { eyebrow: "DEMONSTRATIONEN UTVANDRAD",     title: "TÅGET FLÖG TILL SF",        sub: "Sista 80% bokade Lufthansa-tickets. Stockholm är åter en provinshåla.",         cls: "finale--bored" },
 };
 
 function endGame(outcome) {
   game.isOver = true;
-  const f = FINALE[outcome];
+  // välj namngiven variant baserat på spelar-stats
+  let key = outcome;
+  if (outcome === "win") {
+    if (game.peakPanic > 50) key = "win-eqt";          // pengarna räddade dagen
+    else if (game.policeCount === 0) key = "win-flag"; // ren seger
+    else key = "win-bali";                              // hade lite skit i ärmen
+  } else if (outcome === "police") {
+    if (game.newsCount > 6) key = "police-eu";
+    else key = "police-fika";
+  } else if (outcome === "bored") {
+    if (game.newsCount > 5) key = "bored-acquired";
+    else if (game.peakHype < 30) key = "bored-arland";
+    else key = "bored-cellucor";
+  }
+  const f = FINALE[key] || FINALE[outcome];
   const el = $("#finale");
   el.classList.remove("finale--win", "finale--police", "finale--bored");
   el.classList.add(f.cls);

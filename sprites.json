@@ -218,6 +218,11 @@
     { "text": "Mistral öppnar kontor i Stockholm", "deltaHype": 12 },
     { "text": "Creandum stänger fond III", "deltaBored": 15 },
     { "text": "OpenAI deprecerar GPT-4", "deltaPanic": 14 },
-    { "text": "Polis spärrar av Sergels torg", "deltaPanic": 18 }
+    { "text": "Polis spärrar av Sergels torg", "deltaPanic": 18 },
+    { "text": "Daniel Ek hostar AI-MAY-DAY-fest", "deltaHype": 18 },
+    { "text": "Klarna avskedar HR-chefen", "deltaHype": 14 },
+    { "text": "EU-kommissionen tappar AI Act-pärmen", "deltaHype": 12 },
+    { "text": "Anton Osika svarar på alla DMs", "deltaHype": 16 },
+    { "text": "Kungen vibe codar live på Instagram", "deltaHype": 22 }
   ]
 }
