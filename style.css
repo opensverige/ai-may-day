@@ -206,42 +206,65 @@ body {
 }
 
 /* =========================================================================
-   GOAL bar
+   GOAL bar — samma språk som .btn (ifylld, chunky), ej klickbar status
    ========================================================================= */
 
 .goal {
+  --goal-accent: #b88947;
   position: relative;
   z-index: 5;
   display: grid;
-  grid-template-columns: auto 1fr 280px auto;
+  grid-template-columns: auto 1fr minmax(200px, 280px) auto;
   align-items: center;
-  gap: 16px;
-  padding: 12px 26px;
-  background: linear-gradient(180deg, rgba(7,16,14,0.85), rgba(7,16,14,0.55));
-  border-bottom: 1px solid var(--hairline);
+  gap: 14px 18px;
+  margin: 8px 20px 6px;
+  padding: 11px 16px 12px 14px;
+  background: #f0e3c0;
+  color: #1a1208;
+  border: 3px solid #1a1208;
+  border-left: 5px solid var(--goal-accent);
+  box-shadow: 4px 4px 0 #1a1208;
   font-family: var(--font-mono);
-  font-size: 13px;
-  letter-spacing: 0.16em;
-  color: var(--parchment);
-  transition: background 0.4s ease;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  cursor: default;
+  pointer-events: none;
+  user-select: none;
+  transition: background 0.35s ease, border-left-color 0.35s ease, box-shadow 0.35s ease;
 }
 .goal__label {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  padding: 6px 8px;
   font-weight: 800;
-  color: var(--gold-bright);
-  letter-spacing: 0.32em;
-  font-size: 12px;
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  line-height: 1;
+  color: #1a1208;
+  background: #d4a55c;
+  border: 2px solid #1a1208;
+  box-shadow: 2px 2px 0 rgba(26, 18, 8, 0.35);
 }
 .goal__text {
+  font-family: var(--font-display);
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 900;
+  font-size: clamp(13px, 1.65vw, 16px);
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  color: #1a1208;
 }
 .goal__bar {
   display: block;
-  height: 12px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.1);
+  height: 14px;
+  background: rgba(26, 18, 8, 0.12);
+  border: 2px solid #1a1208;
   overflow: hidden;
   position: relative;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 .goal__bar i {
   display: block;
@@ -256,42 +279,72 @@ body {
   );
 }
 .goal.is-winning {
-  background: linear-gradient(180deg, rgba(28,68,40,0.65), rgba(7,16,14,0.55));
+  --goal-accent: #2d6b3e;
+  background: linear-gradient(180deg, #e5f4e8 0%, #d4ead9 100%);
 }
-.goal.is-winning .goal__bar i { background-color: #6fe089; box-shadow: 0 0 14px #6fe089; }
-.goal.is-winning .goal__text { color: #b6e2bf; }
+.goal.is-winning .goal__bar i {
+  background-color: #4caf6a;
+  box-shadow: 0 0 10px rgba(76, 175, 106, 0.55);
+}
+.goal.is-winning .goal__text { color: #143a1c; }
 
 .goal.is-danger {
-  background: linear-gradient(180deg, rgba(120,30,30,0.65), rgba(7,16,14,0.55));
-  animation: goal-pulse 0.85s ease-in-out infinite;
+  --goal-accent: #9e2828;
+  background: linear-gradient(180deg, #fde8e8 0%, #f8d4d4 100%);
+  animation: goal-pulse-danger 0.85s ease-in-out infinite;
 }
-.goal.is-danger .goal__bar i { background-color: var(--red-bright); box-shadow: 0 0 14px var(--red-bright); }
-.goal.is-danger .goal__text { color: #ffd3d3; }
+.goal.is-danger .goal__bar i {
+  background-color: var(--red-bright);
+  box-shadow: 0 0 10px rgba(229, 74, 74, 0.55);
+}
+.goal.is-danger .goal__text { color: #4a1010; }
 
 .goal.is-bored {
-  background: linear-gradient(180deg, rgba(110,90,40,0.55), rgba(7,16,14,0.55));
-  animation: goal-pulse 1.4s ease-in-out infinite;
+  --goal-accent: #8a6820;
+  background: linear-gradient(180deg, #faf3e0 0%, #f2e6c8 100%);
+  animation: goal-pulse-bored 1.35s ease-in-out infinite;
 }
-.goal.is-bored .goal__bar i { background-color: #d6a850; box-shadow: 0 0 14px #d6a850; }
-.goal.is-bored .goal__text { color: #f4d28a; font-weight: 800; letter-spacing: 0.18em; }
+.goal.is-bored .goal__bar i {
+  background-color: #c9982e;
+  box-shadow: 0 0 10px rgba(201, 152, 46, 0.45);
+}
+.goal.is-bored .goal__text {
+  color: #3d3010;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
 
-@keyframes goal-pulse {
-  0%, 100% { box-shadow: inset 0 0 0 rgba(255,80,80,0); }
-  50% { box-shadow: inset 0 -3px 20px rgba(255,80,80,0.3); }
+@keyframes goal-pulse-danger {
+  0%, 100% { box-shadow: 4px 4px 0 #1a1208; }
+  50% {
+    box-shadow:
+      4px 4px 0 #1a1208,
+      0 0 0 2px rgba(176, 48, 48, 0.35);
+  }
+}
+@keyframes goal-pulse-bored {
+  0%, 100% { box-shadow: 4px 4px 0 #1a1208; }
+  50% {
+    box-shadow:
+      4px 4px 0 #1a1208,
+      0 0 0 2px rgba(184, 137, 71, 0.45);
+  }
 }
 
 .goal__time {
   font-family: var(--font-display);
   font-style: italic;
   font-weight: 900;
-  font-size: 24px;
+  font-size: clamp(20px, 2.8vw, 26px);
   font-variant-numeric: tabular-nums;
-  color: var(--parchment);
-  min-width: 70px;
+  color: #1a1208;
+  min-width: 72px;
   text-align: right;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.35);
 }
-.goal.is-danger .goal__time, .goal.is-bored .goal__time { color: var(--gold-bright); text-shadow: 0 0 12px currentColor; }
-.goal.is-winning .goal__time { color: #92e09e; text-shadow: 0 0 12px #92e09e; }
+.goal.is-winning .goal__time { color: #1e5c2e; }
+.goal.is-danger .goal__time { color: #7a1818; }
+.goal.is-bored .goal__time { color: #6b4f12; }
 
 /* =========================================================================
    FINALE
@@ -325,20 +378,21 @@ body {
 }
 .finale__card .finale__eyebrow:first-child { margin-top: 38px; }
 
-/* Key art överst i finale */
+/* Key art överst i finale — fast höjd + cover beskär lite top/botten */
 .finale__keyart {
   margin: 0 -48px 22px;
   border-bottom: 3px solid #1a1208;
   background: #1a1208;
   overflow: hidden;
   line-height: 0;
+  max-height: min(320px, 48vh);
 }
 .finale__keyart img {
   display: block;
   width: 100%;
-  height: auto;
-  max-height: 380px;
+  height: min(320px, 48vh);
   object-fit: cover;
+  object-position: center center;
 }
 .finale__keyart + .finale__eyebrow { margin-top: 14px; }
 .finale__card::after {
@@ -869,7 +923,7 @@ body {
   font-size: 12px;
   letter-spacing: 0.12em;
   color: #f5d8a8;
-  height: 38px;
+  height: 44px;
   overflow: hidden;
 }
 .ticker__brand {
@@ -883,26 +937,86 @@ body {
   border-right: 1px solid #1a0606;
   text-shadow: 0 1px 0 rgba(255,255,255,0.18);
 }
+/* Mörk band + hög kontrast — TV-crawl / breaking (WCAG AAA på stor text) */
 .ticker__track {
   position: relative;
   overflow: hidden;
   white-space: nowrap;
   display: flex;
   align-items: center;
+  background: #0a0a0a;
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
 .ticker__item {
   display: inline-block;
   padding-left: 100%;
-  animation: tick 14s linear infinite;
+  animation: tick 8.5s linear infinite;
   text-transform: uppercase;
   white-space: nowrap;
+  font-family: "Arial Black", "Helvetica Neue", Helvetica, Impact, Haettenschweiler, "Franklin Gothic Heavy", sans-serif;
+  font-weight: 900;
+  font-size: clamp(14px, 2.1vw, 17px);
+  letter-spacing: 0.05em;
+  line-height: 1.15;
+  color: #ffffff;
+  /* läsbarhet i rörelse: mörk kontur som på nyhetssändningar */
+  text-shadow:
+    0 0 1px #000,
+    1px 0 0 #000,
+    -1px 0 0 #000,
+    0 1px 0 #000,
+    0 -1px 0 #000,
+    2px 2px 4px rgba(0, 0, 0, 0.85);
+  -webkit-font-smoothing: antialiased;
 }
-.ticker__item.is-fresh { color: #fff; }
+.ticker__item.is-fresh {
+  color: #ffffff;
+}
+/* Spelarens event-val: tydlig koppling till BREAKING-raden */
+.ticker__item.is-from-player {
+  color: #fffef8;
+  text-shadow:
+    0 0 1px #000,
+    1px 0 0 #000,
+    -1px 0 0 #000,
+    0 1px 0 #000,
+    0 -1px 0 #000,
+    0 0 16px rgba(241, 199, 129, 0.95),
+    0 0 28px rgba(212, 165, 92, 0.55),
+    2px 2px 4px rgba(0, 0, 0, 0.85);
+  animation-duration: 8.5s;
+}
+/* Hela ticker-baren pulsar när ny spelar-driven nyhet körs */
+.ticker.ticker--react {
+  animation: ticker-react-bar 0.55s ease-out 3;
+  box-shadow: 0 0 0 0 rgba(241, 199, 129, 0);
+}
+@keyframes ticker-react-bar {
+  0%, 100% {
+    box-shadow: inset 0 0 0 0 transparent;
+    border-bottom-color: #3a0e0e;
+  }
+  50% {
+    box-shadow:
+      inset 0 -3px 0 0 var(--gold-bright),
+      0 0 26px rgba(241, 199, 129, 0.35);
+    border-bottom-color: var(--gold-soft);
+  }
+}
+.ticker.ticker--react .ticker__brand {
+  animation: ticker-react-brand 0.5s ease-in-out 3;
+}
+@keyframes ticker-react-brand {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.2); color: #2a0a0a; }
+}
 .ticker__time {
   align-self: center;
   padding: 0 14px;
-  border-left: 1px solid rgba(255,255,255,0.1);
-  color: var(--parchment-d);
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+  color: #f0e8d8;
+  font-weight: 700;
 }
 @keyframes tick {
   0%   { transform: translateX(0); }
@@ -993,6 +1107,38 @@ body {
 }
 
 /* =========================================================================
+   DESKTOP · stämning ovanpå crowd (nere vänster)
+   ========================================================================= */
+
+@media (min-width: 721px) {
+  /* flex: fixed .mood deltar inte → bara titel + räknare i raden */
+  .hud {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 22px;
+  }
+  .hud__title {
+    min-width: 0;
+    flex: 1;
+  }
+  .counter {
+    flex-shrink: 0;
+  }
+  .mood {
+    position: fixed;
+    left: max(14px, env(safe-area-inset-left, 0px));
+    /* ovanför actions-raden så knappar inte täcks */
+    bottom: calc(118px + env(safe-area-inset-bottom, 0px));
+    z-index: 6;
+    margin: 0;
+    min-width: min(260px, 36vw);
+    max-width: min(280px, 40vw);
+  }
+}
+
+/* =========================================================================
    MOBILE
    ========================================================================= */
 
@@ -1028,6 +1174,21 @@ body {
   }
   .bubble--shout { font-size: 14px; padding: 9px 14px 10px; }
   .bubble--panic { font-size: 13px; }
-  .goal { padding: 6px 14px; font-size: 9px; gap: 8px; grid-template-columns: auto 1fr 100px auto; }
-  .goal__label { letter-spacing: 0.18em; }
+  .goal {
+    margin: 6px 12px 4px;
+    padding: 8px 10px 9px;
+    font-size: 9px;
+    gap: 8px 10px;
+    grid-template-columns: auto 1fr minmax(88px, 120px) auto;
+    box-shadow: 3px 3px 0 #1a1208;
+  }
+  .goal__label {
+    min-width: 44px;
+    padding: 5px 6px;
+    font-size: 8px;
+    letter-spacing: 0.2em;
+  }
+  .goal__text { font-size: 11px; letter-spacing: 0.05em; }
+  .goal__time { font-size: 17px; min-width: 58px; }
+  .goal__bar { height: 11px; }
 }

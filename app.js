@@ -819,9 +819,15 @@ function buildShareButtons(finale, ctx) {
 // Kö-baserad news — rotera fritt mellan flera nyheter, byt vid animation-iteration
 const newsQueue = [];
 let newsTickerEl = null;
+let tickerReactTimer = null;
 
 function pushNews(item) {
-  game.newsCount++;
+  if (!item.skipNewsBump) {
+    game.newsCount++;
+    $("#marcher-count").classList.add("flicker");
+    setTimeout(() => $("#marcher-count").classList.remove("flicker"), 400);
+  }
+
   newsQueue.push(item);
 
   // applicera state-deltas direkt
@@ -829,11 +835,32 @@ function pushNews(item) {
   if (item.deltaPanic) applyDelta("panic",  item.deltaPanic);
   if (item.deltaBored) applyDelta("bored",  item.deltaBored);
 
-  $("#marcher-count").classList.add("flicker");
-  setTimeout(() => $("#marcher-count").classList.remove("flicker"), 400);
-
   // om ingen ticker körs, starta direkt
   if (!newsTickerEl) renderNextNews();
+}
+
+function pulseTickerFromPlayerChoice() {
+  const bar = document.querySelector(".ticker.ticker--top");
+  if (!bar) return;
+  bar.classList.remove("ticker--react");
+  void bar.offsetWidth;
+  bar.classList.add("ticker--react");
+  if (tickerReactTimer) clearTimeout(tickerReactTimer);
+  tickerReactTimer = setTimeout(() => bar.classList.remove("ticker--react"), 2400);
+}
+
+/** Rubrik efter dialog-event (kopplar val → BREAKING). Påverkar inte newsCount. */
+function pushEventNews({ choice, archetypeName }) {
+  if (!choice) return;
+  const unlock = choice.unlock ? `${choice.unlock} · ` : "";
+  const core = `${archetypeName}: ${choice.label}`;
+  let text = unlock + core;
+  if (choice.result) {
+    const r = String(choice.result).replace(/\s+/g, " ").trim();
+    const maxTail = 160;
+    text += r.length > maxTail ? ` — ${r.slice(0, maxTail)}…` : ` — ${r}`;
+  }
+  pushNews({ text, fromEvent: true, skipNewsBump: true });
 }
 
 function renderNextNews() {
@@ -845,10 +872,12 @@ function renderNextNews() {
   const track = $("#ticker-track");
   track.innerHTML = "";
   const el = document.createElement("div");
-  el.className = "ticker__item is-fresh";
-  el.textContent = "BREAKING: " + next.text + "  ◆  ";
+  el.className = "ticker__item is-fresh" + (next.fromEvent ? " is-from-player" : "");
+  el.textContent =
+    (next.fromEvent ? "BREAKING · DITT VAL: " : "BREAKING: ") + next.text + "  ◆  ";
   track.appendChild(el);
   newsTickerEl = el;
+  if (next.fromEvent) pulseTickerFromPlayerChoice();
   // när hela texten har scrollat ut → byt till nästa
   el.addEventListener("animationiteration", renderNextNews, { once: true });
 }
@@ -1182,6 +1211,7 @@ function loop(t) {
         }
       },
       pushNews,
+      pushEventNews,
       isOver: () => game.isOver,
 
       // === DEV-HOOKS ===

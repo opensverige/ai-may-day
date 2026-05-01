@@ -9,45 +9,37 @@ const NO_EVENTS = PARAMS.has("noevents");
 const FORCE_EVENT_ID = PARAMS.get("event");
 
 /* -------------------------- ARKETYPER + porträtt-states ----------------------
-   Tre karaktärsblad (sana/facket/polis) har 3 poser i samma bild. Vi cropar
-   ut varje pose via background-position. Lovable har bara 1 pose → samma
-   crop för alla states. Choice.portraitState bestämmer vilken pose som
-   visas EFTER spelaren valt (default: 'reacting'). -------------------------- */
+   Varje karaktär har separata bilder per state i sprites/character/states/.
+   Filnamn: <state>-<characterId>.png  där state ∈ {default, reacting, intense}.
+   Saknas en state → fallback till default. Saknas hela characterId →
+   text-platshållare. -------------------------- */
 
-// Standard 3-state crop för 1024×1536-blad med 3 poser:
-// top-left, top-right, bottom-center.
-const TRIPLE_POSE_CROPS = {
-  default:  { x:  80, y:  20, w: 440, h: 760 }, // pose 1: lugn/talande
-  reacting: { x: 520, y:  20, w: 440, h: 760 }, // pose 2: avvaktande/funderande
-  intense:  { x: 270, y: 780, w: 500, h: 750 }, // pose 3: intensiv/arg/skrik
-};
-// Singel-pose crop (lovable): zoomar in på överkroppen
-const SINGLE_POSE_CROP = { x: 200, y: 100, w: 624, h: 1100 };
+const STATES_DIR = "./sprites/character/states/";
 
-function spriteWith(spriteSrc, crops) {
-  return { sprite: spriteSrc, spriteW: 1024, spriteH: 1536, portraits: crops };
+function chr(id) {
+  return {
+    sprite: STATES_DIR + "default-" + id + ".png", // legacy-fält (default-bild)
+    portraits: {
+      default:  STATES_DIR + "default-"  + id + ".png",
+      reacting: STATES_DIR + "reacting-" + id + ".png",
+      intense:  STATES_DIR + "intense-"  + id + ".png",
+    },
+  };
 }
-const SANA       = spriteWith("./sprites/character/sana.png",       TRIPLE_POSE_CROPS);
-const FACKET     = spriteWith("./sprites/character/facket.png",     TRIPLE_POSE_CROPS);
-const POLIS      = spriteWith("./sprites/character/polis.png",      TRIPLE_POSE_CROPS);
-const JOURNALIST = spriteWith("./sprites/character/journalist.png", TRIPLE_POSE_CROPS);
-const LOVABLE = spriteWith("./sprites/character/lovable.png", {
-  default: SINGLE_POSE_CROP, reacting: SINGLE_POSE_CROP, intense: SINGLE_POSE_CROP,
-});
 
 const ARCHETYPES = {
-  "vc-partner":   { name: "VC-PARTNERN",   ...SANA   },
-  "ai-grundare":  { name: "AI-GRUNDAREN",  ...LOVABLE },
-  "fackpamp":     { name: "FACKPAMPEN",    ...FACKET },
-  "aktivist":     { name: "AKTIVISTEN",    ...LOVABLE },
-  "eu-byrakrat":  { name: "EU-BYRÅKRATEN", ...SANA   },
-  "journalist":   { name: "JOURNALISTEN",  ...JOURNALIST },
-  "polischef":    { name: "POLISCHEFEN",   ...POLIS  },
-  "professor":    { name: "PROFESSORN",    ...SANA   },
-  "kommunalrad":  { name: "KOMMUNALRÅDET", ...FACKET },
-  "influencer":   { name: "INFLUENCERN",   ...LOVABLE },
-  "borasare":     { name: "BORÅSAREN",     ...LOVABLE },
-  "pensionar":    { name: "PENSIONÄREN",   ...FACKET },
+  "vc-partner":   { name: "VC-PARTNERN",   ...chr("sana")       },
+  "ai-grundare":  { name: "AI-GRUNDAREN",  ...chr("sana")       }, // återanvänd sana tills egen finns
+  "fackpamp":     { name: "FACKPAMPEN",    ...chr("facket")     },
+  "aktivist":     { name: "AKTIVISTEN",    ...chr("facket")     },
+  "eu-byrakrat":  { name: "EU-BYRÅKRATEN", ...chr("byrakrat")   },
+  "journalist":   { name: "JOURNALISTEN",  ...chr("journalist") },
+  "polischef":    { name: "POLISCHEFEN",   ...chr("polis")      },
+  "professor":    { name: "PROFESSORN",    ...chr("byrakrat")   },
+  "kommunalrad":  { name: "KOMMUNALRÅDET", ...chr("facket")     },
+  "influencer":   { name: "INFLUENCERN",   ...chr("journalist") },
+  "borasare":     { name: "BORÅSAREN",     ...chr("polis")      },
+  "pensionar":    { name: "PENSIONÄREN",   ...chr("facket")     },
 };
 
 /* -------------------------- EVENT-BIBLIOTEK ----------------------------- */
@@ -287,6 +279,7 @@ class EventManager {
     this.nextAmbientAt = performance.now() + this._randAmbient();
     this.activeModal = null;
     this.shown = new Set(); // för att inte loopa samma event direkt efter varandra
+    this._pendingTickerPayload = null; // pushas till BREAKING när modalen stängs
     this._timer = setInterval(() => this._tick(), this.checkIntervalMs);
   }
 
@@ -383,7 +376,10 @@ class EventManager {
       <div class="event-card">
         <div class="event-card__inner">
           <div class="event-portrait-box">
-            <div class="event-portrait-frame" role="img" aria-label="${arch.name}"></div>
+            <div class="event-portrait-frame">
+              <img class="event-portrait-img" alt="${arch.name}" />
+              <div class="event-portrait-name">${arch.name}</div>
+            </div>
           </div>
           <div class="event-dialog">
             <div class="event-name">${arch.name}</div>
@@ -397,30 +393,8 @@ class EventManager {
     document.body.appendChild(overlay);
     this.activeModal = overlay;
 
-    // sätt initial porträtt-pose (default)
-    if (arch.portraits) {
-      this._setPortraitState("default");
-    } else {
-      // ingen porträtt-config → text-platshållare
-      const frame = overlay.querySelector(".event-portrait-frame");
-      if (frame) {
-        frame.classList.add("event-portrait-frame--placeholder");
-        frame.textContent = arch.name;
-      }
-    }
-    // hantera 404 på sprite-bild via Image preload
-    if (arch.sprite) {
-      const probe = new Image();
-      probe.onerror = () => {
-        const frame = overlay.querySelector(".event-portrait-frame");
-        if (frame) {
-          frame.classList.add("event-portrait-frame--placeholder");
-          frame.style.backgroundImage = "none";
-          frame.textContent = arch.name;
-        }
-      };
-      probe.src = arch.sprite;
-    }
+    // sätt initial porträtt (default)
+    this._setPortraitState("default");
 
     // skip-knapp
     const skipBtn = overlay.querySelector(".event-skip");
@@ -474,6 +448,9 @@ class EventManager {
     if (this.activeModal.dataset.choosing === "1") return;
     this.activeModal.dataset.choosing = "1";
 
+    const arch = this.archetypes[event.archetype] || { name: String(event.archetype).toUpperCase() };
+    this._pendingTickerPayload = { choice, archetypeName: arch.name };
+
     // applicera state-deltas
     if (choice.effect) {
       for (const [state, delta] of Object.entries(choice.effect)) {
@@ -526,41 +503,67 @@ class EventManager {
 
   _setPortraitState(state) {
     const frame = this.activeModal?.querySelector(".event-portrait-frame");
-    if (!frame) return;
+    const img = this.activeModal?.querySelector(".event-portrait-img");
+    if (!frame || !img) return;
     const arch = this._currentArch;
-    if (!arch || !arch.portraits) return;
-    const crop = arch.portraits[state] || arch.portraits.default;
-    if (!crop) return;
+    if (!arch || !arch.portraits) {
+      frame.classList.add("event-portrait-frame--placeholder");
+      img.style.display = "none";
+      return;
+    }
+    const wantedSrc = arch.portraits[state] || arch.portraits.default;
+    const fallbackSrc = arch.portraits.default;
+    if (!wantedSrc) return;
+
     // animera reaktion
     frame.classList.remove("event-portrait-frame--changing");
     void frame.offsetWidth;
     frame.classList.add("event-portrait-frame--changing");
-    this._applyCrop(frame, arch, crop);
-  }
 
-  _applyCrop(el, arch, crop) {
-    const W = arch.spriteW || 1024, H = arch.spriteH || 1536;
-    const bgX = (W / crop.w) * 100;
-    const bgY = (H / crop.h) * 100;
-    const posX = W === crop.w ? 0 : (crop.x / (W - crop.w)) * 100;
-    const posY = H === crop.h ? 0 : (crop.y / (H - crop.h)) * 100;
-    el.style.backgroundImage = `url(${arch.sprite})`;
-    el.style.backgroundSize = `${bgX}% ${bgY}%`;
-    el.style.backgroundPosition = `${posX}% ${posY}%`;
-    el.style.backgroundRepeat = "no-repeat";
-    el.style.aspectRatio = `${crop.w} / ${crop.h}`;
+    // försök ladda önskad state, fallback till default vid 404
+    img.style.display = "";
+    img.onerror = () => {
+      // 404 → fallback till default
+      if (img.src.indexOf(fallbackSrc) === -1 && fallbackSrc) {
+        img.onerror = () => {
+          // även default saknas → text-platshållare
+          frame.classList.add("event-portrait-frame--placeholder");
+          img.style.display = "none";
+        };
+        img.src = fallbackSrc;
+      } else {
+        frame.classList.add("event-portrait-frame--placeholder");
+        img.style.display = "none";
+      }
+    };
+    frame.classList.remove("event-portrait-frame--placeholder");
+    img.src = wantedSrc;
   }
 
   _close() {
     const overlay = this.activeModal;
     if (!overlay) return;
     window.removeEventListener("keydown", this._keyHandler);
+
+    const tickerPayload = this._pendingTickerPayload;
+    this._pendingTickerPayload = null;
+
     overlay.classList.remove("event-overlay--visible");
     overlay.classList.add("event-overlay--closing");
     setTimeout(() => {
       overlay.remove();
       this.activeModal = null;
       try { this.api.resumeGame(); } catch (e) {}
+      /* BREAKING direkt efter stängning — kort paus så ögat hinner med */
+      if (tickerPayload) {
+        setTimeout(() => {
+          try {
+            if (typeof this.api.pushEventNews === "function") {
+              this.api.pushEventNews(tickerPayload);
+            }
+          } catch (e) { /* ticker kan saknas i test */ }
+        }, 1500);
+      }
     }, 300);
   }
 
