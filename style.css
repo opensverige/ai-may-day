@@ -1024,6 +1024,59 @@ body {
 }
 
 /* =========================================================================
+   CREDITS-FOOTER (diskret, bottom-right overlay)
+   ========================================================================= */
+
+.credits {
+  position: fixed;
+  bottom: 6px;
+  right: 8px;
+  z-index: 9;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  background: rgba(7, 12, 11, 0.55);
+  border: 1px solid rgba(212,165,92,0.18);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(239, 227, 200, 0.62);
+  pointer-events: auto;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  transition: opacity 0.25s ease;
+  opacity: 0.55;
+}
+.credits:hover { opacity: 1; }
+.credits__item { white-space: nowrap; }
+.credits__sep { color: rgba(212,165,92,0.4); }
+.credits a {
+  color: rgba(241, 199, 129, 0.85);
+  text-decoration: none;
+  border-bottom: 1px dotted rgba(241,199,129,0.3);
+  transition: color 0.15s ease;
+}
+.credits a:hover { color: var(--gold-bright); border-bottom-color: var(--gold-bright); }
+.credits a strong { color: var(--gold-bright); font-weight: 800; }
+
+@media (max-width: 720px) {
+  .credits {
+    bottom: auto;
+    top: 4px;
+    right: 4px;
+    font-size: 8px;
+    padding: 3px 6px;
+    gap: 5px;
+  }
+  .credits__sep { display: none; }
+  .credits__item:not(:first-child) { display: none; }
+  .credits:hover .credits__sep,
+  .credits:hover .credits__item:not(:first-child) { display: inline; }
+}
+
+/* =========================================================================
    POLICE & SHAKE
    ========================================================================= */
 

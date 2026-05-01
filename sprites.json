@@ -77,9 +77,9 @@
       "rate limit igen…",
       "ska vi pitcha för Creandum?",
       "har någon laddat min Mac?",
-      "var är Anton?",
+      "var är CTO:n?",
       "Claude eller GPT?",
-      "*kollar telefonen* var är Anton?",
+      "*kollar telefonen* var är CTO:n?",
       "*sneglar mot Mountain View*",
       "*scrollar X i smyg*",
       "*viskar* vibe code forever",
@@ -205,10 +205,10 @@
     { "text": "Klarna anställer 200 till", "deltaHype": -8 },
     { "text": "AI-startup höjer pris 300%", "deltaPanic": 12 },
     { "text": "Sana-rykten cirkulerar igen", "deltaHype": -5, "deltaPanic": 5 },
-    { "text": "Antoine Osika tweetar ostligt", "deltaHype": 5 },
+    { "text": "Lovable-grundaren tweetar ostligt", "deltaHype": 5 },
     { "text": "Northvolt kommer tillbaka som AI-bolag", "deltaHype": 15 },
     { "text": "AI Act träder i kraft", "deltaPanic": 20 },
-    { "text": "Daniel Ek lanserar AI-podd", "deltaBored": 10 },
+    { "text": "Spotify-grundaren lanserar AI-podd", "deltaBored": 10 },
     { "text": "KTH öppnar prompt engineering-master", "deltaHype": 10 },
     { "text": "Skatteverket hittar fel i Bolagsverket", "deltaPanic": 8 },
     { "text": "Norrbotten testar AI-läkare", "deltaHype": 5 },
@@ -219,10 +219,10 @@
     { "text": "Creandum stänger fond III", "deltaBored": 15 },
     { "text": "OpenAI deprecerar GPT-4", "deltaPanic": 14 },
     { "text": "Polis spärrar av Sergels torg", "deltaPanic": 18 },
-    { "text": "Daniel Ek hostar AI-MAY-DAY-fest", "deltaHype": 18 },
+    { "text": "Spotify-grundaren hostar AI-MAY-DAY-fest", "deltaHype": 18 },
     { "text": "Klarna byter HR-strategi igen", "deltaHype": 14 },
     { "text": "EU-kommissionen tappar AI Act-pärmen", "deltaHype": 12 },
     { "text": "Lovable-grundaren svarar på alla DMs", "deltaHype": 16 },
-    { "text": "Kungen vibe codar live på Instagram", "deltaHype": 22 }
+    { "text": "Hovet vibe codar live på Instagram", "deltaHype": 22 }
   ]
 }
