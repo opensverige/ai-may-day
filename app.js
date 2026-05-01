@@ -355,7 +355,6 @@ const game = {
   scene: null,
   config: null,
   sheets: null,
-  marching: false,
   snowing: false,
   marchers: 1247,
   lastNews: 0,
@@ -485,9 +484,9 @@ function pulse(el) {
    5. PRATBUBBLOR
    ========================================================================= */
 
-const BUBBLE_MAX = 4;
-const BUBBLE_COOLDOWN = 14000;
-const BUBBLE_HOLD = 4500;
+const BUBBLE_MAX = 6;
+const BUBBLE_COOLDOWN = 5000;
+const BUBBLE_HOLD = 4000;
 
 function trySpawnBubble(h) {
   if (game.visibleBubbles >= BUBBLE_MAX) return;
@@ -582,11 +581,10 @@ function rgbForLayer(layer, pct) {
 }
 
 function updateMarcherCount(dt) {
-  if (game.marching) {
-    game.marchers += dt * rand(2.5, 8);
-    const el = $("#marcher-count");
-    el.textContent = Math.floor(game.marchers).toLocaleString("sv-SE").replace(/ /g, " ");
-  }
+  // tickar långsamt över tid — folk fortsätter ansluta sig
+  game.marchers += dt * rand(0.6, 1.6);
+  const el = $("#marcher-count");
+  if (el) el.textContent = Math.floor(game.marchers).toLocaleString("sv-SE");
 }
 
 /* =========================================================================
@@ -596,7 +594,7 @@ function updateMarcherCount(dt) {
 const GOAL_THRESHOLDS = {
   winThreshold: 75, winSustain: 12,
   loseThreshold: 65, loseSustain: 8,
-  boredThreshold: 85, boredSustain: 45,
+  boredThreshold: 70, boredSustain: 30,
 };
 
 function tickGoal(dt) {
@@ -846,11 +844,15 @@ function tickHotspots(dt) {
       }
     }
 
-    // sporadiska bubblor från aktiva hotspots — saktare så man hinner läsa
-    if ((h.state === "hype" || h.state === "panic") && Math.random() < dt * 0.06) {
+    // bubble-spawn — mer frekvent
+    if ((h.state === "hype" || h.state === "panic") && Math.random() < dt * 0.18) {
       trySpawnBubble(h);
     }
-    if (h.state === "bored" && Math.random() < dt * 0.012) {
+    if (h.state === "bored" && Math.random() < dt * 0.05) {
+      trySpawnBubble(h);
+    }
+    // även neutral hotspots säger något ibland
+    if (h.state === "neutral" && Math.random() < dt * 0.025) {
       trySpawnBubble(h);
     }
   }
@@ -904,11 +906,7 @@ function bindUI() {
   $$(".toggle").forEach((t) => {
     t.addEventListener("click", () => {
       const k = t.dataset.toggle;
-      if (k === "march") {
-        game.marching = !game.marching;
-        t.classList.toggle("is-on", game.marching);
-        game.scene.sceneEl.classList.toggle("is-marching", game.marching);
-      } else if (k === "snow") {
+      if (k === "snow") {
         game.snowing = !game.snowing;
         t.classList.toggle("is-on", game.snowing);
         if (game.snowing) {
@@ -963,7 +961,7 @@ function debugInfo() {
     `hotspots: ${game.hotspots.length}<br>` +
     `instances: ${game.scene.instances.length}<br>` +
     Object.entries(counts).map(([k, v]) => `${k.padEnd(10)} ${v}`).join("<br>") +
-    `<br>marching: ${game.marching} · snow: ${game.snowing}<br>` +
+    `<br>snow: ${game.snowing}<br>` +
     `bubbles: ${game.visibleBubbles}/${BUBBLE_MAX}`;
 }
 

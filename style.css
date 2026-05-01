@@ -204,29 +204,35 @@ body {
   position: relative;
   z-index: 5;
   display: grid;
-  grid-template-columns: auto 1fr 200px auto;
+  grid-template-columns: auto 1fr 280px auto;
   align-items: center;
-  gap: 14px;
-  padding: 8px 26px;
-  background: linear-gradient(180deg, rgba(7,16,14,0.7), rgba(7,16,14,0.4));
+  gap: 16px;
+  padding: 12px 26px;
+  background: linear-gradient(180deg, rgba(7,16,14,0.85), rgba(7,16,14,0.55));
   border-bottom: 1px solid var(--hairline);
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  color: var(--parchment-d);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  color: var(--parchment);
+  transition: background 0.4s ease;
 }
 .goal__label {
-  font-weight: 700;
+  font-weight: 800;
   color: var(--gold-bright);
-  letter-spacing: 0.28em;
+  letter-spacing: 0.32em;
+  font-size: 12px;
 }
-.goal__text { text-transform: uppercase; }
+.goal__text {
+  text-transform: uppercase;
+  font-weight: 600;
+}
 .goal__bar {
   display: block;
-  height: 6px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.06);
+  height: 12px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
   overflow: hidden;
+  position: relative;
 }
 .goal__bar i {
   display: block;
@@ -234,16 +240,49 @@ body {
   width: 0%;
   background: var(--gold-bright);
   transition: width 0.3s ease;
+  background-image: repeating-linear-gradient(
+    -25deg,
+    rgba(0,0,0,0.18) 0 6px,
+    transparent 6px 12px
+  );
 }
-.goal.is-winning .goal__bar i { background: #92c19c; box-shadow: 0 0 8px #92c19c; }
-.goal.is-danger  .goal__bar i { background: var(--red-bright); box-shadow: 0 0 8px var(--red-bright); }
-.goal.is-bored   .goal__bar i { background: #8a7a55; }
+.goal.is-winning {
+  background: linear-gradient(180deg, rgba(28,68,40,0.65), rgba(7,16,14,0.55));
+}
+.goal.is-winning .goal__bar i { background-color: #6fe089; box-shadow: 0 0 14px #6fe089; }
+.goal.is-winning .goal__text { color: #b6e2bf; }
+
+.goal.is-danger {
+  background: linear-gradient(180deg, rgba(120,30,30,0.65), rgba(7,16,14,0.55));
+  animation: goal-pulse 0.85s ease-in-out infinite;
+}
+.goal.is-danger .goal__bar i { background-color: var(--red-bright); box-shadow: 0 0 14px var(--red-bright); }
+.goal.is-danger .goal__text { color: #ffd3d3; }
+
+.goal.is-bored {
+  background: linear-gradient(180deg, rgba(110,90,40,0.55), rgba(7,16,14,0.55));
+  animation: goal-pulse 1.4s ease-in-out infinite;
+}
+.goal.is-bored .goal__bar i { background-color: #d6a850; box-shadow: 0 0 14px #d6a850; }
+.goal.is-bored .goal__text { color: #f4d28a; font-weight: 800; letter-spacing: 0.18em; }
+
+@keyframes goal-pulse {
+  0%, 100% { box-shadow: inset 0 0 0 rgba(255,80,80,0); }
+  50% { box-shadow: inset 0 -3px 20px rgba(255,80,80,0.3); }
+}
+
 .goal__time {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 900;
+  font-size: 24px;
   font-variant-numeric: tabular-nums;
   color: var(--parchment);
-  min-width: 50px;
+  min-width: 70px;
   text-align: right;
 }
+.goal.is-danger .goal__time, .goal.is-bored .goal__time { color: var(--gold-bright); text-shadow: 0 0 12px currentColor; }
+.goal.is-winning .goal__time { color: #92e09e; text-shadow: 0 0 12px #92e09e; }
 
 /* =========================================================================
    FINALE
