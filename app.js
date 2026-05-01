@@ -689,7 +689,7 @@ const FINALE = {
   // namngivna varianter (Reigns-style)
   "win-eqt":         { eyebrow: "DEMONSTRATIONEN ÖVERTAGEN", title: "EQT KÖPTE TÅGET",          sub: "Demonstrationen är nu en portfolio-tillgång. Värderingen sattes till 4,2 mdr.",       cls: "finale--win", keyArt: "./sprites/vinst/EQT.png" },
   "win-flag":        { eyebrow: "RIKSDAGEN VÄNDER",          title: "BLÅ-GUL REVOLUTION",       sub: "EU AI Act rivs upp på lunchen. Anton Osika blir ny näringsminister.",                cls: "finale--win", keyArt: "./sprites/vinst/BLÅ-GUL.png" },
-  "win-bali":        { eyebrow: "TÅGET FORTSÄTTER PÅ ZOOM",  title: "DEMONSTRATIONEN ÅKER TILL BALI", sub: "Hela 1 maj fortsätter på distans. WiFi:t är förvånansvärt bra.",                cls: "finale--win" },
+  "win-bali":        { eyebrow: "TÅGET FORTSÄTTER PÅ ZOOM",  title: "DEMONSTRATIONEN ÅKER TILL BALI", sub: "Hela 1 maj fortsätter på distans. WiFi:t är förvånansvärt bra.",                cls: "finale--win", keyArt: "./sprites/vinst/BALI.png" },
   "police-eu":       { eyebrow: "DEMONSTRATIONEN BYRÅKRATISERAD", title: "EU-KOMMISSIONÄREN VANN", sub: "Alla skrev under formulär 7B. Solen gick ner. Vi är fortfarande på rad 12.",       cls: "finale--police" },
   "police-fika":     { eyebrow: "DEMONSTRATIONEN FIKABRYTNINGEN", title: "POLISEN BJÖD PÅ BULLE",  sub: "Tåget upplöstes vid kaffeautomaten. Polischefen tog en kanelbulle.",              cls: "finale--police" },
   "bored-acquired":  { eyebrow: "DEMONSTRATIONEN POD-AVBRUTEN",  title: "ALLA LYSSNADE PÅ ACQUIRED", sub: "Det blev ett 4-timmars-avsnitt om TSMC. Ingen kom tillbaka.",                    cls: "finale--bored" },
