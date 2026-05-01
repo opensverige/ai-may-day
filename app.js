@@ -483,6 +483,38 @@ const BUBBLE_MAX = 6;
 const BUBBLE_COOLDOWN = 5000;
 const BUBBLE_HOLD = 4000;
 
+function findFreeBubbleSlot(targetX, targetY) {
+  // försök hitta en plats där bubblan inte överlappar befintliga
+  const existing = Array.from(document.querySelectorAll(".bubble"));
+  if (!existing.length) return [targetX, targetY];
+  const sceneRect = game.scene.sceneEl.getBoundingClientRect();
+  const offsets = [
+    [0, 0], [0, -7], [10, -3], [-10, -3], [16, -8], [-16, -8],
+    [6, 5], [-6, 5], [20, 0], [-20, 0], [0, -14], [12, -12], [-12, -12],
+  ];
+  for (const [dx, dy] of offsets) {
+    const x = clamp(targetX + dx, 12, 88);
+    const y = clamp(targetY + dy, 28, 70);
+    let collide = false;
+    for (const b of existing) {
+      if (!b.classList.contains("bubble--visible")) continue;
+      const r = b.getBoundingClientRect();
+      const bx = ((r.left + r.width / 2 - sceneRect.left) / sceneRect.width) * 100;
+      const by = ((r.bottom - sceneRect.top) / sceneRect.height) * 100;
+      // bubble har approximativ bredd 16% / höjd 6% av scen
+      if (Math.abs(bx - x) < 16 && Math.abs(by - y) < 7) { collide = true; break; }
+    }
+    if (!collide) return [x, y];
+  }
+  return [clamp(targetX, 12, 88), clamp(targetY, 28, 70)];
+}
+
+function formatBubbleText(text) {
+  // *...* → italic action-text
+  const escaped = text.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+  return escaped.replace(/\*([^*]+)\*/g, '<em class="bubble__action">$1</em>');
+}
+
 function trySpawnBubble(h) {
   if (game.visibleBubbles >= BUBBLE_MAX) return;
   if (now() - h.lastBubble < BUBBLE_COOLDOWN) return;
@@ -495,11 +527,9 @@ function trySpawnBubble(h) {
   b.className = "bubble bubble--" + h.state + " bubble--layer-" + h.layer;
   if (h.state === "hype") b.classList.add("bubble--shout");
   if (h.state === "panic") b.classList.add("bubble--panic");
-  b.textContent = text;
-  // clamp så bubblan alltid hamnar i övre/mellersta delen av scenen
-  // (bubble har translate(-50%,-100%) → svans pekar nedåt mot crowd, body uppåt)
-  const x = clamp(h.absX, 12, 88);
-  const y = clamp(h.absY, 28, 70);
+  b.innerHTML = formatBubbleText(text);
+  // hitta non-overlapping plats för bubblan
+  const [x, y] = findFreeBubbleSlot(h.absX, h.absY);
   b.style.left = x + "%";
   b.style.top  = y + "%";
   $("#bubbles").appendChild(b);
