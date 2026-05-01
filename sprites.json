@@ -29,61 +29,16 @@
       "banner": { "x": 19.5, "y": 9, "w": 61, "h": 21, "textColor": "dark" },
       "hotspots": "auto"
     },
-    "crowd-heads": {
-      "sheet": "crowd-main",
-      "crop": [0, 600, 1625, 368],
-      "type": "crowd",
-      "banner": null,
-      "hotspots": "auto"
-    },
-    "crowd-heads-anon": {
-      "sheet": "crowd-band",
-      "crop": [40, 920, 1450, 100],
-      "type": "crowd",
-      "banner": null,
-      "hotspots": "auto"
-    },
-    "crowd-heads-anon-2": {
-      "sheet": "crowd-band",
-      "crop": [40, 660, 1450, 100],
-      "type": "crowd",
-      "banner": null,
-      "hotspots": "auto"
-    },
-    "band-1": {
-      "sheet": "crowd-band",
-      "crop": [40, 8, 480, 248],
-      "type": "crowd",
-      "banner": { "x": 12, "y": 8, "w": 76, "h": 24, "textColor": "dark" },
-      "hotspots": "auto"
-    },
-    "band-2": {
-      "sheet": "crowd-band",
-      "crop": [560, 8, 460, 248],
-      "type": "crowd",
-      "banner": { "x": 14, "y": 10, "w": 72, "h": 22, "textColor": "dark" },
-      "hotspots": "auto"
-    },
-    "band-3": {
-      "sheet": "crowd-band",
-      "crop": [1060, 8, 460, 248],
-      "type": "crowd",
-      "banner": { "x": 12, "y": 8, "w": 76, "h": 24, "textColor": "dark" },
-      "hotspots": "auto"
-    },
-    "band-wide": {
-      "sheet": "crowd-band",
-      "crop": [20, 280, 1500, 240],
-      "type": "crowd",
-      "banner": { "x": 32, "y": 12, "w": 35, "h": 20, "textColor": "dark" },
-      "hotspots": "auto"
-    }
+    "row-1": { "sheet": "crowd-band", "crop": [0, 0, 1536, 256],   "type": "crowd", "banner": null, "hotspots": "auto" },
+    "row-2": { "sheet": "crowd-band", "crop": [0, 256, 1536, 256], "type": "crowd", "banner": null, "hotspots": "auto" },
+    "row-3": { "sheet": "crowd-band", "crop": [0, 512, 1536, 256], "type": "crowd", "banner": null, "hotspots": "auto" },
+    "row-4": { "sheet": "crowd-band", "crop": [0, 768, 1536, 256], "type": "crowd", "banner": null, "hotspots": "auto" }
   },
 
   "layerStyles": {
-    "back":  { "scale": 0.36, "opacity": 0.45, "brightness": 0.65, "saturate": 0.7,  "bobDuration": 7.4, "bobAmplitude": 2 },
-    "mid":   { "scale": 0.5,  "opacity": 0.78, "brightness": 0.82, "saturate": 0.88, "bobDuration": 5.3, "bobAmplitude": 3 },
-    "front": { "scale": 1.4,  "opacity": 1.0,  "brightness": 1.0,  "saturate": 1.0,  "bobDuration": 4.1, "bobAmplitude": 6 }
+    "back":  { "scale": 0.42, "opacity": 0.5,  "brightness": 0.7,  "saturate": 0.75, "bobDuration": 7.4, "bobAmplitude": 2 },
+    "mid":   { "scale": 0.7,  "opacity": 0.85, "brightness": 0.9,  "saturate": 0.92, "bobDuration": 5.3, "bobAmplitude": 3 },
+    "front": { "scale": 1.25, "opacity": 1.0,  "brightness": 1.05, "saturate": 1.0,  "bobDuration": 4.1, "bobAmplitude": 5 }
   },
 
   "marchStyle": {
@@ -92,14 +47,11 @@
   },
 
   "scene": [
-    { "id": "back-far",   "spriteId": "band-wide",  "layer": "back",  "x": 50, "y": 30, "flip": false, "tilt": 0,    "bannerText": "" },
-    { "id": "back-l",     "spriteId": "band-1",     "layer": "back",  "x": 16, "y": 42, "flip": false, "tilt": -0.4, "bannerText": "" },
-    { "id": "back-c",     "spriteId": "band-2",     "layer": "back",  "x": 50, "y": 44, "flip": false, "tilt": 0.3,  "bannerText": "" },
-    { "id": "back-r",     "spriteId": "band-3",     "layer": "back",  "x": 84, "y": 42, "flip": true,  "tilt": -0.2, "bannerText": "" },
-    { "id": "mid-l",      "spriteId": "band-1",     "layer": "mid",   "x": 18, "y": 58, "flip": false, "tilt": 0.5,  "bannerText": "" },
-    { "id": "mid-c",      "spriteId": "band-2",     "layer": "mid",   "x": 50, "y": 60, "flip": true,  "tilt": 0.2,  "bannerText": "" },
-    { "id": "mid-r",      "spriteId": "band-3",     "layer": "mid",   "x": 82, "y": 58, "flip": true,  "tilt": -0.3, "bannerText": "" },
-    { "id": "front",      "spriteId": "crowd-heads",        "layer": "front", "x": 50, "y": 86, "flip": false, "tilt": 0, "bannerText": "" }
+    { "id": "row-1-back", "spriteId": "row-1", "layer": "back",  "x": 50, "y": 22, "flip": false, "tilt": 0, "bannerText": "" },
+    { "id": "row-2-mid",  "spriteId": "row-2", "layer": "mid",   "x": 50, "y": 38, "flip": false, "tilt": 0, "bannerText": "" },
+    { "id": "row-3-mid",  "spriteId": "row-3", "layer": "mid",   "x": 50, "y": 54, "flip": true,  "tilt": 0, "bannerText": "" },
+    { "id": "row-3-front","spriteId": "row-3", "layer": "front", "x": 50, "y": 72, "flip": false, "tilt": 0, "bannerText": "" },
+    { "id": "row-4-front","spriteId": "row-4", "layer": "front", "x": 50, "y": 90, "flip": false, "tilt": 0, "bannerText": "" }
   ],
 
   "bannerSlogans": [
