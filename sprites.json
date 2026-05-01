@@ -203,15 +203,15 @@
 
   "news": [
     { "text": "Klarna anställer 200 till", "deltaHype": -8 },
-    { "text": "Lovable höjer pris med 300%", "deltaPanic": 12 },
-    { "text": "Sana sålt till Workday för 1,1 mdr", "deltaHype": -5, "deltaPanic": 5 },
-    { "text": "Anton Osika tweetar ostligt", "deltaHype": 5 },
+    { "text": "AI-startup höjer pris 300%", "deltaPanic": 12 },
+    { "text": "Sana-rykten cirkulerar igen", "deltaHype": -5, "deltaPanic": 5 },
+    { "text": "Antoine Osika tweetar ostligt", "deltaHype": 5 },
     { "text": "Northvolt kommer tillbaka som AI-bolag", "deltaHype": 15 },
     { "text": "AI Act träder i kraft", "deltaPanic": 20 },
     { "text": "Daniel Ek lanserar AI-podd", "deltaBored": 10 },
     { "text": "KTH öppnar prompt engineering-master", "deltaHype": 10 },
     { "text": "Skatteverket hittar fel i Bolagsverket", "deltaPanic": 8 },
-    { "text": "Tandem rullar ut AI-läkare i Norrbotten", "deltaHype": 5 },
+    { "text": "Norrbotten testar AI-läkare", "deltaHype": 5 },
     { "text": "EQT köper allt", "deltaPanic": 10 },
     { "text": "Legora vinner Forbes 30 Under 30", "deltaHype": 3 },
     { "text": "Vibe coding utses till Word of the Year", "deltaHype": 8 },
@@ -220,9 +220,9 @@
     { "text": "OpenAI deprecerar GPT-4", "deltaPanic": 14 },
     { "text": "Polis spärrar av Sergels torg", "deltaPanic": 18 },
     { "text": "Daniel Ek hostar AI-MAY-DAY-fest", "deltaHype": 18 },
-    { "text": "Klarna avskedar HR-chefen", "deltaHype": 14 },
+    { "text": "Klarna byter HR-strategi igen", "deltaHype": 14 },
     { "text": "EU-kommissionen tappar AI Act-pärmen", "deltaHype": 12 },
-    { "text": "Anton Osika svarar på alla DMs", "deltaHype": 16 },
+    { "text": "Lovable-grundaren svarar på alla DMs", "deltaHype": 16 },
     { "text": "Kungen vibe codar live på Instagram", "deltaHype": 22 }
   ]
 }

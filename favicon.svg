@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" fill="#1a1208"/>
+  <rect x="6" y="6" width="52" height="52" fill="#f0e3c0" stroke="#1a1208" stroke-width="3"/>
+  <text x="32" y="38" font-family="'Trebuchet MS', Tahoma, Verdana, sans-serif" font-weight="900" font-size="24" fill="#b03030" text-anchor="middle" letter-spacing="0.5">AI</text>
+  <rect x="6" y="50" width="52" height="8" fill="#b03030"/>
+</svg>

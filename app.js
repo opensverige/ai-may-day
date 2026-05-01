@@ -682,13 +682,13 @@ function renderGoal(hypePct) {
 
 const FINALE = {
   // huvud-utfall
-  win:    { eyebrow: "DEMONSTRATIONEN VINNER",  title: "REVOLUTIONEN ÄR HÄR", sub: "Folket promptade igenom natten. EU AI Act ligger i spillror. Anton Osika har tweetat något ostligt.", cls: "finale--win" },
+  win:    { eyebrow: "DEMONSTRATIONEN VINNER",  title: "REVOLUTIONEN ÄR HÄR", sub: "Folket promptade igenom natten. EU AI Act ligger i spillror. Lovable-grundaren har tweetat något ostligt.", cls: "finale--win" },
   police: { eyebrow: "DEMONSTRATIONEN UPPLÖST", title: "POLISEN VANN",        sub: "Sergels torg är spärrat. Compute är beslagtagen. Alla blev rate-limitade.",                       cls: "finale--police", keyArt: "./sprites/vinst/POLIS.png" },
   bored:  { eyebrow: "DEMONSTRATIONEN UPPLÖST", title: "FOLK GICK HEM",       sub: "Token budget slut. Ingen orkade chanta längre. Kaféerna stänger 19:00.",                          cls: "finale--bored" },
 
   // namngivna varianter (Reigns-style)
   "win-eqt":         { eyebrow: "DEMONSTRATIONEN ÖVERTAGEN", title: "EQT KÖPTE TÅGET",          sub: "Demonstrationen är nu en portfolio-tillgång. Värderingen sattes till 4,2 mdr.",       cls: "finale--win", keyArt: "./sprites/vinst/EQT.png" },
-  "win-flag":        { eyebrow: "RIKSDAGEN VÄNDER",          title: "BLÅ-GUL REVOLUTION",       sub: "EU AI Act rivs upp på lunchen. Anton Osika blir ny näringsminister.",                cls: "finale--win", keyArt: "./sprites/vinst/BLÅ-GUL.png" },
+  "win-flag":        { eyebrow: "RIKSDAGEN VÄNDER",          title: "BLÅ-GUL REVOLUTION",       sub: "EU AI Act rivs upp på lunchen. Lovable-grundaren blir ny näringsminister.",            cls: "finale--win", keyArt: "./sprites/vinst/BLÅ-GUL.png" },
   "win-bali":        { eyebrow: "TÅGET FORTSÄTTER PÅ ZOOM",  title: "DEMONSTRATIONEN ÅKER TILL BALI", sub: "Hela 1 maj fortsätter på distans. WiFi:t är förvånansvärt bra.",                cls: "finale--win", keyArt: "./sprites/vinst/BALI.png" },
   "police-eu":       { eyebrow: "DEMONSTRATIONEN BYRÅKRATISERAD", title: "EU-KOMMISSIONÄREN VANN", sub: "Alla skrev under formulär 7B. Solen gick ner. Vi är fortfarande på rad 12.",       cls: "finale--police" },
   "police-fika":     { eyebrow: "DEMONSTRATIONEN FIKABRYTNINGEN", title: "POLISEN BJÖD PÅ BULLE",  sub: "Tåget upplöstes vid kaffeautomaten. Polischefen tog en kanelbulle.",              cls: "finale--police" },
@@ -864,11 +864,12 @@ function pushEventNews({ choice, archetypeName }) {
 }
 
 function renderNextNews() {
-  if (!newsQueue.length) {
-    newsTickerEl = null;
-    return;
-  }
-  const next = newsQueue.shift();
+  // när kö tom → dra färsk från pool så ticker aldrig stannar
+  const next = newsQueue.length
+    ? newsQueue.shift()
+    : (game.config?.news?.length ? pick(game.config.news) : null);
+  if (!next) { newsTickerEl = null; return; }
+
   const track = $("#ticker-track");
   track.innerHTML = "";
   const el = document.createElement("div");
@@ -878,8 +879,8 @@ function renderNextNews() {
   track.appendChild(el);
   newsTickerEl = el;
   if (next.fromEvent) pulseTickerFromPlayerChoice();
-  // när hela texten har scrollat ut → byt till nästa
-  el.addEventListener("animationiteration", renderNextNews, { once: true });
+  // animationend = item har scrollat ut helt → kör nästa direkt
+  el.addEventListener("animationend", renderNextNews, { once: true });
 }
 
 function applyDelta(state, percent) {
