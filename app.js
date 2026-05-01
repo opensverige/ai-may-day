@@ -699,7 +699,7 @@ const FINALE = {
 
 function endGame(outcome) {
   game.isOver = true;
-  // välj namngiven variant baserat på spelar-stats
+  // om outcome redan är en specifik key (t.ex. 'win-eqt') — använd den direkt
   let key = outcome;
   if (outcome === "win") {
     if (game.peakPanic > 50) key = "win-eqt";
@@ -713,6 +713,7 @@ function endGame(outcome) {
     else if (game.peakHype < 30) key = "bored-arland";
     else key = "bored-cellucor";
   }
+  // (om outcome är en exakt FINALE-key används den as-is)
   const f = FINALE[key] || FINALE[outcome];
   const el = $("#finale");
   el.classList.remove("finale--win", "finale--police", "finale--bored");
@@ -1158,7 +1159,7 @@ function loop(t) {
     // välkomst-news
     setTimeout(() => pushNews({ text: "AI-tåget samlas vid Sergels torg" }), 1200);
 
-    // exponera tunn API för event-systemet (events.js)
+    // exponera tunn API för event-systemet (events.js) + dev-hooks
     window.AIMayDay = {
       pauseGame() { game.paused = true; document.body.classList.add("is-paused"); },
       resumeGame() { game.paused = false; document.body.classList.remove("is-paused"); },
@@ -1182,8 +1183,36 @@ function loop(t) {
       },
       pushNews,
       isOver: () => game.isOver,
+
+      // === DEV-HOOKS ===
+      forceFinale(key, fakeStats = true) {
+        if (fakeStats) {
+          // sätt plausibla stats för att share-text och stats-rader ser vettiga ut
+          game.peakHype  = key.startsWith("win") ? rand(70, 95) : rand(20, 60);
+          game.peakPanic = key.startsWith("police") ? rand(70, 90) : rand(10, 50);
+          game.newsCount = randi(3, 12);
+          game.policeCount = key.startsWith("police") ? randi(1, 4) : randi(0, 2);
+          game.marchers += randi(50, 400);
+          game.startTime -= randi(40, 110) * 1000;
+        }
+        endGame(key);
+      },
+      forceState(state, pct) {
+        applyDelta(state, pct);
+      },
+      resetGame() { location.reload(); },
     };
     document.dispatchEvent(new CustomEvent("aimayday:ready"));
+
+    // Dev: ?finale=<key>  ?state=<name>:<pct>
+    const params = new URLSearchParams(location.search);
+    if (params.has("finale")) {
+      setTimeout(() => window.AIMayDay.forceFinale(params.get("finale")), 600);
+    }
+    if (params.has("state")) {
+      const [name, pctStr] = params.get("state").split(":");
+      if (name) window.AIMayDay.forceState(name, parseInt(pctStr || "50", 10));
+    }
 
     requestAnimationFrame(loop);
   } catch (err) {

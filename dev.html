@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI MAY DAY · DEV</title>
+  <style>
+    :root {
+      --bg: #0e1a18;
+      --card: #1a2826;
+      --gold: #d4a55c;
+      --gold-bright: #f0c478;
+      --parchment: #f0e3c0;
+      --ink: #1a1208;
+      --red: #b03030;
+      --green: #6fa07a;
+      --blue: #5b8fc4;
+      --hairline: rgba(212,165,92,0.22);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--parchment);
+      font-family: "Trebuchet MS", Tahoma, Verdana, sans-serif;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    h1 {
+      font-weight: 900;
+      font-size: 36px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin: 0 0 4px;
+      text-shadow: 2px 0 0 #000, -2px 0 0 #000, 0 2px 0 #000, 3px 3px 0 #621818;
+    }
+    .lead {
+      color: #c9bb98;
+      font-size: 13px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .lead a { color: var(--gold-bright); }
+    h2 {
+      font-weight: 900;
+      font-size: 16px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold-bright);
+      margin: 28px 0 12px;
+      border-bottom: 2px solid var(--hairline);
+      padding-bottom: 6px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 10px;
+    }
+    .grid--wide { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+    .grid--narrow { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+
+    .btn {
+      appearance: none;
+      background: var(--parchment);
+      border: 3px solid var(--ink);
+      box-shadow: 4px 4px 0 var(--ink);
+      color: var(--ink);
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 10px 12px;
+      cursor: pointer;
+      text-align: left;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      transition: transform 0.06s ease;
+      border-radius: 0;
+    }
+    .btn:hover { background: #fff4d2; transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--ink); }
+    .btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
+    .btn__id {
+      font-family: "Courier New", Consolas, monospace;
+      font-size: 10px;
+      font-weight: 700;
+      color: #5e4a30;
+      letter-spacing: 0.08em;
+    }
+    .btn__title {
+      font-weight: 900;
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .btn__sub {
+      font-weight: 500;
+      font-size: 11px;
+      color: #4a3a20;
+      font-style: italic;
+    }
+    .btn--win   { background: #d4ecc4; }
+    .btn--win:hover { background: #e8f8d8; }
+    .btn--police { background: #c4d8ec; }
+    .btn--police:hover { background: #d8eaf8; }
+    .btn--bored  { background: #ecdcb4; }
+    .btn--bored:hover { background: #f8edcc; }
+    .btn--crisis { background: #f1c0c0; }
+    .btn--ambient { background: var(--parchment); }
+
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      padding: 14px;
+      background: var(--card);
+      border: 2px solid var(--hairline);
+      margin-bottom: 24px;
+    }
+    .toolbar a {
+      background: var(--gold-bright);
+      color: var(--ink);
+      font-weight: 900;
+      font-size: 12px;
+      padding: 9px 14px;
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 2px solid var(--ink);
+      box-shadow: 3px 3px 0 var(--ink);
+    }
+    .toolbar a:hover { background: #ffd494; transform: translate(-1px,-1px); }
+    .toolbar a.danger { background: #e85a5a; color: var(--parchment); }
+    .toolbar a.muted  { background: #5e6a68; color: var(--parchment); }
+
+    .keyart-status {
+      font-family: "Courier New", monospace;
+      font-size: 10px;
+      color: #6fa07a;
+      margin-top: 4px;
+    }
+    .keyart-status.missing { color: #e85a5a; }
+  </style>
+</head>
+<body>
+  <h1>AI MAY DAY · DEV</h1>
+  <p class="lead">
+    Kontrollpanel för manuell triggning. Klicka en knapp → öppnas i ny flik
+    med rätt URL-flagga. Spelet startar normalt och triggar omedelbart.
+    <br>
+    Live: <a href="./index.html" target="_blank">/index.html</a>
+  </p>
+
+  <div class="toolbar">
+    <a href="./index.html" target="_blank">▶ START NORMAL</a>
+    <a href="./index.html?debug=1" target="_blank">DEBUG-läge</a>
+    <a href="./index.html?noevents=1" target="_blank" class="muted">UTAN EVENTS</a>
+    <a href="./index.html?state=hype:90" target="_blank">START HYPE 90%</a>
+    <a href="./index.html?state=panic:80" target="_blank" class="danger">START PANIK 80%</a>
+    <a href="./index.html?state=bored:80" target="_blank">START TRÖTT 80%</a>
+  </div>
+
+  <h2>🏆 Vinster (3)</h2>
+  <div class="grid grid--wide" id="wins"></div>
+
+  <h2>🚨 Polis-förluster (3)</h2>
+  <div class="grid grid--wide" id="police-losses"></div>
+
+  <h2>😴 Trött-förluster (3)</h2>
+  <div class="grid grid--wide" id="bored-losses"></div>
+
+  <h2>🎭 Crisis-events (4)</h2>
+  <div class="grid" id="crisis-events"></div>
+
+  <h2>💬 Ambient-events (14)</h2>
+  <div class="grid" id="ambient-events"></div>
+
+  <h2>📊 Direkta state-shortcuts</h2>
+  <div class="grid grid--narrow" id="state-shortcuts"></div>
+
+  <script type="module">
+    // === FINALE-utfall (synca med app.js FINALE) ===
+    const FINALES = [
+      { key: "win",          group: "wins", title: "REVOLUTIONEN ÄR HÄR",          sub: "default win", keyart: "REVOLUTION.png" },
+      { key: "win-eqt",      group: "wins", title: "EQT KÖPTE TÅGET",              sub: "om peakPanic > 50", keyart: "EQT.png" },
+      { key: "win-flag",     group: "wins", title: "BLÅ-GUL REVOLUTION",           sub: "om policeCount === 0", keyart: "BLÅ-GUL.png" },
+      { key: "win-bali",     group: "wins", title: "DEMONSTRATIONEN ÅKER TILL BALI", sub: "default win om annat ej matchar", keyart: "BALI.png" },
+      { key: "police",       group: "police", title: "POLISEN VANN",               sub: "default police", keyart: "POLISEN.png" },
+      { key: "police-eu",    group: "police", title: "EU-KOMMISSIONÄREN VANN",     sub: "om newsCount > 6", keyart: "EU.png" },
+      { key: "police-fika",  group: "police", title: "POLISEN BJÖD PÅ BULLE",      sub: "default police-loss", keyart: "BULLE.png" },
+      { key: "bored",        group: "bored",  title: "FOLK GICK HEM",              sub: "default bored", keyart: "HEMGÅNG.png" },
+      { key: "bored-acquired", group: "bored", title: "ALLA LYSSNADE PÅ ACQUIRED", sub: "om newsCount > 5", keyart: "ACQUIRED.png" },
+      { key: "bored-cellucor", group: "bored", title: "CELLUCOR-LAGRET TOG SLUT",  sub: "default bored", keyart: "CELLUCOR.png" },
+      { key: "bored-arland",   group: "bored", title: "TÅGET FLÖG TILL SF",        sub: "om peakHype < 30", keyart: "SF.png" },
+    ];
+
+    // === EVENTS (synca med events.js EVENTS-arrayen) ===
+    const EVENTS = [
+      { id: "vc-arrives",          arch: "VC-PARTNERN",   trigger: "panic > 70", text: "Hej hej. Jag ser att stämningen är spicy..." },
+      { id: "polis-fika",          arch: "POLISCHEFEN",   trigger: "panic > 70", text: "Är ni anmälda? Jag har en lapp om fika-paus." },
+      { id: "eu-byrakrat",         arch: "EU-BYRÅKRATEN", trigger: "panic > 70", text: "Artikel 6, model cards, GDPR..." },
+      { id: "grundare-bali",       arch: "AI-GRUNDAREN",  trigger: "exhausted > 80", text: "Jag flyttar till Bali, bokat redan." },
+      { id: "fackpamp-megafon",    arch: "FACKPAMPEN",    trigger: "ambient", text: "Solidaritet med inferens-arbetarna!" },
+      { id: "journalist-quote",    arch: "JOURNALISTEN",  trigger: "ambient", text: "Vad är ert huvudbudskap idag?" },
+      { id: "aktivist-podium",     arch: "AKTIVISTEN",    trigger: "ambient", text: "Compute-utsläppen!" },
+      { id: "professor-paper",     arch: "PROFESSORN",    trigger: "ambient", text: "Mitt papper från 2019..." },
+      { id: "kommunalrad-foto",    arch: "KOMMUNALRÅDET", trigger: "ambient", text: "Får jag stå med på bilden?" },
+      { id: "influencer-stream",   arch: "INFLUENCERN",   trigger: "ambient", text: "Get-ready-with-me from the protest?" },
+      { id: "borasare-vad",        arch: "BORÅSAREN",     trigger: "ambient", text: "Vad fan är AI?" },
+      { id: "pensionar-1971",      arch: "PENSIONÄREN",   trigger: "ambient", text: "Jag stod här 1971..." },
+      { id: "eu-byrakrat-7b",      arch: "EU-BYRÅKRATEN", trigger: "ambient", text: "Formulär 7B, 47 underskrifter." },
+      { id: "journalist-igen",     arch: "JOURNALISTEN",  trigger: "ambient", text: "Helt annan tidning, ni är aggressiva?" },
+      { id: "aktivist-mark",       arch: "AKTIVISTEN",    trigger: "ambient", text: "Urbefolkningsmark!" },
+      { id: "grundare-afterski",   arch: "AI-GRUNDAREN",  trigger: "ambient", text: "Afterski på Söder, NDA krävs." },
+      { id: "polischef-vanlig",    arch: "POLISCHEFEN",   trigger: "ambient", text: "Är ni oroliga eller bara tänker?" },
+      { id: "professor-peer-review", arch: "PROFESSORN",  trigger: "ambient", text: "Peer-review-process för paroller?" },
+    ];
+
+    function btn(href, title, sub, id, cls) {
+      const a = document.createElement("a");
+      a.className = "btn " + (cls || "");
+      a.href = href;
+      a.target = "_blank";
+      a.innerHTML = `
+        ${id ? `<span class="btn__id">${id}</span>` : ""}
+        <span class="btn__title">${title}</span>
+        ${sub ? `<span class="btn__sub">${sub}</span>` : ""}
+      `;
+      return a;
+    }
+
+    // FINALES — kontrollera key-art-status (HEAD request)
+    async function checkKeyArt(filename) {
+      try {
+        const r = await fetch("./sprites/vinst/" + filename, { method: "HEAD" });
+        return r.ok;
+      } catch { return false; }
+    }
+
+    const groupHosts = {
+      wins: document.getElementById("wins"),
+      police: document.getElementById("police-losses"),
+      bored: document.getElementById("bored-losses"),
+    };
+
+    for (const f of FINALES) {
+      const cls = f.group === "wins" ? "btn--win" : f.group === "police" ? "btn--police" : "btn--bored";
+      const a = btn(`./index.html?finale=${encodeURIComponent(f.key)}`, f.title, f.sub, f.key, cls);
+      // key-art-status
+      const status = document.createElement("span");
+      status.className = "keyart-status";
+      status.textContent = "(checking key-art…)";
+      a.appendChild(status);
+      checkKeyArt(f.keyart).then((ok) => {
+        if (ok) {
+          status.textContent = "🎨 " + f.keyart;
+        } else {
+          status.classList.add("missing");
+          status.textContent = "○ saknar " + f.keyart;
+        }
+      });
+      groupHosts[f.group].appendChild(a);
+    }
+
+    // EVENTS
+    const crisis = document.getElementById("crisis-events");
+    const ambient = document.getElementById("ambient-events");
+    for (const e of EVENTS) {
+      const isCrisis = e.trigger.includes(">");
+      const a = btn(
+        `./index.html?event=${encodeURIComponent(e.id)}`,
+        e.arch,
+        e.text,
+        e.id + " · " + e.trigger,
+        isCrisis ? "btn--crisis" : "btn--ambient",
+      );
+      (isCrisis ? crisis : ambient).appendChild(a);
+    }
+
+    // STATE-shortcuts
+    const stateShortcuts = [
+      ["hype:50", "HYPE 50%"], ["hype:80", "HYPE 80%"], ["hype:95", "HYPE 95%"],
+      ["panic:50", "PANIK 50%"], ["panic:75", "PANIK 75%"], ["panic:95", "PANIK 95%"],
+      ["bored:50", "TRÖTT 50%"], ["bored:75", "TRÖTT 75%"], ["bored:95", "TRÖTT 95%"],
+      ["exhausted:80", "UTMATTAD 80%"],
+    ];
+    const stateHost = document.getElementById("state-shortcuts");
+    for (const [param, label] of stateShortcuts) {
+      stateHost.appendChild(btn(`./index.html?state=${encodeURIComponent(param)}`, label, "", param, ""));
+    }
+  </script>
+</body>
+</html>
