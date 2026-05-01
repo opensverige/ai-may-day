@@ -1038,6 +1038,78 @@ function tickHotspots(dt) {
    10. INPUT + TOGGLES
    ========================================================================= */
 
+/* =========================================================================
+   ONBOARDING — visas första gången, max 2 screens
+   ========================================================================= */
+
+const ONBOARD_STORAGE_KEY = "aimd_onboarded_v1";
+
+function initOnboarding() {
+  const el = $("#onboard");
+  if (!el) return;
+  const params = new URLSearchParams(location.search);
+
+  // Hoppa helt om: dev-flagga, redan setts, eller spelet startar med tvång
+  if (params.has("event") || params.has("finale") || params.get("intro") === "skip") return;
+  let alreadySeen = false;
+  try { alreadySeen = !!localStorage.getItem(ONBOARD_STORAGE_KEY); } catch (e) {}
+  if (alreadySeen && params.get("intro") !== "1") return;
+
+  // Pause spelet medan onboardingen är uppe
+  let onboardPausedGame = false;
+  if (!game.paused) {
+    onboardPausedGame = true;
+    game.paused = true;
+    document.body.classList.add("is-paused");
+  }
+
+  el.hidden = false;
+  requestAnimationFrame(() => el.classList.add("is-visible"));
+
+  function goToScreen2() {
+    el.classList.add("is-screen-2");
+    $("#onboard-scene")?.setAttribute("hidden", "");
+    $("#onboard-how")?.removeAttribute("hidden");
+    activeScreen = 2;
+  }
+  function close() {
+    el.classList.remove("is-visible");
+    el.classList.add("is-closing");
+    setTimeout(() => {
+      el.hidden = true;
+      el.classList.remove("is-closing", "is-screen-2");
+    }, 360);
+    try { localStorage.setItem(ONBOARD_STORAGE_KEY, String(Date.now())); } catch (e) {}
+    if (onboardPausedGame) {
+      onboardPausedGame = false;
+      game.paused = false;
+      document.body.classList.remove("is-paused");
+    }
+    window.removeEventListener("keydown", keyHandler);
+  }
+
+  let activeScreen = 1;
+
+  $("#onboard-next")?.addEventListener("click", goToScreen2);
+  $("#onboard-start")?.addEventListener("click", close);
+  $("#onboard-skip")?.addEventListener("click", close);
+
+  function keyHandler(e) {
+    if (el.hidden) return;
+    if (e.key === "Escape") {
+      e.preventDefault();
+      close();
+      return;
+    }
+    if (e.key === "Enter" || e.key === " " || e.key === "ArrowRight") {
+      e.preventDefault();
+      if (activeScreen === 1) goToScreen2();
+      else close();
+    }
+  }
+  window.addEventListener("keydown", keyHandler);
+}
+
 function bindUI() {
   // klick på scen → engage
   $("#scene").addEventListener("click", (e) => {
@@ -1048,6 +1120,9 @@ function bindUI() {
     const t = e.touches[0];
     engageAt(t.clientX, t.clientY);
   }, { passive: true });
+
+  // ONBOARDING: visas första gången, sparas i localStorage
+  initOnboarding();
 
   // howto-modal: klick på MÅL-baren öppnar speltips
   const howtoEl = $("#howto");

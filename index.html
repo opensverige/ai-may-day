@@ -103,6 +103,50 @@
     <span class="goal__time" id="goal-time">0.0s</span>
   </button>
 
+  <!-- ONBOARDING (visas första gången) -->
+  <div class="onboard" id="onboard" hidden>
+    <button class="onboard__skip" id="onboard-skip" type="button" aria-label="Hoppa över introduktion">×</button>
+
+    <!-- SCREEN 1: scene -->
+    <div class="onboard__screen onboard__screen--scene" id="onboard-scene">
+      <div class="onboard__card">
+        <div class="onboard__eyebrow">1 MAJ 2026 · STOCKHOLM</div>
+        <h1 class="onboard__title">SERGELS TORG</h1>
+        <p class="onboard__line onboard__line--1">EU AI Act har trätt i kraft.</p>
+        <p class="onboard__line onboard__line--2">AI-tåget samlas.</p>
+        <p class="onboard__line onboard__line--3"><strong>Du har megafonen.</strong></p>
+        <button class="onboard__next" id="onboard-next" type="button">FORTSÄTT <span aria-hidden="true">→</span></button>
+        <div class="onboard__hint">Enter / Space / →</div>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: mekanik -->
+    <div class="onboard__screen onboard__screen--how" id="onboard-how" hidden>
+      <div class="onboard__card">
+        <div class="onboard__eyebrow">DITT UPPDRAG</div>
+        <h1 class="onboard__title">TÄMJA TÅGET</h1>
+        <p class="onboard__lead">90 sekunder. Mätaren upptill visar massans humör.</p>
+
+        <ul class="onboard__moods">
+          <li><span class="onboard__pip onboard__pip--win"></span><strong>UPPRÖRD</strong> i topp → <em>VINST</em></li>
+          <li><span class="onboard__pip onboard__pip--police"></span><strong>PANIK</strong> tar över → polisen vinner</li>
+          <li><span class="onboard__pip onboard__pip--bored"></span><strong>TRÖTT</strong> sprider sig → folk går hem</li>
+        </ul>
+
+        <div class="onboard__buttons-row">
+          <span class="onboard__btn-pill onboard__btn-pill--engage">ENGAGE</span>
+          <span class="onboard__btn-pill onboard__btn-pill--chant">CHANT</span>
+          <span class="onboard__btn-pill onboard__btn-pill--disperse">DISPERSE</span>
+          <span class="onboard__btn-pill onboard__btn-pill--police">POLICE</span>
+        </div>
+        <p class="onboard__small">Karaktärer dyker upp och kräver beslut. Lycka till.</p>
+
+        <button class="onboard__start" id="onboard-start" type="button">STARTA <span aria-hidden="true">▶</span></button>
+        <div class="onboard__hint">Enter / Space</div>
+      </div>
+    </div>
+  </div>
+
   <!-- Speltips-modal (visas när man klickar på MÅL) -->
   <div class="howto" id="howto" hidden>
     <div class="howto__card" role="dialog" aria-labelledby="howto-title" aria-modal="true">

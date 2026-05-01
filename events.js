@@ -29,17 +29,17 @@ function chr(id) {
 
 const ARCHETYPES = {
   "vc-partner":   { name: "VC-PARTNERN",   ...chr("sana")       },
-  "ai-grundare":  { name: "AI-GRUNDAREN",  ...chr("sana")       }, // återanvänd sana tills egen finns
+  "ai-grundare":  { name: "AI-GRUNDAREN",  ...chr("protest")    }, // generisk demonstrant
   "fackpamp":     { name: "FACKPAMPEN",    ...chr("facket")     },
-  "aktivist":     { name: "AKTIVISTEN",    ...chr("facket")     },
+  "aktivist":     { name: "AKTIVISTEN",    ...chr("protest")    }, // generisk demonstrant
   "eu-byrakrat":  { name: "EU-BYRÅKRATEN", ...chr("byrakrat")   },
   "journalist":   { name: "JOURNALISTEN",  ...chr("journalist") },
   "polischef":    { name: "POLISCHEFEN",   ...chr("polis")      },
   "professor":    { name: "PROFESSORN",    ...chr("byrakrat")   },
-  "kommunalrad":  { name: "KOMMUNALRÅDET", ...chr("facket")     },
+  "kommunalrad":  { name: "KOMMUNALRÅDET", ...chr("protest")    }, // generisk demonstrant
   "influencer":   { name: "INFLUENCERN",   ...chr("journalist") },
-  "borasare":     { name: "BORÅSAREN",     ...chr("facket")     },
-  "pensionar":    { name: "PENSIONÄREN",   ...chr("facket")     },
+  "borasare":     { name: "BORÅSAREN",     ...chr("protest")    }, // generisk demonstrant
+  "pensionar":    { name: "PENSIONÄREN",   ...chr("pensionar")  },
 };
 
 /* -------------------------- EVENT-BIBLIOTEK ----------------------------- */
