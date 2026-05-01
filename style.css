@@ -389,17 +389,109 @@ body {
 .finale__card {
   background:
     linear-gradient(180deg, rgba(28,42,40,0.96), rgba(15,25,23,0.98));
-  border: 1px solid var(--gold-soft);
+  border: 4px solid var(--gold-soft);
   padding: 0 48px 30px;
   max-width: 580px;
   width: calc(100% - 40px);
   text-align: center;
   position: relative;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.03) inset;
+  box-shadow: 8px 8px 0 #1a1208, 0 30px 80px rgba(0,0,0,0.7);
   max-height: calc(100vh - 32px);
   overflow-y: auto;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
 }
+.finale--win .finale__card    { border-color: #6fe089; box-shadow: 8px 8px 0 #1a3a22, 0 30px 80px rgba(111,224,137,0.25), 0 0 60px rgba(111,224,137,0.3) inset; }
+.finale--police .finale__card { border-color: #5b8fc4; box-shadow: 8px 8px 0 #0a1422, 0 30px 80px rgba(0,0,0,0.7); }
+.finale--bored .finale__card  { border-color: #d6a850; box-shadow: 8px 8px 0 #4a3618, 0 30px 80px rgba(0,0,0,0.7); }
+.finale--win    { background: rgba(7,16,14,0.92); }
+.finale--police { background: rgba(10,20,34,0.92); }
+.finale--bored  { background: rgba(28,22,12,0.92); }
 .finale__card .finale__eyebrow:first-child { margin-top: 38px; }
+
+/* ===== VERDICT-banner: VINST / FÖRLUST ===== */
+.finale__verdict {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 0 -48px 18px;
+  padding: 12px 16px 13px;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(20px, 3.5vw, 28px);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  border-bottom: 4px solid #1a1208;
+  z-index: 1;
+}
+.finale__verdict-icon {
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  width: 34px; height: 34px;
+  border: 3px solid #1a1208;
+  background: #fff4d2;
+  font-size: 22px;
+  line-height: 1;
+  color: #1a1208;
+  box-shadow: 3px 3px 0 #1a1208;
+}
+.finale__verdict-label {
+  text-shadow: 2px 0 0 #1a1208, -2px 0 0 #1a1208, 0 2px 0 #1a1208, 0 -2px 0 #1a1208;
+}
+
+/* WIN: grön + guld + glow */
+.finale__verdict--win {
+  background: linear-gradient(180deg, #6fe089 0%, #3aab58 100%);
+  color: #fff;
+  box-shadow: 0 0 30px rgba(111, 224, 137, 0.45) inset, 0 4px 0 #1a3a22;
+  animation: verdict-pulse-win 1.4s ease-in-out infinite;
+}
+.finale__verdict--win .finale__verdict-icon {
+  background: #f1c781;
+  color: #1a1208;
+  animation: verdict-icon-spin 0.6s cubic-bezier(.4,1.5,.6,1) 0.2s both;
+}
+@keyframes verdict-pulse-win {
+  0%, 100% { box-shadow: 0 0 30px rgba(111, 224, 137, 0.45) inset, 0 4px 0 #1a3a22; }
+  50%      { box-shadow: 0 0 50px rgba(111, 224, 137, 0.7) inset, 0 4px 0 #1a3a22; }
+}
+@keyframes verdict-icon-spin {
+  0%   { transform: rotate(-180deg) scale(0.4); opacity: 0; }
+  100% { transform: rotate(0) scale(1); opacity: 1; }
+}
+
+/* LOSS: röd-grå sober, ingen pulse */
+.finale__verdict--loss {
+  background: linear-gradient(180deg, #5a1818 0%, #2a0808 100%);
+  color: #ffd3d3;
+  box-shadow: 0 0 24px rgba(176, 48, 48, 0.4) inset, 0 4px 0 #1a0808;
+}
+.finale__verdict--loss .finale__verdict-icon {
+  background: #b03030;
+  color: #f0e3c0;
+  border-color: #1a0808;
+}
+.finale--police .finale__verdict--loss {
+  background: linear-gradient(180deg, #2c4a78 0%, #142640 100%);
+  box-shadow: 0 0 24px rgba(91, 143, 196, 0.4) inset, 0 4px 0 #0a1422;
+  color: #d6e2f0;
+}
+.finale--police .finale__verdict--loss .finale__verdict-icon {
+  background: #5b8fc4;
+  color: #0a1422;
+  border-color: #0a1422;
+}
+.finale--bored .finale__verdict--loss {
+  background: linear-gradient(180deg, #7a5e2c 0%, #3a2a14 100%);
+  box-shadow: 0 0 24px rgba(214, 168, 80, 0.3) inset, 0 4px 0 #1a1208;
+  color: #f1e0b8;
+}
+.finale--bored .finale__verdict--loss .finale__verdict-icon {
+  background: #d6a850;
+  color: #1a1208;
+  border-color: #1a1208;
+}
 
 /* Key art överst i finale — fast höjd + cover beskär lite top/botten */
 .finale__keyart {
@@ -545,6 +637,12 @@ body {
 }
 .finale__btn:hover { background: linear-gradient(180deg, rgba(48,68,64,0.95), rgba(25,38,35,0.98)); }
 .finale__btn:active { transform: translateY(1px); }
+.finale--win .finale__btn    { background: #2a6e3a; color: #fff4d2; border-color: #1a3a22; }
+.finale--win .finale__btn:hover    { background: #348445; }
+.finale--police .finale__btn { background: #2c4a78; color: #d6e2f0; border-color: #0a1422; }
+.finale--police .finale__btn:hover { background: #3a5d92; }
+.finale--bored .finale__btn  { background: #7a5e2c; color: #f1e0b8; border-color: #3a2a14; }
+.finale--bored .finale__btn:hover  { background: #94733a; }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 
 /* =========================================================================

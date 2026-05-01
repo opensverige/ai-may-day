@@ -718,6 +718,21 @@ function endGame(outcome) {
   const el = $("#finale");
   el.classList.remove("finale--win", "finale--police", "finale--bored");
   el.classList.add(f.cls);
+
+  // VERDICT-banner: VINST / FÖRLUST tydligt visuellt
+  const isWin = f.cls === "finale--win";
+  const verdictLabel = isWin ? "VINST" : "FÖRLUST";
+  const verdictIcon = isWin ? "★" : (f.cls === "finale--police" ? "⌧" : "·");
+  const verdictEl = $("#finale-verdict");
+  if (verdictEl) {
+    verdictEl.classList.remove("finale__verdict--win", "finale__verdict--loss");
+    verdictEl.classList.add(isWin ? "finale__verdict--win" : "finale__verdict--loss");
+  }
+  const labEl = $("#finale-verdict-label");
+  const iconEl = $("#finale-verdict-icon");
+  if (labEl) labEl.textContent = verdictLabel;
+  if (iconEl) iconEl.textContent = verdictIcon;
+
   $("#finale-eyebrow").textContent = f.eyebrow;
   $("#finale-title").textContent = f.title;
   $("#finale-sub").textContent = f.sub;
