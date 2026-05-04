@@ -2218,7 +2218,7 @@ body.is-final-spurt .ticker.ticker--top { animation: ticker-rush 0.6s ease-in-ou
     position: fixed;
     left: max(14px, env(safe-area-inset-left, 0px));
     /* ovanför actions-raden så knappar inte täcks */
-    bottom: calc(118px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(160px + env(safe-area-inset-bottom, 0px));
     z-index: 6;
     margin: 0;
     min-width: min(260px, 36vw);

@@ -40,7 +40,7 @@ const ARCHETYPES = {
   "influencer":   { name: "INFLUENCERN",   ...chr("journalist") },
   "borasare":     { name: "BORÅSAREN",     ...chr("pensionar")  }, // tant-pensionär-vibe
   "pensionar":    { name: "PENSIONÄREN",   ...chr("pensionar")  },
-  "statsminister": { name: "STATSMINISTERN", ...chr("kommun")    }, // egen, fallback till kommun
+  "statsminister": { name: "STATSMINISTERN", ...chr("statsminister") },
 };
 
 /* -------------------------- EVENT-BIBLIOTEK ----------------------------- */
